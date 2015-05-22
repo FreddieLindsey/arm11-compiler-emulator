@@ -16,13 +16,44 @@
 	- Set PC register = *location 0
 	- Execute instructions as per architecture.
 - ARM system
-	- 17 32-bit registers (5-bit Reg Code)
-	- Reg 0 - 12 are general purpose
-	- Reg 13 - 14 are called SP, RP respectively and can be ignored for this exercise
-	- Reg 15 is the PC register
-	- Reg 16 is the CPSR register
+	- Registers
+		- 17 32-bit registers (5-bit Reg Code)
+		- Reg 0 - 12 are general purpose
+		- Reg 13 - 14 are called SP, RP respectively and can be ignored for this exercise
+		- Reg 15 is the PC register
+		- Reg 16 is the CPSR register
+			- Configures operating mode for ARM processor and checks conditionals
+			- We are only concerned with it's top 4-bits. 
+	
+	| Flag bit | Flag | Semantic |
+	| :-- | :-- | --- |
+	| 31 | N | last result was negative |
+	| 30 | Z | last result was zero |
+	| 29 | C | carry bit |
+	| 28 | V | overflow bit |
+	
+	- Instruction set
+		- No `halt` instruction in ARM instruction set --> the processor will run forever
+		- We will use an instruction `all-0` as a psuedo-halt instruction (corresponds to `andeq r0, r0, r0`)
+		- Upon terminating, we will print the following
+			- The value of each register
+			- The contents of any non-zero memory location
+
+### Necessary functions of an emulator
+
+- Execute the three-phase pipeline
+- Set pipeline stages during branch: 
+
+		if [[ decoded (starts with b) ]]; then 
+			PC += offset 
+			fetched = null 
+		fi
+
+- 
 
 ## Part II - Assembler
+
+
 
 ## Part III -
 
