@@ -77,6 +77,7 @@ Form
 | | Bit from | Bit to | Semantic |
 | :-- | --- | --- | :-- |
 | *Cond* | 28 | 31 | Condition field |
+| - | 26 | 27 | 0 |
 | *Immediate Operand* | 25 | 25 | If set, *Operand2* is an immediate constant, otherwise it is a shifted register |
 | *OpCode* | 21 | 24 | Minimal set of supported *OpCodes* details below. |
 | *Set conditions* | 20 | 20 | If set, instruction should update CPSR flags |
@@ -144,6 +145,34 @@ Shift types
 
 Note that for logical left, if the instruction is to set the CPSR flags, the least significant discarded bit is the new carry flag. For logical right, this is the most significant discarded bit.
 For arithmetic right, instead of filling the high bits with 0s, they are filled with bit 31 of the original value.
+
+#### Multiply instructions
+
+Form
+
+| | Bit from | Bit to | Semantic |
+| :-- | --- | --- | :-- |
+| *Cond* | 28 | 31 | Condition field |
+| - | 22 | 27 | 0 |
+| *Accumulate* | 21 | 22 | If set, the instruction performs multiply and accumulate, otherwise just multiply. |
+| *Set conditions* | 20 | 20 | If set, instruction should update CPSR flags |
+| \\( R_{d} \\) | 16 | 19 | Destination register |
+| \\( R_{n} \\) | 12 | 15 | \\( R_{n} \\) |
+| \\( R_{s} \\) | 8 | 11 | \\( R_{s} \\) |
+| - | 4 | 7 | 1001 |
+| \\( R_{m} \\) | 0 | 3 | \\( R_{m} \\) |
+
+Accumulate
+
+	if [[ accumulate == 1 ]]; then
+		R_d := R_m * R_s + R_n
+	else
+		R_d := R_m * R_s
+	fi
+
+The multiply instruction (with or without accumulate) truncates to the least significant 32-bits, and as such, it works the same for signed and unsigned integers.
+
+#### Single Data Transfer
 
 ## Part II - Assembler
 

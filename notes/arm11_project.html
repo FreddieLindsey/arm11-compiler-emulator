@@ -395,6 +395,12 @@ fi
 	<td style="text-align:left;">Condition field</td>
 </tr>
 <tr>
+	<td style="text-align:left;">-</td>
+	<td style="text-align:left;">26</td>
+	<td style="text-align:left;">27</td>
+	<td style="text-align:left;">0</td>
+</tr>
+<tr>
 	<td style="text-align:left;"><em>Immediate Operand</em></td>
 	<td style="text-align:left;">25</td>
 	<td style="text-align:left;">25</td>
@@ -586,6 +592,98 @@ The shift has a type (2-bit) and is defined by a 5-bit integer, or by another re
 
 <p>Note that for logical left, if the instruction is to set the CPSR flags, the least significant discarded bit is the new carry flag. For logical right, this is the most significant discarded bit.<br/>
 For arithmetic right, instead of filling the high bits with 0s, they are filled with bit 31 of the original value.</p>
+
+<h4 id=" multiplyinstructions"> Multiply instructions</h4>
+
+<p>Form</p>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;"></th>
+	<th style="text-align:left;">Bit from</th>
+	<th style="text-align:left;">Bit to</th>
+	<th style="text-align:left;">Semantic</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;"><em>Cond</em></td>
+	<td style="text-align:left;">28</td>
+	<td style="text-align:left;">31</td>
+	<td style="text-align:left;">Condition field</td>
+</tr>
+<tr>
+	<td style="text-align:left;">-</td>
+	<td style="text-align:left;">22</td>
+	<td style="text-align:left;">27</td>
+	<td style="text-align:left;">0</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><em>Accumulate</em></td>
+	<td style="text-align:left;">21</td>
+	<td style="text-align:left;">22</td>
+	<td style="text-align:left;">If set, the instruction performs multiply and accumulate, otherwise just multiply.</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><em>Set conditions</em></td>
+	<td style="text-align:left;">20</td>
+	<td style="text-align:left;">20</td>
+	<td style="text-align:left;">If set, instruction should update CPSR flags</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><span class="math">\( R_{d} \)</span></td>
+	<td style="text-align:left;">16</td>
+	<td style="text-align:left;">19</td>
+	<td style="text-align:left;">Destination register</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><span class="math">\( R_{n} \)</span></td>
+	<td style="text-align:left;">12</td>
+	<td style="text-align:left;">15</td>
+	<td style="text-align:left;"><span class="math">\( R_{n} \)</span></td>
+</tr>
+<tr>
+	<td style="text-align:left;"><span class="math">\( R_{s} \)</span></td>
+	<td style="text-align:left;">8</td>
+	<td style="text-align:left;">11</td>
+	<td style="text-align:left;"><span class="math">\( R_{s} \)</span></td>
+</tr>
+<tr>
+	<td style="text-align:left;">-</td>
+	<td style="text-align:left;">4</td>
+	<td style="text-align:left;">7</td>
+	<td style="text-align:left;">1001</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><span class="math">\( R_{m} \)</span></td>
+	<td style="text-align:left;">0</td>
+	<td style="text-align:left;">3</td>
+	<td style="text-align:left;"><span class="math">\( R_{m} \)</span></td>
+</tr>
+</tbody>
+</table>
+
+<p>Accumulate</p>
+
+<pre><code>if [[ accumulate == 1 ]]; then  
+    R_d := R_m * R_s + R_n  
+else  
+    R_d := R_m * R_s  
+fi
+</code></pre>
+
+<p>The multiply instruction (with or without accumulate) truncates to the least significant 32-bits, and as such, it works the same for signed and unsigned integers.</p>
+
+<h4 id="singledatatransfer">Single Data Transfer</h4>
 
 <h2 id="partii-assembler">Part II - Assembler</h2>
 
