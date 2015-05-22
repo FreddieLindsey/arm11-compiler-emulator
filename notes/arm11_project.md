@@ -77,7 +77,7 @@ Form
 | | Bit from | Bit to | Semantic |
 | :-- | --- | --- | :-- |
 | *Cond* | 28 | 31 | Condition field |
-| - | 26 | 27 | 0 |
+| - | 26 | 27 | 00 |
 | *Immediate Operand* | 25 | 25 | If set, *Operand2* is an immediate constant, otherwise it is a shifted register |
 | *OpCode* | 21 | 24 | Minimal set of supported *OpCodes* details below. |
 | *Set conditions* | 20 | 20 | If set, instruction should update CPSR flags |
@@ -153,7 +153,7 @@ Form
 | | Bit from | Bit to | Semantic |
 | :-- | --- | --- | :-- |
 | *Cond* | 28 | 31 | Condition field |
-| - | 22 | 27 | 0 |
+| - | 22 | 27 | 000000 |
 | *Accumulate* | 21 | 22 | If set, the instruction performs multiply and accumulate, otherwise just multiply. |
 | *Set conditions* | 20 | 20 | If set, instruction should update CPSR flags |
 | \\( R_{d} \\) | 16 | 19 | Destination register |
@@ -173,6 +173,33 @@ Accumulate
 The multiply instruction (with or without accumulate) truncates to the least significant 32-bits, and as such, it works the same for signed and unsigned integers.
 
 #### Single Data Transfer
+
+Single data transfers are used to load/store data from/to memory. ARM doesn't support memory to memory operations.
+
+Form
+
+| | Bit from | Bit to | Semantic |
+| :-- | --- | --- | :-- |
+| *Cond* | 28 | 31 | Condition field |
+| - | 26 | 27 | 01 |
+| *Immediate Offset* | 25 | 25 | If set, offset is a shifted register, else a constant |
+| *Pre/Post-indexing* | 24 | 24 | If set, the offset is applied to the base register before transferring, if clear, after transferring |
+| *Up* | 23 | 23 | If set, offset is added to base register, if clear, subtracted |
+| - | 21 | 21 | 00 |
+| *Load/Store* | 20 | 20 | If set, load from memory, else store in memory |
+| \\( R_{n} \\) | 16 | 19 | \\( R_{n} \\) |
+| \\( R_{d} \\) | 12 | 15 | Destination register |
+| Offset | 0 | 11 | Either an unsigned 12-bit immediate offset, or a register (possibly shifted) depending on *Immediate Offset* constant above. |
+
+#### Branch Instruction
+
+Form
+
+| | Bit from | Bit to | Semantic |
+| :-- | --- | --- | :-- |
+| *Cond* | 28 | 31 | Condition field |
+| - | 24 | 27 | 1010 |
+| Offset | 0 | 23 | Offset is a 24-bit signed 2's compliment integer. <br> It needs to be shifted left 2-bits, sign-extended to 32-bits, then added to PC. Therefore the branch instruction can specify a branch of ±32 MB. <br> N.B. The offset will take into account that the PC is 8 bytes ahead of the instruction being executed. |
 
 ## Part II - Assembler
 
