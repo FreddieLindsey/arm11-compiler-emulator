@@ -101,11 +101,21 @@ OpCodes
 
 *Operand2*
 
-##### Immediate constant
+	Immediate constant
+
+If *Operand2* is an immediate constant (I = 1), then bits 0 --> 7 are an unsigned 8-bit immediate value, and bits 8 --> 11 are the rotation.
+
+Such that, the constants value is the 8-bit value, extended to 32-bit <br>(00000001 -> 00000001000000000000000000000000), <br> which is then rotated right an even number of positions as specified by the rotation bits (0, 2, 4, . . , 30)
+
+Therefore, 
+
+010100100110 <br> --> <br> 00000000000010011000000000000000
+
+Note that is it not possible to load a 32-bit immediate value into a register; this must be done using load from memory.
+
+	Register
 
 
-
-##### Register
 
 ## Part II - Assembler
 
