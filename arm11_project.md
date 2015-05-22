@@ -19,3 +19,9 @@
   - Reg 13 - 14 are called SP, RP respectively and can be ignored for this exercise
   - Reg 15 is the PC register
   - Reg 16 is the CPSR register
+
+## Part II - Assembler
+
+## Part III -
+
+## Part IV -  
