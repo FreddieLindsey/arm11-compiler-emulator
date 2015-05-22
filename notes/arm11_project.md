@@ -13,11 +13,11 @@
 	- All registers and memory locations should be initialised to 0.
 - Running the program
 	- Binary file loads
-	- Set PC register = *location 0
+	- Initialise the processor/memory
 	- Execute instructions as per architecture.
 - ARM system
 	- Registers
-		- 17 32-bit registers (5-bit Reg Code)
+		- 17 32-bit registers (4-bit Reg Code - 17 not accessible)
 		- Reg 0 - 12 are general purpose
 		- Reg 13 - 14 are called SP, RP respectively and can be ignored for this exercise
 		- Reg 15 is the PC register
@@ -41,6 +41,8 @@
 
 ### Functions of an emulator class
 
+#### Program functions
+
 - Execute the three-phase pipeline
 - Set pipeline stages during branch: 
 
@@ -54,6 +56,8 @@
 
 		if [[ condition_met || al ]]; then
 			run instruction
+		else
+			pass
 		fi
 
 | Code | Suffix | CPSR flags | Interpretation |
@@ -66,7 +70,42 @@
 | 1101 | le | Z set OR (N not equal to V) | less than or equal |
 | 1110 | al | (ignored) | - |
 
+#### Data processing instructions
 
+Form
+
+| | Bit from | Bit to | Semantic |
+| :-- | --- | --- | :-- |
+| *Cond* | 28 | 31 | Condition field |
+| *Immediate Operand* | 25 | 25 | If set, *Operand2* is an immediate constant, otherwise it is a shifted register |
+| *OpCode* | 21 | 24 | Minimal set of supported *OpCodes* details below. |
+| *Set conditions* | 20 | 20 | If set, instruction should update CPSR flags |
+| \\( R_{n} \\) | 16 | 19 | First operand is content of register \\( R_{n} \\) |
+| \\( R_{d} \\) | 12 | 15 | Register to write result to \\( R_{d} \\) |
+| *Operand2* | 0 | 11 | Either a rotated 8 bit *Immediate constant* or a shifted register (\\( R_{m} \\)). <br> Details on interpretation below. |
+
+OpCodes
+
+| OpCode | Mnemonic | Interpretation |
+| --- | --- | :-- |
+| 0000 | and | \\( R_{n} \\) AND *Operand2* |
+| 0001 | eor | \\( R_{n} \\) EOR *Operand2* |
+| 0010 | sub | \\( R_{n} \\) - *Operand2* |
+| 0011 | rsb |  *Operand2* - \\( R_{n} \\) |
+| 0100 | add | \\( R_{n} \\) + *Operand2* |
+| 1000 | tst | as `and` but result not written |
+| 1001 | teq | as `eor` but result not written |
+| 1010 | cmp | as `sub` but result not written |
+| 1100 | orr | \\( R_{n} \\) OR *Operand2* |
+| 1101 | mov | *Operand2* |
+
+*Operand2*
+
+##### Immediate constant
+
+
+
+##### Register
 
 ## Part II - Assembler
 
