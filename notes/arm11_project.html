@@ -202,7 +202,7 @@ table {
 
 <ul>
 <li>Binary file loads</li>
-<li>Set PC register = *location 0</li>
+<li>Initialise the processor/memory</li>
 <li>Execute instructions as per architecture.</li>
 </ul></li>
 <li>ARM system
@@ -211,7 +211,7 @@ table {
 <li>Registers
 
 <ul>
-<li>17 32-bit registers (5-bit Reg Code)</li>
+<li>17 32-bit registers (4-bit Reg Code - 17 not accessible)</li>
 <li>Reg 0 - 12 are general purpose</li>
 <li>Reg 13 - 14 are called SP, RP respectively and can be ignored for this exercise</li>
 <li>Reg 15 is the PC register</li>
@@ -274,11 +274,318 @@ table {
 <ul>
 <li>The value of each register</li>
 <li>The contents of any non-zero memory location</li>
-<li></li>
 </ul></li>
 </ul></li>
 </ul></li>
 </ul>
+
+<h3 id="functionsofanemulatorclass">Functions of an emulator class</h3>
+
+<h4 id="programfunctions">Program functions</h4>
+
+<ul>
+<li><p>Execute the three-phase pipeline </p></li>
+<li><p>Set pipeline stages during branch: </p>
+
+<pre><code>if [[ decoded (starts with b) ]]; then  
+    PC += offset    ; offset is calculated from the position  
+                    ; of the instruction relative to PC + 8  
+    fetched = null  
+fi
+</code></pre></li>
+<li><p>Check conditions in the instruction with the CPSR register</p>
+
+<pre><code>if [[ condition_met || al ]]; then  
+    run instruction  
+else  
+    pass  
+fi
+</code></pre></li>
+</ul>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:right;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;">Code</th>
+	<th style="text-align:right;">Suffix</th>
+	<th style="text-align:left;">CPSR flags</th>
+	<th style="text-align:left;">Interpretation</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">0000</td>
+	<td style="text-align:right;">eq</td>
+	<td style="text-align:left;">Z set</td>
+	<td style="text-align:left;">equal</td>
+</tr>
+<tr>
+	<td style="text-align:left;">0001</td>
+	<td style="text-align:right;">ne</td>
+	<td style="text-align:left;">Z clear</td>
+	<td style="text-align:left;">not equal</td>
+</tr>
+<tr>
+	<td style="text-align:left;">1010</td>
+	<td style="text-align:right;">ge</td>
+	<td style="text-align:left;">N equals V</td>
+	<td style="text-align:left;">greater or equal</td>
+</tr>
+<tr>
+	<td style="text-align:left;">1011</td>
+	<td style="text-align:right;">lt</td>
+	<td style="text-align:left;">N not equals to V</td>
+	<td style="text-align:left;">less than</td>
+</tr>
+<tr>
+	<td style="text-align:left;">1100</td>
+	<td style="text-align:right;">gt</td>
+	<td style="text-align:left;">Z clear AND (N equals V)</td>
+	<td style="text-align:left;">greater than</td>
+</tr>
+<tr>
+	<td style="text-align:left;">1101</td>
+	<td style="text-align:right;">le</td>
+	<td style="text-align:left;">Z set OR (N not equal to V)</td>
+	<td style="text-align:left;">less than or equal</td>
+</tr>
+<tr>
+	<td style="text-align:left;">1110</td>
+	<td style="text-align:right;">al</td>
+	<td style="text-align:left;">(ignored)</td>
+	<td style="text-align:left;">-</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="dataprocessinginstructions">Data processing instructions</h4>
+
+<p>Form</p>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;"></th>
+	<th style="text-align:left;">Bit from</th>
+	<th style="text-align:left;">Bit to</th>
+	<th style="text-align:left;">Semantic</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;"><em>Cond</em></td>
+	<td style="text-align:left;">28</td>
+	<td style="text-align:left;">31</td>
+	<td style="text-align:left;">Condition field</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><em>Immediate Operand</em></td>
+	<td style="text-align:left;">25</td>
+	<td style="text-align:left;">25</td>
+	<td style="text-align:left;">If set, <em>Operand2</em> is an immediate constant, otherwise it is a shifted register</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><em>OpCode</em></td>
+	<td style="text-align:left;">21</td>
+	<td style="text-align:left;">24</td>
+	<td style="text-align:left;">Minimal set of supported <em>OpCodes</em> details below.</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><em>Set conditions</em></td>
+	<td style="text-align:left;">20</td>
+	<td style="text-align:left;">20</td>
+	<td style="text-align:left;">If set, instruction should update CPSR flags</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><span class="math">\( R_{n} \)</span></td>
+	<td style="text-align:left;">16</td>
+	<td style="text-align:left;">19</td>
+	<td style="text-align:left;">First operand is content of register <span class="math">\( R_{n} \)</span></td>
+</tr>
+<tr>
+	<td style="text-align:left;"><span class="math">\( R_{d} \)</span></td>
+	<td style="text-align:left;">12</td>
+	<td style="text-align:left;">15</td>
+	<td style="text-align:left;">Register to write result to <span class="math">\( R_{d} \)</span></td>
+</tr>
+<tr>
+	<td style="text-align:left;"><em>Operand2</em></td>
+	<td style="text-align:left;">0</td>
+	<td style="text-align:left;">11</td>
+	<td style="text-align:left;">Either a rotated 8 bit <em>Immediate constant</em> or a shifted register (<span class="math">\( R_{m} \)</span>). <br> Details on interpretation below.</td>
+</tr>
+</tbody>
+</table>
+
+<p>OpCodes</p>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;">OpCode</th>
+	<th style="text-align:left;">Mnemonic</th>
+	<th style="text-align:left;">Interpretation</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">0000</td>
+	<td style="text-align:left;">and</td>
+	<td style="text-align:left;"><span class="math">\( R_{n} \)</span> AND <em>Operand2</em></td>
+</tr>
+<tr>
+	<td style="text-align:left;">0001</td>
+	<td style="text-align:left;">eor</td>
+	<td style="text-align:left;"><span class="math">\( R_{n} \)</span> EOR <em>Operand2</em></td>
+</tr>
+<tr>
+	<td style="text-align:left;">0010</td>
+	<td style="text-align:left;">sub</td>
+	<td style="text-align:left;"><span class="math">\( R_{n} \)</span> - <em>Operand2</em></td>
+</tr>
+<tr>
+	<td style="text-align:left;">0011</td>
+	<td style="text-align:left;">rsb</td>
+	<td style="text-align:left;"><em>Operand2</em> - <span class="math">\( R_{n} \)</span></td>
+</tr>
+<tr>
+	<td style="text-align:left;">0100</td>
+	<td style="text-align:left;">add</td>
+	<td style="text-align:left;"><span class="math">\( R_{n} \)</span> + <em>Operand2</em></td>
+</tr>
+<tr>
+	<td style="text-align:left;">1000</td>
+	<td style="text-align:left;">tst</td>
+	<td style="text-align:left;">as <code>and</code> but result not written</td>
+</tr>
+<tr>
+	<td style="text-align:left;">1001</td>
+	<td style="text-align:left;">teq</td>
+	<td style="text-align:left;">as <code>eor</code> but result not written</td>
+</tr>
+<tr>
+	<td style="text-align:left;">1010</td>
+	<td style="text-align:left;">cmp</td>
+	<td style="text-align:left;">as <code>sub</code> but result not written</td>
+</tr>
+<tr>
+	<td style="text-align:left;">1100</td>
+	<td style="text-align:left;">orr</td>
+	<td style="text-align:left;"><span class="math">\( R_{n} \)</span> OR <em>Operand2</em></td>
+</tr>
+<tr>
+	<td style="text-align:left;">1101</td>
+	<td style="text-align:left;">mov</td>
+	<td style="text-align:left;"><em>Operand2</em></td>
+</tr>
+</tbody>
+</table>
+
+<p><em>Operand2</em></p>
+
+<pre><code>Immediate constant
+</code></pre>
+
+<p>If <em>Operand2</em> is an immediate constant (I = 1), then bits 0 &#8211;&gt; 7 are an unsigned 8-bit immediate value, and bits 8 &#8211;&gt; 11 are the rotation.</p>
+
+<p>Such that, the constants value is the 8-bit value, extended to 32-bit <br>(00000001 -&gt; 00000001000000000000000000000000), <br> which is then rotated right an even number of positions as specified by the rotation bits (0, 2, 4, . . , 30)</p>
+
+<p>Therefore, </p>
+<center><br/>
+010100100110 <br> &#8211;&gt; <br> 00000000000010011000000000000000<br/>
+</center>
+
+<p>Note that is it not possible to load a 32-bit immediate value into a register; this must be done using load from memory.</p>
+
+<pre><code>Register
+</code></pre>
+
+<p>If <em>Operand2</em> is another register (I = 0), then bits 0 &#8211;&gt; 3 are the register, and bits 4 &#8211;&gt; 11 specify the shift.<br/>
+The shift has a type (2-bit) and is defined by a 5-bit integer, or by another register. </p>
+
+<p>If the shift is by an integer,</p>
+
+<ul>
+<li>Bit 4 is 0</li>
+<li>Bits 5 &#8211;&gt; 6 give the shift type</li>
+<li>Bits 7 &#8211;&gt; 11 give the 5-bit integer shift amount</li>
+</ul>
+
+<p>If the shift if by a register value,</p>
+
+<ul>
+<li>Bit 4 is 1</li>
+<li>Bits 5 &#8211; &gt; 6 give the shift type</li>
+<li>Bit 7 is 0 (unused)</li>
+<li>Bits 8 &#8211;&gt; 11 are the shift register where the last byte of the register value gives the shift amount</li>
+</ul>
+
+<p>Shift types</p>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;">Code</th>
+	<th style="text-align:left;">Shift type</th>
+	<th style="text-align:left;">Interpretation</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">00</td>
+	<td style="text-align:left;">logical left (lsl)</td>
+	<td style="text-align:left;">Moves each bit to the left by the specified amount</td>
+</tr>
+<tr>
+	<td style="text-align:left;">01</td>
+	<td style="text-align:left;">logical right (lsr)</td>
+	<td style="text-align:left;">Moves each bit to the right by the specified amount</td>
+</tr>
+<tr>
+	<td style="text-align:left;">10</td>
+	<td style="text-align:left;">arithmetic right (asr)</td>
+	<td style="text-align:left;">As lsr, but preserves the sign bit; used for 2&#8217;s compliment operations.</td>
+</tr>
+<tr>
+	<td style="text-align:left;">11</td>
+	<td style="text-align:left;">rotate right (ror)</td>
+	<td style="text-align:left;">Rotate cyclically with bit 0 shifting into bit 31</td>
+</tr>
+</tbody>
+</table>
+
+<p>Note that for logical left, if the instruction is to set the CPSR flags, the least significant discarded bit is the new carry flag. For logical right, this is the most significant discarded bit.<br/>
+For arithmetic right, instead of filling the high bits with 0s, they are filled with bit 31 of the original value.</p>
 
 <h2 id="partii-assembler">Part II - Assembler</h2>
 
@@ -4557,6 +4864,15 @@ hljs.registerLanguage("clojure", function(j) {
 });  
 </script><br/>
 <script>hljs.initHighlightingOnLoad();</script><br/>
+</div>
+<div style="display:none"><br/>
+<!--This seemingly unnecessary div markup is the only thing keeping this script working after Markdown conversion. Trust me.--><br/>
+ <script type="text/x-mathjax-config">  
+  MathJax.Hub.Config({
+    
+  });  
+</script><br/>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML-full"></script><br/>
 </div>
 <!-- ##END MARKED WRAPPER## -->
     </div>

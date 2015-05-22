@@ -109,13 +109,41 @@ Such that, the constants value is the 8-bit value, extended to 32-bit <br>(00000
 
 Therefore, 
 
+<center>
 010100100110 <br> --> <br> 00000000000010011000000000000000
+</center>
 
 Note that is it not possible to load a 32-bit immediate value into a register; this must be done using load from memory.
 
 	Register
 
+If *Operand2* is another register (I = 0), then bits 0 --> 3 are the register, and bits 4 --> 11 specify the shift.
+The shift has a type (2-bit) and is defined by a 5-bit integer, or by another register. 
 
+If the shift is by an integer,
+
+- Bit 4 is 0
+- Bits 5 --> 6 give the shift type
+- Bits 7 --> 11 give the 5-bit integer shift amount
+
+If the shift if by a register value,
+
+- Bit 4 is 1
+- Bits 5 -- > 6 give the shift type
+- Bit 7 is 0 (unused)
+- Bits 8 --> 11 are the shift register where the last byte of the register value gives the shift amount
+
+Shift types
+
+| Code | Shift type | Interpretation |
+| --- | :-- | :-- |
+| 00 | logical left (lsl) | Moves each bit to the left by the specified amount |
+| 01 | logical right (lsr) | Moves each bit to the right by the specified amount |
+| 10 | arithmetic right (asr) | As lsr, but preserves the sign bit; used for 2's compliment operations. |
+| 11 | rotate right (ror) | Rotate cyclically with bit 0 shifting into bit 31 |
+
+Note that for logical left, if the instruction is to set the CPSR flags, the least significant discarded bit is the new carry flag. For logical right, this is the most significant discarded bit.
+For arithmetic right, instead of filling the high bits with 0s, they are filled with bit 31 of the original value.
 
 ## Part II - Assembler
 
