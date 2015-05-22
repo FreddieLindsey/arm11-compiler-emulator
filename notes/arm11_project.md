@@ -39,17 +39,34 @@
 			- The value of each register
 			- The contents of any non-zero memory location
 
-### Necessary functions of an emulator
+### Functions of an emulator class
 
 - Execute the three-phase pipeline
 - Set pipeline stages during branch: 
 
 		if [[ decoded (starts with b) ]]; then 
-			PC += offset 
+			PC += offset 	; offset is calculated from the position 
+							; of the instruction relative to PC + 8
 			fetched = null 
 		fi
 
-- 
+- Check conditions in the instruction with the CPSR register
+
+		if [[ condition_met || al ]]; then
+			run instruction
+		fi
+
+| Code | Suffix | CPSR flags | Interpretation |
+| --- | --: | :-- | :-- |
+| 0000 | eq | Z set | equal |
+| 0001 | ne | Z clear | not equal |
+| 1010 | ge | N equals V | greater or equal |
+| 1011 | lt | N not equals to V | less than |
+| 1100 | gt | Z clear AND (N equals V) | greater than |
+| 1101 | le | Z set OR (N not equal to V) | less than or equal |
+| 1110 | al | (ignored) | - |
+
+
 
 ## Part II - Assembler
 
