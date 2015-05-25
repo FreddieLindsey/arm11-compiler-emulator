@@ -2,15 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct machine {
+typedef struct machine {
   int *memory;
-  int *r; // General purpose registers
-  int pc; // Other registers
-  int cpsr; 
-};
+  int *r[16]; // General purpose registers
+  int pc = &r[14]; // Other registers
+  int cpsr = &[r15]; 
+} machine_t;
 
 void loadfile(char *filename, int *memory);
-void printState(struct machine *machine);
+void printState(machine_t *machine);
 char* byteToBinary(int x);
 
 int main(int argc, char **argv) {
@@ -20,11 +20,9 @@ int main(int argc, char **argv) {
   }
 
   // Init machine
-  struct machine machine;
+  machine_t machine;
   machine.memory = calloc(65536, 1); // set 2^16 1 byte elements to 0
-  machine.r = calloc(12, 4);
-  machine.pc = 0;
-  machine.cpsr = 0;
+  machine.r = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
   // Load binary file to memory
   loadfile(argv[1], machine.memory);
@@ -50,7 +48,7 @@ void loadfile(char *filename, int *memory) {
   while((x = fgetc(file)) != EOF) {
     memory[i] = x;
     i++;
-    // print memory as its loading in (debug)
+    //print memory as its loading in (debug)
     //printf("%s ", byteToBinary(x));
     //if(i % 4 == 0) printf("\n");
   }
