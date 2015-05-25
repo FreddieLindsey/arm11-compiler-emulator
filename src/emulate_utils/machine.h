@@ -1,5 +1,5 @@
 typedef struct machine {
-  char *memory;
+  unsigned char *memory;
   int *r; // General purpose registers
   int pc; // Other registers
   int cpsr;

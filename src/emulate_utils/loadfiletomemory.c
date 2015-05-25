@@ -1,9 +1,9 @@
-void loadfile(char *filename, char *memory);
+void loadfile(char *filename, unsigned char *memory);
 
 /*
  *  Loads a binary file to [*memory]
  */
-void loadfile(char *filename, char *memory) {
+void loadfile(char *filename, unsigned char *memory) {
   FILE *file = fopen(filename, "r");
 
   if (file == NULL) {
@@ -11,7 +11,7 @@ void loadfile(char *filename, char *memory) {
     return;
   }
 
-  char x;
+  unsigned char x;
   int i = 0;
   while((x = fgetc(file)) != EOF) {
     memory[i] = x;

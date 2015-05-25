@@ -14,10 +14,10 @@ void printState(struct machine *machine) {
   // Memory
   printf("Non-zero memory:\n");
   for(long i = 0; i < 65536; i += 4) {
-    char a = (*machine).memory[i];
-    char b = (*machine).memory[i+1];
-    char c = (*machine).memory[i+2];
-    char d = (*machine).memory[i+3];
+    unsigned char a = (*machine).memory[i];
+    unsigned char b = (*machine).memory[i+1];
+    unsigned char c = (*machine).memory[i+2];
+    unsigned char d = (*machine).memory[i+3];
     if(a != 0 || b != 0 || c != 0 || d != 0) {
      printf("0x%08lx: 0x%02x%02x%02x%02x\n", i, a, b, c, d);
     }

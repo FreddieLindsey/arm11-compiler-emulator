@@ -13,8 +13,10 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
+  printf("test");
+
   machine_t machine;
-  machine.memory = calloc(65536, sizeof(char)); // set 2^16 1 byte elements to 0
+  machine.memory = calloc(65536, sizeof(unsigned char)); 
   machine.r = calloc(14, sizeof(int));
   machine.pc = 0;
   machine.cpsr = 0;
