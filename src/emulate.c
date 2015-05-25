@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void loadfile(char *filename);
+void loadfile(char *filename, int *memory);
 char* byteToBinary(int x);
 
 int main(int argc, char **argv) {
@@ -10,14 +10,21 @@ int main(int argc, char **argv) {
     printf("Usage: emulate <file>");
     return EXIT_FAILURE;
   }
-  loadfile(argv[1]);
+
+  // Init memory and registers
+  int *memory = calloc(65536, 1); // set 2^16 1 byte elements to 0
+  //int *r[16] = { 0 }; // all registers init to 0
+
+  // Load binary file to memory
+  loadfile(argv[1], memory);
+
   return EXIT_SUCCESS;
 }
 
 /*
  *  Loads a binary file  
  */
-void loadfile(char *filename) {
+void loadfile(char *filename, int *memory) {
   FILE *file = fopen(filename, "r");
 
   if(file == NULL) {
@@ -25,16 +32,18 @@ void loadfile(char *filename) {
     return;
   }
   
-  int i = 0;
-  int x;
+  int x, i = 0;
   while((x = fgetc(file)) != EOF) {
-    printf("%s ", byteToBinary(x));
+    memory[i] = x;
     i++;
-    if(i % 4 == 0) printf("\n");
+    // print memory as its loading in (debug)
+    //printf("%s ", byteToBinary(x));
+    //if(i % 4 == 0) printf("\n");
   }
 
   fclose(file);
 }
+
 
 /*
  *  Converts a byte to a binary string
