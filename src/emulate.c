@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "emulate_utils/machine.h"
-#include "emulate_utils/printmachine.c"
-#include "emulate_utils/loadfiletomemory.c"
-#include "emulate_utils/fetchinstruction.c"
-#include "emulate_utils/bytetobinary.c"
+#include "emulate_utils/printmachine.h"
+#include "emulate_utils/loadfiletomemory.h"
+#include "emulate_utils/fetchinstruction.h"
+#include "emulate_utils/bytetobinary.h"
 
 int main(int argc, char **argv) {
   if(argc != 2) {
@@ -13,9 +13,9 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  machine_t machine;
+  machine_t machine = create_machine(65536);
   machine.memory = calloc(65536, sizeof(char)); // set 2^16 1 byte elements to 0
-  machine.r = calloc(14, sizeof(int));
+  machine.r = calloc(16, sizeof(int));
   machine.pc = 0;
   machine.cpsr = 0;
 

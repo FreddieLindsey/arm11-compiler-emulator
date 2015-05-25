@@ -22,3 +22,4 @@ void printState(struct machine *machine) {
      printf("0x%08lx: 0x%02x%02x%02x%02x\n", i, a, b, c, d);
     }
   }
+}
