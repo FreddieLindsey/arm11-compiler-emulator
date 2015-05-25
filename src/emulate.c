@@ -2,7 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct machine {
+  int *memory;
+  int *r; // General purpose registers
+  int pc; // Other registers
+  int cpsr; 
+};
+
 void loadfile(char *filename, int *memory);
+void printState(struct machine *machine);
 char* byteToBinary(int x);
 
 int main(int argc, char **argv) {
@@ -11,15 +19,18 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  // Init memory and registers
-  int *memory = calloc(65536, 1); // set 2^16 1 byte elements to 0
-  int r[16] = { 0 }; // all registers init to 0
+  // Init machine
+  struct machine machine;
+  machine.memory = calloc(65536, 1); // set 2^16 1 byte elements to 0
+  machine.r = calloc(12, 4);
+  machine.pc = 0;
+  machine.cpsr = 0;
 
   // Load binary file to memory
-  loadfile(argv[1], memory);
-
-  // print byte of memory at r15 (PC)
-  printf("%s ", byteToBinary(memory[r[15]]));
+  loadfile(argv[1], machine.memory);
+ 
+  // Print values of registers & memory
+  printState(&machine);
 
   return EXIT_SUCCESS;
 }
@@ -45,6 +56,31 @@ void loadfile(char *filename, int *memory) {
   }
 
   fclose(file);
+}
+
+/*
+ *  Prints current values of registers
+ *  TODO: hex value padding
+ */
+void printState(struct machine *machine) {
+  // Registers
+  printf("Registers:\n");
+  for(int i = 0; i < 13; i++) {
+    printf("$%d %s:\t\t%d (0x%08x)\n", 
+        i, (i < 10) ? " " : "", (*machine).r[i], (*machine).r[i]);
+  }
+  printf("PC  :\t\t%d (0x%08x)\n", (*machine).pc, (*machine).pc);
+  printf("CPSR:\t\t%d (0x%08x)\n", (*machine).cpsr, (*machine).cpsr);
+
+  // Memory
+  printf("Non-zero memory:\n");
+  for(int i = 0; i < 6553; i += 4) {
+    if((*machine).memory[i] != 0) {
+      printf("0x%08x: 0x%02x%02x%02x%02x\n", i, 
+          (*machine).memory[i], (*machine).memory[i+1],
+          (*machine).memory[i+2], (*machine).memory[i+3]);
+    }
+  }
 }
 
 
