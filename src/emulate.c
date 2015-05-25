@@ -15,32 +15,29 @@ int main(int argc, char **argv) {
 }
 
 /*
- *  Loads a binary file and prints it out
- *  TODO: make it return a data structure with the binary commands rahter than
- *        just printing it out
+ *  Loads a binary file  
  */
 void loadfile(char *filename) {
-  FILE *outStream = stdout;
-
-  fprintf(outStream, "Loading file: %s \n", filename);
   FILE *file = fopen(filename, "r");
 
   if(file == NULL) {
-    fprintf(outStream, "File \"%s\" not found\n", filename);
+    printf("File \"%s\" not found\n", filename);
     return;
   }
   
-  fprintf(outStream, "Printing file: \n");
+  int i = 0;
   int x;
   while((x = fgetc(file)) != EOF) {
-    printf("%s", byteToBinary(x));
+    printf("%s ", byteToBinary(x));
+    i++;
+    if(i % 4 == 0) printf("\n");
   }
 
   fclose(file);
 }
 
 /*
- *  Converts a byte to its binary representation
+ *  Converts a byte to a binary string
  *  Helper function to print out a byte for debugging
  */
 char* byteToBinary(int x) {
