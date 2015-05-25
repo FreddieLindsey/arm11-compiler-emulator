@@ -3,13 +3,13 @@
 #include <string.h>
 
 struct machine {
-  int *memory;
+  char *memory;
   int *r; // General purpose registers
   int pc; // Other registers
   int cpsr; 
 };
 
-void loadfile(char *filename, int *memory);
+void loadfile(char *filename, char *memory);
 void printState(struct machine *machine);
 char* byteToBinary(int x);
 
@@ -21,8 +21,8 @@ int main(int argc, char **argv) {
 
   // Init machine
   struct machine machine;
-  machine.memory = calloc(65536, 1); // set 2^16 1 byte elements to 0
-  machine.r = calloc(12, 4);
+  machine.memory = calloc(65536, 1);// set 2^16 1 byte elements to 0
+  machine.r = calloc(12, sizeof(int));
   machine.pc = 0;
   machine.cpsr = 0;
 
@@ -32,13 +32,15 @@ int main(int argc, char **argv) {
   // Print values of registers & memory
   printState(&machine);
 
+  free((void*) machine.memory);
+  free((void*) machine.r);
   return EXIT_SUCCESS;
 }
 
 /*
  *  Loads a binary file to [*memory]
  */
-void loadfile(char *filename, int *memory) {
+void loadfile(char *filename, char *memory) {
   FILE *file = fopen(filename, "r");
 
   if(file == NULL) {
@@ -60,7 +62,6 @@ void loadfile(char *filename, int *memory) {
 
 /*
  *  Prints current values of registers
- *  TODO: hex value padding
  */
 void printState(struct machine *machine) {
   // Registers
@@ -74,11 +75,13 @@ void printState(struct machine *machine) {
 
   // Memory
   printf("Non-zero memory:\n");
-  for(int i = 0; i < 6553; i += 4) {
-    if((*machine).memory[i] != 0) {
-      printf("0x%08x: 0x%02x%02x%02x%02x\n", i, 
-          (*machine).memory[i], (*machine).memory[i+1],
-          (*machine).memory[i+2], (*machine).memory[i+3]);
+  for(long i = 0; i < 65536; i += 4) {
+    char a = (*machine).memory[i];
+    char b = (*machine).memory[i+1];
+    char c = (*machine).memory[i+2];
+    char d = (*machine).memory[i+3];
+    if(a != 0 || b != 0 || c != 0 || d != 0) {
+     printf("0x%08lx: 0x%02x%02x%02x%02x\n", i, a, b, c, d);
     }
   }
 }
