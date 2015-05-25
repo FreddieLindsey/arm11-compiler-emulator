@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct machine {
+typedef struct machine {
   char *memory;
   int *r; // General purpose registers
   int pc; // Other registers
   int cpsr; 
-};
+} machine_t;
 
 void loadfile(char *filename, char *memory);
 void printState(struct machine *machine);
@@ -19,10 +19,9 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  // Init machine
-  struct machine machine;
-  machine.memory = calloc(65536, 1);// set 2^16 1 byte elements to 0
-  machine.r = calloc(12, sizeof(int));
+  machine_t machine;
+  machine.memory = calloc(65536, 1); // set 2^16 1 byte elements to 0
+  machine.r = calloc(14, sizeof(int));
   machine.pc = 0;
   machine.cpsr = 0;
 
@@ -52,7 +51,7 @@ void loadfile(char *filename, char *memory) {
   while((x = fgetc(file)) != EOF) {
     memory[i] = x;
     i++;
-    // print memory as its loading in (debug)
+    //print memory as its loading in (debug)
     //printf("%s ", byteToBinary(x));
     //if(i % 4 == 0) printf("\n");
   }
@@ -84,6 +83,21 @@ void printState(struct machine *machine) {
      printf("0x%08lx: 0x%02x%02x%02x%02x\n", i, a, b, c, d);
     }
   }
+}
+
+/* 
+ * Fetches a single instruction 
+ * given a starting address
+ */
+int fetchInstruction(int *x) {
+  int instruction = 0;
+  //for(int i = 0; i < 3; i++) {
+  //  instruction += (int) byteToBinary(*x);
+  //  instruction = instruction * 100000000;
+  //  x++;
+  //}
+  //instruction += (int) byteToBinary(*x);
+  return instruction;
 }
 
 

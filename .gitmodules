@@ -1,3 +1,4 @@
 [submodule "submodules/arm11_1415_testsuite"]
 	path = submodules/arm11_1415_testsuite
 	url = git@gitlab.doc.ic.ac.uk:mvalerae/arm11_1415_testsuite.git
+  ignore = dirty
