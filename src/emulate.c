@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "emulate_utils/machine.h"
-#include "emulate_utils/printmachine.h"
-#include "emulate_utils/loadfiletomemory.h"
-#include "emulate_utils/fetchinstruction.h"
-#include "emulate_utils/bytetobinary.h"
+#include "emulate_utils/printmachine.c"
+#include "emulate_utils/loadfiletomemory.c"
+#include "emulate_utils/fetchinstruction.c"
+#include "emulate_utils/bytetobinary.c"
 
 int main(int argc, char **argv) {
   if(argc != 2) {
