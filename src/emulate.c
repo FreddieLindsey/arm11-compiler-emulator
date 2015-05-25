@@ -13,16 +13,19 @@ int main(int argc, char **argv) {
 
   // Init memory and registers
   int *memory = calloc(65536, 1); // set 2^16 1 byte elements to 0
-  //int *r[16] = { 0 }; // all registers init to 0
+  int r[16] = { 0 }; // all registers init to 0
 
   // Load binary file to memory
   loadfile(argv[1], memory);
+
+  // print byte of memory at r15 (PC)
+  printf("%s ", byteToBinary(memory[r[15]]));
 
   return EXIT_SUCCESS;
 }
 
 /*
- *  Loads a binary file  
+ *  Loads a binary file to [*memory]
  */
 void loadfile(char *filename, int *memory) {
   FILE *file = fopen(filename, "r");
