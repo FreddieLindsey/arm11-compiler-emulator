@@ -1,31 +1,67 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include "emulate_utils/machine.h"
-#include "emulate_utils/printmachine.h"
-#include "emulate_utils/loadfiletomemory.h"
-#include "emulate_utils/fetchinstruction.h"
-#include "emulate_utils/bytetobinary.h"
+#include <stdint.h>
 
-int main(int argc, char **argv) {
-  if(argc != 2) {
-    printf("Usage: emulate <file>");
+/*
+ *  STRUCTS / UNIONS
+ */ 
+
+typedef struct machine {
+  char *memory;
+  int *registers; 
+} machine_t;
+
+/*
+ *  FUNCTION PROTOTYPES
+ */
+
+void usage(void);
+void init_machine(machine_t *machine);
+void printmachine(machine_t *machine);
+void close_machine(machine_t *machine);
+void loadfile(char *filename, machine_t *machine);
+
+/*
+ *  MAIN
+ */
+
+int main(int argc, char** argv) {
+
+  /*  Check if a file has been given as an argument
+      return if not */
+  if (argc != 2) {
+    usage();
+    printf("You have supplied %s arguments.\nEXITING\n", 
+          (argc < 2) ? "too few" : "too many" );
     return EXIT_FAILURE;
   }
 
+  /*  Create and initialise a machine */
   machine_t machine;
-  machine.memory = calloc(65536, sizeof(unsigned char)); 
-  machine.r = calloc(14, sizeof(int));
-  machine.pc = 0;
-  machine.cpsr = 0;
+  init_machine(&machine);  
 
-  // Load binary file to memory
-  loadfile(argv[1], machine.memory);
- 
-  // Print values of registers & memory
-  printState(&machine);
-
-  free((void*) machine.memory);
-  free((void*) machine.r);
+  /*  Frees the machine by closing it */
+  close_machine(&machine);
+  
   return EXIT_SUCCESS;
+
+}
+
+/*
+ *  FUNCTIONS
+ */
+
+void usage(void) {
+  printf( "Program takes 1 argument:\n\nExample:\t"
+          "./emulate binary_arm_file\n\n");
+}
+
+void init_machine(machine_t *machine) {
+  machine->memory = malloc(65536);
+  machine->registers = malloc(16 * sizeof(int));
+}
+
+void close_machine(machine_t *machine) {
+  free(machine->memory);
+  free(machine->registers);
 }
