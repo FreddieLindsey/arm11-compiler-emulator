@@ -1,30 +1,43 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
 #include "machine.h"
 
-/*
- *  Prints current values of registers
- */
+static const uint32_t machine_memory_size = 65536;
+static const int machine_register_count = 16;
 
-void printState(machine_t *machine) {
-  // Registers
-  printf("Registers:\n");
-  for(int i = 0; i < 13; i++) {
-    printf("$%d %s:\t\t%d (0x%08x)\n", i, 
-           (i < 10) ? " " : "", 
-           machine->r[i], machine->r[i]);
+void init_machine(machine_t *machine) {
+  machine->memory = calloc(machine_memory_size, sizeof(char));
+  machine->memsize = machine_memory_size;
+  machine->registers = calloc(machine_register_count, sizeof(int));
+  machine->regcount = machine_register_count;
+}
+
+void close_machine(machine_t *machine) {
+  free(machine->memory);
+  free(machine->registers);
+}
+
+void print_machine(machine_t *machine) {
+  /* Signal start of machine to user */
+  printf("\nPrinting machine state:\n");
+
+  /* Print register values */
+  printf("\nRegister values:\n");
+  for (int i = 0; i < machine_register_count; ++i) {
+    printf("Register No. %2i:\t0x%08x\n", i + 1,
+           machine->registers[i]);
   }
-  printf("PC  :\t\t%d (0x%08x)\n", machine->pc, machine->pc);
-  printf("CPSR:\t\t%d (0x%08x)\n", machine->cpsr, machine->cpsr);
 
-  // Memory
-  printf("Non-zero memory:\n");
-  for(long i = 3; i < 65536; i += 4) {
-    char a = machine->memory[i];
-    char b = machine->memory[i-1];
-    char c = machine->memory[i-2];
-    char d = machine->memory[i-3];
-    if(a != 0 || b != 0 || c != 0 || d != 0) {
-     printf("0x%08lx: 0x%02x%02x%02x%02x\n", i, a, b, c, d);
+  /* Print non-zero memory */
+  printf("\nNon-zero memory:\n");
+  for (int i = 0; i < (machine_memory_size / sizeof(memchunk_t)); ++i) {
+    if (machine->memory[i] != 0) { 
+      printf("Memory Location 0x%08x:\t0x%08x\n", 
+              i * 4, machine->memory[i]);
     }
   }
+
+  /* Signal end of machine to user */
+  printf("\nEnd of machine state.\n");
 }

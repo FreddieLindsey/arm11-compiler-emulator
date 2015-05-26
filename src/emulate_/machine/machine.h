@@ -2,14 +2,16 @@
 #define MACHINE
 
 /*
-** The structure for the ARM machine
-*/
+ *  TYPEDEFS / STRUCTS / UNIONS
+ */
+
+typedef uint8_t memchunk_t;
 
 typedef struct machine {
-  char *memory;
-  int *r; // General purpose registers
-  int pc; // Other registers
-  int cpsr;
+  memchunk_t *memory;
+  uint32_t memsize;
+  memchunk_t *registers;
+  uint32_t regcount;
 } machine_t;
 
 #endif
