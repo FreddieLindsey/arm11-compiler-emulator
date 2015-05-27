@@ -60,12 +60,11 @@ int operand2(char *str) {
       value = (value << 2) | excess;
       shift++;
     }
-    //1000 00111111 exptected
-    //0111 11111100 actual
     const int SHIFT_OFFSET = 0x8;
     return value + (shift << SHIFT_OFFSET);
   } else if(str[0] == 'r') {
-    return 0; //TODO: value is register
+    //TODO? shifted registers (optional)
+    return valueToInt(str);
   } else {
     printf("Error: invalid operand2 \"%s\"\n", str);
     exit(EXIT_FAILURE);
