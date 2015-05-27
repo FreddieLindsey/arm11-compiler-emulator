@@ -4,12 +4,12 @@
 #include "machine.h"
 
 static const uint32_t machine_memory_size = 65536;
-static const int machine_register_count = 16;
+static const uint32_t machine_register_count = 16;
 
 void init_machine(machine_t *machine) {
-  machine->memory = calloc(machine_memory_size, sizeof(char));
+  machine->memory = calloc(machine_memory_size, sizeof(memchunk_t));
   machine->memsize = machine_memory_size;
-  machine->registers = calloc(machine_register_count, sizeof(int));
+  machine->registers = calloc(machine_register_count, sizeof(memchunk_t));
   machine->regcount = machine_register_count;
 }
 
@@ -31,10 +31,14 @@ void print_machine(machine_t *machine) {
 
   /* Print non-zero memory */
   printf("\nNon-zero memory:\n");
-  for (int i = 0; i < (machine_memory_size / sizeof(memchunk_t)); ++i) {
-    if (machine->memory[i] != 0) { 
-      printf("Memory Location 0x%08x:\t0x%08x\n", 
-              i * 4, machine->memory[i]);
+  for (int i = 0; i < (machine_memory_size * sizeof(memchunk_t) / sizeof(instruction_t)); ++i) {
+    memchunk_t *memoryposition = &machine->memory[(i+1) * sizeof(instruction_t) / sizeof(memchunk_t) - 1];
+    instruction_t instruction = *(memoryposition - 3) << 24 | *(memoryposition - 2) << 16 |
+                                *(memoryposition - 1) <<  8 | *(memoryposition);
+
+    if (instruction != 0) { 
+      printf("Memory Location 0x%08lx:\t0x%08x\n", 
+              i * (sizeof(instruction_t) / sizeof(memchunk_t)), instruction);
     }
   }
 

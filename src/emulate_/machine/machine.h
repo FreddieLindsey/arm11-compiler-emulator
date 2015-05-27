@@ -5,6 +5,7 @@
  *  TYPEDEFS / STRUCTS / UNIONS
  */
 
+typedef uint32_t instruction_t;
 typedef uint8_t memchunk_t;
 
 typedef struct machine {

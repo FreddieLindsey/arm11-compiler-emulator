@@ -6,12 +6,6 @@
 #include "emulate_/funcprotos.h"
 
 /*
- *  VARIABLES
- */
-
-
-
-/*
  *  MAIN
  */
 

@@ -11,9 +11,11 @@ void loadfile(FILE *file, machine_t *machine) {
   }
 
   /* Read the file into memory. */
-  for (int i = 0; i < machine->memsize; ++i) {
-    machine->memory[i] = fgetc(file);
-    i++;
+  for (int i = 0; i < (machine->memsize / sizeof(instruction_t)); ++i) {
+    /* Read in a byte at a time */
+    for (int j = 0; j < sizeof(instruction_t); ++j) {
+      fread(&machine->memory[i * sizeof(instruction_t) + j], sizeof(memchunk_t), 1, file);
+    }
   }
 
   /* Close the file after reading */
