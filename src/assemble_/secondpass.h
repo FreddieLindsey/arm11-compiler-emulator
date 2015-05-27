@@ -1,6 +1,10 @@
 #ifndef SECONDPASS_H 
 #define SECONDPASS_H
 
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 #include "assemble.h"
 
 typedef enum instructionType {
@@ -13,7 +17,7 @@ struct instruction {
   char *mnemonic;
 
   // function to create binary
-  int (*createBinary)(char *args); 
+  uint32_t (*createBinary)(char *args); 
 };
 
 void secondpass(symbol *table, char **filecontents, unsigned char *out);

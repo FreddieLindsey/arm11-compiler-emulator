@@ -1,15 +1,12 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include "secondpass.h"
 
 /*
  *  Converts a register string, i.e. "r4" to the registers int value i.e. 4
  *  Also works with immediate numbers such as "#2"
  */
-int valueToInt(char* str) {
+uint32_t valueToInt(char* str) {
   // increments str to remove first charcter, then converts to int
-  return (int) strtol(++str, NULL, 0);
+  return (uint32_t) strtol(++str, NULL, 0);
 }
 
 
@@ -21,12 +18,12 @@ int valueToInt(char* str) {
 //                         OPERAND 2
 
 typedef struct dataProcessIntruction {
-  int i;
-  int opcode;
-  int s;
-  int rn;
-  int rd;
-  int operand2;
+  uint32_t i;
+  uint32_t opcode;
+  uint32_t s;
+  uint32_t rn;
+  uint32_t rd;
+  uint32_t operand2;
 } dataProcess;
 
 /*
@@ -51,13 +48,13 @@ int buildDataProcess(dataProcess *ins) {
 /*
  *  Given a [str] calculate the operand2 binary
  */
-int operand2(char *str) {
-  return 0;
+uint32_t operand2(char *str) {
+  return valueToInt(str);
 }
 
-int mov(char *args) {
+uint32_t mov(char *args) {
   
-  // split args and remove whitespace
+  // split args
   char *arg1 = strtok(args, ",");
   char *arg2 = strtok(NULL, ",");
   
@@ -66,6 +63,7 @@ int mov(char *args) {
     return 0;
   }
 
+  // remove whitespace
   trim(arg1);
   trim(arg2);
 
@@ -76,9 +74,9 @@ int mov(char *args) {
   ins->s = 0;
   ins->rn = 0;
   ins->rd = valueToInt(arg1);
-  ins->operand2 = valueToInt(arg2);
+  ins->operand2 = operand2(arg2);
 
-  int result = buildDataProcess(ins);
+  uint32_t result = buildDataProcess(ins);
 
   free(ins);
 

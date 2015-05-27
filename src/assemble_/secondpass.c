@@ -1,6 +1,3 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include "secondpass.h"
 #include "instructions.h"
 
@@ -42,7 +39,7 @@ void secondpass(symbol *table, char **filecontents, unsigned char *out) {
     }
 
     // call function to create binary for this argument
-    int binary = ins->createBinary(args);
+    uint32_t binary = ins->createBinary(args);
  
     // write to output in reverse order
     out[4*i] = binary;
