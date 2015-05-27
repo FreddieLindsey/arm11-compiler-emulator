@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "assemble_/assemble.h"
 #include "assemble_/secondpass.h"
 
 #define MAX_LINE_SIZE 512 * sizeof(char)
@@ -14,26 +15,18 @@ struct symbolTableEntry {
   struct symbolTableEntry *next;
 };
 
-typedef struct symbolTableEntry symbol;
-
-void printTable(symbol *table);
-void printFileContents(char **filecontents);
-void trimBefore(char *str);
-void trimAfter(char *str);
-char *getlabel(char *str);
-
 int main(int argc, char **argv) {
 
-  if(argc != 2) {
-    printf("Usage: assemble <file>\n");
-    return EXIT_FAILURE;
+  if(argc != 3) {
+    printf("Usage: assemble <input source> <output binary>\n");
+    exit(EXIT_FAILURE);
   }
 
   // open file
   FILE *file = fopen(argv[1], "r");
   if(file == NULL) {
     printf("File \"%s\" not found\n", argv[1]);
-    return EXIT_FAILURE;
+    exit(EXIT_FAILURE);
   }
 
   // define symbol table
@@ -81,24 +74,42 @@ int main(int argc, char **argv) {
 
   }
 
+  int numInstructions = i;
+
   free(line);
-  
-  printf("Labels defined as:\n");
-  printTable(symbolTable);
-  printf("\nCode:\n");
-  printFileContents(filecontents);
-
   fclose(file);
+  
+  //printf("Labels defined as:\n");
+  //printTable(symbolTable);
+  //printf("\nCode:\n");
+  //printFileContents(filecontents);
 
-  //second pass convert to binary
-  //write binary file
- 
-  //TODO: free line
-  //TODO: free table
+  // allocate space for each 4 byte binary instruction
+  unsigned char *binary = calloc(numInstructions*4, 1);
+  secondpass(symbolTable, filecontents, binary);
+  
+  // free memory
+  freeTable(symbolTable);
   free(filecontents);
+
+  //printf("\nBinary:\n");
+  //printBinary(binary);
+ 
+  // write binary to file
+  fwrite(binary, 1, numInstructions * 4, fopen(argv[2], "wb"));
+
+  free(binary);
   return EXIT_SUCCESS;
 }
 
+void freeTable(symbol *table) {
+  symbol *next, *current = table;
+  while(current->next != NULL) {
+    next = current->next;
+    free(current);
+    current = next;
+  }
+}
 
 /*
  *  Recursively prints a symbol table
@@ -109,7 +120,6 @@ void printTable(symbol *table) {
     printf("\"%s\" => %03d\n", current->name, current->address);
     current = current->next;
   }
-
 }
 
 void printFileContents(char **filecontents) {
@@ -118,6 +128,21 @@ void printFileContents(char **filecontents) {
       printf("%03d: %s\n", i, filecontents[i]);
     }
   }
+}
+
+void printBinary(unsigned char *binary) {
+  for(int i = 0; binary[i] != '\0'; i += 4) {
+    printf("0x%02x%02x%02x%02x\n", 
+        binary[i], binary[i+1], binary[i+2], binary[i+3]);
+  }
+}
+
+/*
+ *  Removes whitespace from the start and end of a string
+ */
+void trim(char *str) {
+  trimBefore(str);
+  trimAfter(str);
 }
 
 /*
