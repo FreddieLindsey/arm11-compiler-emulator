@@ -53,7 +53,7 @@ void secondpass(symbol *table, char **filecontents, unsigned char *out) {
       trim(args[i]);
       arg = strtok(NULL, ",");
     }
-    
+   
     // call function to create binary for this argument
     uint32_t binary = ins->createBinary(args);
     free(args);
@@ -80,7 +80,8 @@ void initInstructions(instruction* instructions) {
   
   // DATA PROCESS
   instructions[0].mnemonic = "add";
-  
+  instructions[0].createBinary = &add;
+
   instructions[1].mnemonic = "sub";
   
   instructions[2].mnemonic = "rsp";

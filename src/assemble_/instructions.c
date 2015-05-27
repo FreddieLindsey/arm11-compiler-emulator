@@ -13,7 +13,7 @@ uint32_t valueToInt(char* str) {
 // DATA PROCESSING
 //
 // COND  I     S Rn   Rd 
-// 11100000 00000000 00000000 00000000
+// 111000XX XXXXXXXX XXXXXXXX XXXXXXXX
 // OPCODE ^ ^^^          ^^^^ ^^^^^^^^
 //                         OPERAND 2
 
@@ -72,12 +72,32 @@ int operand2(char *str) {
   }
 }
 
+/*
+ *  Functions that compute results (and, add, sub, etc..)
+ */ 
+uint32_t computable(char **args, int opcode) {
+  // create instruction object struct in heap
+  dataProcess *ins = malloc(sizeof(dataProcess));
+  ins->i = args[2][0] == '#' ? 1 : 0;
+  ins->opcode = opcode;
+  ins->s = 0;
+  ins->rn = valueToInt(args[1]);
+  ins->rd = valueToInt(args[0]);
+  ins->operand2 = operand2(args[2]);
+
+  // calcualte binary for this instruction
+  uint32_t result = buildDataProcess(ins);
+  
+  //free memory & return 
+  free(ins);
+  return result;
+}
+
 uint32_t add(char **args) {
-  return 0;
+  return computable(args, 4);
 }
 
 uint32_t mov(char **args) {
-  // buld dataProcess structure
   dataProcess *ins = malloc(sizeof(dataProcess));
   ins->i = args[1][0] == '#' ? 1 : 0;
   ins->opcode = 13;
@@ -89,7 +109,6 @@ uint32_t mov(char **args) {
   uint32_t result = buildDataProcess(ins);
 
   free(ins);
-
   return result;
 }
 
