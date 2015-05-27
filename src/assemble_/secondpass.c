@@ -44,8 +44,6 @@ void secondpass(symbol *table, char **filecontents, unsigned char *out) {
     out[4*i+1] = c2;
     out[4*i+2] = c3;
     out[4*i+3] = c4;
-
-    free(ins);
     
   }
 }
@@ -53,9 +51,7 @@ void secondpass(symbol *table, char **filecontents, unsigned char *out) {
 instruction *getInstruction(instruction* instructions, char *mnemonic) {
   for(int i = 0; i < NUM_INSTRUCTIONS; i++) {
     if(strcmp(mnemonic, instructions[i].mnemonic) == 0) {
-      instruction *ins = malloc(sizeof(instruction));
-      memcpy(ins, &instructions[i], sizeof(instruction));
-      return ins;
+      return &instructions[i];
     }
   }
   return NULL;
