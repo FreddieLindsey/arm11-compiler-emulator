@@ -63,37 +63,28 @@ int operand2(char *str) {
     const int SHIFT_OFFSET = 0x8;
     return value + (shift << SHIFT_OFFSET);
   } else if(str[0] == 'r') {
-    //TODO? shifted registers (optional)
+    // TODO? shifted registers (optional)
+    // here we just return the int after the 'r' char
     return valueToInt(str);
   } else {
-    printf("Error: invalid operand2 \"%s\"\n", str);
+    printf("Error: invalid argument \"%s\"\n", str);
     exit(EXIT_FAILURE);
   }
 }
 
-uint32_t mov(char *args) {
-  
-  // split args
-  char *arg1 = strtok(args, ",");
-  char *arg2 = strtok(NULL, ",");
-  
-  if(arg2 == NULL) {
-    printf("Error: invalid arguments to \"mov %s\"\n", args); 
-    exit(EXIT_FAILURE);
-  }
+uint32_t add(char **args) {
+  return 0;
+}
 
-  // remove whitespace
-  trim(arg1);
-  trim(arg2);
-
+uint32_t mov(char **args) {
   // buld dataProcess structure
   dataProcess *ins = malloc(sizeof(dataProcess));
-  ins->i = arg2[0] == '#' ? 1 : 0;
+  ins->i = args[1][0] == '#' ? 1 : 0;
   ins->opcode = 13;
   ins->s = 0;
   ins->rn = 0;
-  ins->rd = valueToInt(arg1);
-  ins->operand2 = operand2(arg2);
+  ins->rd = valueToInt(args[0]);
+  ins->operand2 = operand2(args[1]);
 
   uint32_t result = buildDataProcess(ins);
 

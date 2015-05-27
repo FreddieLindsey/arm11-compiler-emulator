@@ -7,6 +7,7 @@
 #include <string.h>
 #include "secondpass.h"
 
-uint32_t mov(char* args); 
+uint32_t add(char **args);
+uint32_t mov(char **args);
 
 #endif

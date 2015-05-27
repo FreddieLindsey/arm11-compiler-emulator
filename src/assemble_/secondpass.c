@@ -27,20 +27,37 @@ void secondpass(symbol *table, char **filecontents, unsigned char *out) {
     // split instruction into mnemonic and arguments
     *firstspace = '\0';
     char *mnemonic = filecontents[i]; 
-    char *args = firstspace + 1;
+    char *argstr = firstspace + 1;
 
     instruction *ins = getInstruction(instructions, mnemonic);
     
     // if command doesnt have any args throw an error
     if(ins == NULL && ins->createBinary != NULL) {
       printf("Error: instruction \"%s %s\" invalid or not implemented\n", 
-          mnemonic, args);
+          mnemonic, argstr);
       exit(EXIT_FAILURE);
     }
 
+    // count number of args
+    int numargs;
+    char *original = argstr;
+    for(numargs = 1; argstr[numargs]; 
+        argstr[numargs] == ',' ? numargs++ : *argstr++);
+    argstr = original;
+
+    // split args from string to array
+    char **args = calloc(numargs, sizeof(char*));
+    char *arg = strtok(argstr, ",");
+    for(int i = 0; i < numargs; i++) {
+      args[i] = arg;
+      trim(args[i]);
+      arg = strtok(NULL, ",");
+    }
+    
     // call function to create binary for this argument
     uint32_t binary = ins->createBinary(args);
- 
+    free(args);
+    
     // write to output in reverse order
     out[4*i] = binary;
     out[4*i+1] = binary >> 8;

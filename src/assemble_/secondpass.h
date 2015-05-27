@@ -17,7 +17,7 @@ struct instruction {
   char *mnemonic;
 
   // function to create binary
-  uint32_t (*createBinary)(char *args); 
+  uint32_t (*createBinary)(char **args); 
 };
 
 void secondpass(symbol *table, char **filecontents, unsigned char *out);
