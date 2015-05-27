@@ -21,7 +21,7 @@ void secondpass(symbol *table, char **filecontents, unsigned char *out) {
 
     if(firstspace == NULL) {
       printf("Error: instruction \"%s\" invalid", filecontents[i]); 
-      return;
+      exit(EXIT_FAILURE);
     } 
 
     // split instruction into mnemonic and arguments
@@ -35,7 +35,7 @@ void secondpass(symbol *table, char **filecontents, unsigned char *out) {
     if(ins == NULL && ins->createBinary != NULL) {
       printf("Error: instruction \"%s %s\" invalid or not implemented\n", 
           mnemonic, args);
-      return;
+      exit(EXIT_FAILURE);
     }
 
     // call function to create binary for this argument

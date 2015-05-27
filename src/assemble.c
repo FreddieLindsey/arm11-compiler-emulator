@@ -19,14 +19,14 @@ int main(int argc, char **argv) {
 
   if(argc != 3) {
     printf("Usage: assemble <input source> <output binary>\n");
-    return EXIT_FAILURE;
+    exit(EXIT_FAILURE);
   }
 
   // open file
   FILE *file = fopen(argv[1], "r");
   if(file == NULL) {
     printf("File \"%s\" not found\n", argv[1]);
-    return EXIT_FAILURE;
+    exit(EXIT_FAILURE);
   }
 
   // define symbol table
