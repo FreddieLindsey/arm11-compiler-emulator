@@ -83,14 +83,19 @@ void initInstructions(instruction* instructions) {
   instructions[0].createBinary = &add;
 
   instructions[1].mnemonic = "sub";
+  instructions[1].createBinary = &sub;
   
-  instructions[2].mnemonic = "rsp";
+  instructions[2].mnemonic = "rsb";
+  instructions[2].createBinary = &rsb;
   
   instructions[3].mnemonic = "and";
+  instructions[3].createBinary = &and;
   
   instructions[4].mnemonic = "eor";
+  instructions[4].createBinary = &eor;
   
   instructions[5].mnemonic = "orr";
+  instructions[5].createBinary = &orr;
   
   instructions[6].mnemonic = "mov";
   instructions[6].createBinary = &mov;

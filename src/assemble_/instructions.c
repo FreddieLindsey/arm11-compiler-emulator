@@ -93,8 +93,28 @@ uint32_t computable(char **args, int opcode) {
   return result;
 }
 
+uint32_t and(char **args) {
+  return computable(args, 0);
+}
+
+uint32_t eor(char **args) {
+  return computable(args, 1);
+}
+
+uint32_t sub(char **args) {
+  return computable(args, 2);
+}
+
+uint32_t rsb(char **args) {
+  return computable(args, 3);
+}
+
 uint32_t add(char **args) {
   return computable(args, 4);
+}
+
+uint32_t orr(char **args) {
+  return computable(args, 12);
 }
 
 uint32_t mov(char **args) {
