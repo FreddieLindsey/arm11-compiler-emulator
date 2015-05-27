@@ -13,21 +13,29 @@
  *    and written to [out]
  */
 void secondpass(symbol *table, char **filecontents, unsigned char *out) {
-  
   instruction *instructions = calloc(NUM_INSTRUCTIONS, sizeof(instruction));
   initInstructions(instructions);
 
   // for each instruction
   for(int i = 0; filecontents[i] != 0; i++) {
 
-    // split instruction into mnonic and arguments
-    char *mnemonic = strtok(filecontents[i], " ");
-    char *args = strtok(NULL, " ");
+    // find first space in string
+    char *firstspace = strchr(filecontents[i], ' ');
+
+    if(firstspace == NULL) {
+      printf("Error: instruction \"%s\" invalid", filecontents[i]); 
+      return;
+    } 
+
+    // split instruction into mnemonic and arguments
+    *firstspace = '\0';
+    char *mnemonic = filecontents[i]; 
+    char *args = firstspace + 1;
 
     instruction *ins = getInstruction(instructions, mnemonic);
     
     // if command doesnt have any args throw an error
-    if(ins == NULL) {
+    if(ins == NULL && ins->createBinary != NULL) {
       printf("Error: instruction \"%s %s\" invalid or not implemented\n", 
           mnemonic, args);
       return;

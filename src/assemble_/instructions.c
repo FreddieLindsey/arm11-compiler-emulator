@@ -48,10 +48,24 @@ int buildDataProcess(dataProcess *ins) {
       (ins->operand2 << OFFSET_OPERAND2);
 }
 
+/*
+ *  Given a [str] calculate the operand2 binary
+ */
+int operand2(char *str) {
+  return 0;
+}
+
 int mov(char *args) {
+  
   // split args and remove whitespace
   char *arg1 = strtok(args, ",");
   char *arg2 = strtok(NULL, ",");
+  
+  if(arg2 == NULL) {
+    printf("Error: invalid arguments to \"mov %s\"\n", args); 
+    return 0;
+  }
+
   trim(arg1);
   trim(arg2);
 
