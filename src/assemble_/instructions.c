@@ -47,6 +47,7 @@ int mov(char *args) {
   trim(arg1);
   trim(arg2);
 
+  // buld dataProcess structure
   dataProcess *ins = malloc(sizeof(dataProcess));
   ins->i = arg2[0] == '#' ? 1 : 0;
   ins->opcode = 13;
@@ -55,6 +56,10 @@ int mov(char *args) {
   ins->rd = valueToInt(arg1);
   ins->operand2 = valueToInt(arg2);
 
-  return buildDataProcess(ins);
+  int result = buildDataProcess(ins);
+
+  free(ins);
+
+  return result;
 }
 

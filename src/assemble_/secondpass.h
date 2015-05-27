@@ -12,12 +12,6 @@ struct instruction {
   // instruction mnemonic (mov, add, and ...)
   char *mnemonic;
 
-  // type of instruction (see enum above)
-  instructionType type;
-
-  // instruction binary
-  int binary;
-
   // function to create binary
   int (*createBinary)(char *args); 
 };

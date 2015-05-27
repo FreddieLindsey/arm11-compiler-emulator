@@ -63,39 +63,54 @@ instruction *getInstruction(instruction* instructions, char *mnemonic) {
 
 void initInstructions(instruction* instructions) {
   
-  // set all data processing types + binary templates
-  for(int i = 0; i <= 9; i++) {
-    instructions[i].type = DATA_PROCESSING;
-  }
-
+  // DATA PROCESS
   instructions[0].mnemonic = "add";
+  
   instructions[1].mnemonic = "sub";
+  
   instructions[2].mnemonic = "rsp";
+  
   instructions[3].mnemonic = "and";
+  
   instructions[4].mnemonic = "eor";
+  
   instructions[5].mnemonic = "orr";
   
   instructions[6].mnemonic = "mov";
-  instructions[6].binary |= 0x0000A001;
   instructions[6].createBinary = &mov;
 
   instructions[7].mnemonic = "tst";
+  
   instructions[8].mnemonic = "teq";
+  
   instructions[9].mnemonic = "cmp";
 
+  // MULTIPLICATION
   instructions[10].mnemonic = "mul";
+  
   instructions[11].mnemonic = "mla";
 
+  // SINGLE DATA TRANSFER
   instructions[12].mnemonic = "ldr";
+  
   instructions[13].mnemonic = "str";
+  
   instructions[14].mnemonic = "beq";
+  
   instructions[15].mnemonic = "bne";
+  
   instructions[16].mnemonic = "bge";
+  
   instructions[17].mnemonic = "blt";
+  
   instructions[18].mnemonic = "bgt";
+  
   instructions[19].mnemonic = "ble";
+  
   instructions[20].mnemonic = "b";
-
+ 
+  // SPECIAL
   instructions[21].mnemonic = "lsl";
+  
   instructions[22].mnemonic = "andeq";
 }
