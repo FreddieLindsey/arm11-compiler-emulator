@@ -8,6 +8,7 @@ void freeTable(symbol *table);
 void printTable(symbol *table);
 void printFileContents(char **filecontents);
 void printBinary(unsigned char *binary);
+void trim(char *str);
 void trimBefore(char *str);
 void trimAfter(char *str);
 char *getlabel(char *str);

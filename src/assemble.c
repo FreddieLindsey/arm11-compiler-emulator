@@ -79,10 +79,10 @@ int main(int argc, char **argv) {
   free(line);
   fclose(file);
   
-  printf("Labels defined as:\n");
-  printTable(symbolTable);
-  printf("\nCode:\n");
-  printFileContents(filecontents);
+  //printf("Labels defined as:\n");
+  //printTable(symbolTable);
+  //printf("\nCode:\n");
+  //printFileContents(filecontents);
 
   // allocate space for each 4 byte binary instruction
   unsigned char *binary = calloc(numInstructions*4, 1);
@@ -92,8 +92,8 @@ int main(int argc, char **argv) {
   freeTable(symbolTable);
   free(filecontents);
 
-  printf("\nBinary:\n");
-  printBinary(binary);
+  //printf("\nBinary:\n");
+  //printBinary(binary);
  
   // write binary to file
   fwrite(binary, 1, numInstructions * 4, fopen(argv[2], "wb"));
@@ -135,6 +135,14 @@ void printBinary(unsigned char *binary) {
     printf("0x%02x%02x%02x%02x\n", 
         binary[i], binary[i+1], binary[i+2], binary[i+3]);
   }
+}
+
+/*
+ *  Removes whitespace from the start and end of a string
+ */
+void trim(char *str) {
+  trimBefore(str);
+  trimAfter(str);
 }
 
 /*
