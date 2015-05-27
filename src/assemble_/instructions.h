@@ -14,5 +14,8 @@ uint32_t rsb(char **args);
 uint32_t add(char **args);
 uint32_t orr(char **args);
 uint32_t mov(char **args);
+uint32_t tst(char **args);
+uint32_t teq(char **args);
+uint32_t cmp(char **args);
 
 #endif

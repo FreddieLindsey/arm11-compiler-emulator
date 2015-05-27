@@ -93,6 +93,23 @@ uint32_t computable(char **args, int opcode) {
   return result;
 }
 
+/*
+ * Functions that set the flags
+ */
+uint32_t flagsetter(char **args, int opcode) {
+  dataProcess *ins = malloc(sizeof(dataProcess));
+  ins->i = args[1][0] == '#' ? 1 : 0;
+  ins->opcode = opcode;
+  ins->s = 1;
+  ins->rn = valueToInt(args[0]);
+  ins->rd = 0;
+  ins->operand2 = operand2(args[1]);
+
+  uint32_t result = buildDataProcess(ins);
+  free(ins);
+  return result;
+}
+
 uint32_t and(char **args) {
   return computable(args, 0);
 }
@@ -127,8 +144,19 @@ uint32_t mov(char **args) {
   ins->operand2 = operand2(args[1]);
 
   uint32_t result = buildDataProcess(ins);
-
   free(ins);
   return result;
+}
+
+uint32_t tst(char **args) {
+  return flagsetter(args, 8);
+}
+
+uint32_t teq(char **args) {
+  return flagsetter(args, 9);
+}
+
+uint32_t cmp(char **args) {
+  return flagsetter(args, 10);
 }
 

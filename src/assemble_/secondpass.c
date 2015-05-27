@@ -101,10 +101,13 @@ void initInstructions(instruction* instructions) {
   instructions[6].createBinary = &mov;
 
   instructions[7].mnemonic = "tst";
+  instructions[7].createBinary = &tst;
   
   instructions[8].mnemonic = "teq";
+  instructions[8].createBinary = &teq;
   
   instructions[9].mnemonic = "cmp";
+  instructions[9].createBinary = &cmp;
 
   // MULTIPLICATION
   instructions[10].mnemonic = "mul";
