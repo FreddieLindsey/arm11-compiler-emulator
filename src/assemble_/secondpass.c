@@ -33,17 +33,14 @@ void secondpass(symbol *table, char **filecontents, unsigned char *out) {
       return;
     }
 
+    // call function to create binary for this argument
     int binary = ins->createBinary(args);
  
-    unsigned char c1 = binary >> 24;
-    unsigned char c2 = binary >> 16;
-    unsigned char c3 = binary >> 8;
-    unsigned char c4 = binary;
-    
-    out[4*i] = c1;
-    out[4*i+1] = c2;
-    out[4*i+2] = c3;
-    out[4*i+3] = c4;
+    // write to output in reverse order
+    out[4*i] = binary;
+    out[4*i+1] = binary >> 8;
+    out[4*i+2] = binary >> 16;
+    out[4*i+3] = binary >> 24;
     
   }
 }

@@ -14,11 +14,11 @@ int valueToInt(char* str) {
 
 
 // DATA PROCESSING
-//                        
-//           Rd         S Rn  COND  I
-// 00000000 00000000 00000000 11100000
-// ^^^^^^^^     ^^^^ ^^^             ^
-//    OPERAND 2            OPCODE
+//
+// COND  I     S Rn   Rd 
+// 11100000 00000000 00000000 00000000
+// OPCODE ^ ^^^          ^^^^ ^^^^^^^^
+//                         OPERAND 2
 
 typedef struct dataProcessIntruction {
   int i;
@@ -34,10 +34,18 @@ typedef struct dataProcessIntruction {
  *  TODO: operand2 as a register or shifted int
  */
 int buildDataProcess(dataProcess *ins) {
+  const int OFFSET_COND = 0x1C;
+  const int OFFSET_I = 0x19;
+  const int OFFSET_OPCODE = 0x15;
+  const int OFFSET_S = 0x14;
+  const int OFFSET_RN = 0x10;
+  const int OFFSET_RD = 0xC;
+  const int OFFSET_OPERAND2 = 0x0;
   int cond = 14;
-  return (cond << 4) | (ins->i << 1) | (ins->opcode & (1 << 3) >> 3) | 
-      ((ins->opcode & 7) << 13) | (ins->s << 12) | (ins->rn << 8) |
-      (ins->rd << 20) | (ins->operand2 << 24);
+  return (cond << OFFSET_COND) | (ins->i << OFFSET_I) | 
+      (ins->opcode << OFFSET_OPCODE) | (ins->s << OFFSET_S) | 
+      (ins->rn << OFFSET_RN) | (ins->rd << OFFSET_RD) | 
+      (ins->operand2 << OFFSET_OPERAND2);
 }
 
 int mov(char *args) {
