@@ -28,7 +28,6 @@ typedef struct dataProcessIntruction {
 
 /*
  *  Given a dataProcess, builds the binary and returns it
- *  TODO: operand2 as a register or shifted int
  */
 uint32_t buildDataProcess(dataProcess *ins) {
   const int OFFSET_COND = 0x1C;
@@ -51,17 +50,18 @@ uint32_t buildDataProcess(dataProcess *ins) {
 int operand2(char *str) {
   // if value is an immediate value
   if(str[0] == '#') {
-
     // convert to int, check for overflow
-    int value = valueToInt(str);
+    uint32_t value = valueToInt(str);
     int shift = 0;
     // shift to fit in 8`bits
     while(value > (1 << 8) - 1) {
-      value = value >> 1;
+      // rotate twice
+      int excess = (value & (11 << 30)) >> 30;
+      value = (value << 2) | excess;
       shift++;
     }
     //1000 00111111 exptected
-    //0001 01101100 actual
+    //0111 11111100 actual
     const int SHIFT_OFFSET = 0x8;
     return value + (shift << SHIFT_OFFSET);
   } else if(str[0] == 'r') {
