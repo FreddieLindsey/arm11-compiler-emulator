@@ -219,3 +219,39 @@ uint32_t cmp(char **args) {
   return flagsetter(args, 10);
 }
 
+typedef struct multiplyInstruction {
+  int a;
+  int rd;
+  int rn;
+  int rs;
+  int rm;
+} multiply;
+
+uint32_t buildMultiply(multiply *ins) {
+  const int OFFSET_COND = 0x1C;
+  const int OFFSET_A = 0x15;
+  const int OFFSET_RD = 0x10;
+  const int OFFSET_RN = 0xC;
+  const int OFFSET_RS = 0x8;
+  const int OFFSET_1001 = 0x4;
+  const int OFFSET_RM = 0x0; 
+  int cond = 14;
+  return (cond << OFFSET_COND) | (ins->a << OFFSET_A) |
+      (ins->rd << OFFSET_RD) | (ins->rn << OFFSET_RN) |
+      (ins->rs << OFFSET_RS) | (0x9 << OFFSET_1001) |
+      (ins->rm << OFFSET_RM);
+}
+
+uint32_t mla(char **args){
+  multiply *ins = malloc(sizeof(multiply));
+  ins->a = 1; 
+  ins->rd = valueToInt(args[0]);
+  ins->rn = valueToInt(args[3]);
+  ins->rs = valueToInt(args[2]);
+  ins->rm = valueToInt(args[1]); 
+
+  uint32_t result = buildMultiply(ins);
+  free(ins);
+  return result;
+  
+}
