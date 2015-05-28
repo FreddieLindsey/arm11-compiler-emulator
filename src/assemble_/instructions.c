@@ -242,6 +242,7 @@ uint32_t buildMultiply(multiply *ins) {
       (ins->rm << OFFSET_RM);
 }
 
+// MULTIPLICATION
 uint32_t mul(char **args){
   multiply *ins = malloc(sizeof(multiply));
   ins->a = 0;
@@ -265,4 +266,29 @@ uint32_t mla(char **args){
   uint32_t result = buildMultiply(ins);
   free(ins);
   return result;  
+}
+
+// SINGLE DATA TRANSFER
+
+// SPECIAL
+uint32_t andeq(char **args) {
+  return 0;
+}
+
+uint32_t lsl(char **args) {
+  // create space for 4 arguments
+  char **movargs = malloc(3 * sizeof(char*));
+  movargs[0] = args[0];
+  movargs[1] = args[0];
+  char *arg3 = malloc(512);
+  memset(arg3, 0, 512);
+  memcpy(arg3, "lsl ", 4*sizeof(char));
+  movargs[2] = strcat(arg3, args[1]);
+
+  uint32_t result = mov(movargs);
+  
+  free(arg3);
+  free(movargs);
+
+  return result;
 }

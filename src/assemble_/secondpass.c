@@ -138,6 +138,8 @@ void initInstructions(instruction* instructions) {
  
   // SPECIAL
   instructions[21].mnemonic = "lsl";
+  instructions[21].createBinary = &lsl;
   
   instructions[22].mnemonic = "andeq";
+  instructions[22].createBinary = &andeq;
 }
