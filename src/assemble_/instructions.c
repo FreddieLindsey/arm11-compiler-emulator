@@ -47,12 +47,15 @@ uint32_t buildDataProcess(dataProcess *ins) {
 /*
  *  Given a [str] calculate the operand2 binary
  */
-int operand2(char *str) {
+int operand2(char *str, char *shiftstr) {
+  
   // if value is an immediate value
   if(str[0] == '#') {
+    
     // convert to int, check for overflow
     uint32_t value = valueToInt(str);
     int shift = 0;
+    
     // shift to fit in 8`bits
     while(value > (1 << 8) - 1) {
       // rotate twice
@@ -60,12 +63,68 @@ int operand2(char *str) {
       value = (value << 2) | excess;
       shift++;
     }
+
     const int SHIFT_OFFSET = 0x8;
     return value + (shift << SHIFT_OFFSET);
   } else if(str[0] == 'r') {
-    // TODO? shifted registers (optional)
-    // here we just return the int after the 'r' char
-    return valueToInt(str);
+    
+    // get register number
+    int value = valueToInt(str);
+
+    // if value needs to be shifted
+    if(shiftstr != NULL) {
+      
+      // split by space into shift type and amount
+      char *firstspace = strchr(shiftstr, ' ');
+      if(firstspace == NULL) {
+        printf("Error: shift string \"%s\" invalid\n", shiftstr);
+        exit(EXIT_FAILURE);
+      } 
+      *firstspace = '\0';
+      char *shifttype = shiftstr; 
+      char *shiftamount = firstspace + 1;
+      trim(shifttype);
+      trim(shiftamount);
+
+      // work out shift amount based on either direct value or register
+      int shiftamountvalue = valueToInt(shiftamount);
+      int amount;
+      int isregistershift;
+      if(shiftamount[0] == '#') {
+        amount = shiftamountvalue; 
+        isregistershift = 0;
+      } else if(shiftamount[0] == 'r') {
+        amount = shiftamountvalue << 1; 
+        isregistershift = 1;
+      } else {
+        printf("Error: shift amount \"%s\" invalid\n", shiftamount);
+        exit(EXIT_FAILURE);
+      }
+      
+      // switch on shift type & find shift type binary
+      int type;
+      if(strcmp(shifttype, "asr") == 0) {
+        type = 2;
+      } else if(strcmp(shifttype, "lsl") == 0) {
+        type = 0;
+      } else if(strcmp(shifttype, "lsr") == 0) {
+        type = 1;
+      } else if(strcmp(shifttype, "ror") == 0) {
+        type = 3;
+      } else {
+        printf("Error: shift type \"%s\" invalid\n", shifttype);
+        exit(EXIT_FAILURE);
+      }
+
+      const int AMOUNT_OFFSET = 0x7; 
+      const int TYPE_OFFSET = 0x5;
+      const int IS_REG_OFFSET = 0x4; 
+      return (amount << AMOUNT_OFFSET) | (type << TYPE_OFFSET) | 
+          (isregistershift << IS_REG_OFFSET) | value;
+
+    } else {
+      return value;
+    }
   } else {
     printf("Error: invalid argument \"%s\"\n", str);
     exit(EXIT_FAILURE);
@@ -83,7 +142,7 @@ uint32_t computable(char **args, int opcode) {
   ins->s = 0;
   ins->rn = valueToInt(args[1]);
   ins->rd = valueToInt(args[0]);
-  ins->operand2 = operand2(args[2]);
+  ins->operand2 = operand2(args[2], NULL);
 
   // calcualte binary for this instruction
   uint32_t result = buildDataProcess(ins);
@@ -103,7 +162,7 @@ uint32_t flagsetter(char **args, int opcode) {
   ins->s = 1;
   ins->rn = valueToInt(args[0]);
   ins->rd = 0;
-  ins->operand2 = operand2(args[1]);
+  ins->operand2 = operand2(args[1], args[2]);
 
   uint32_t result = buildDataProcess(ins);
   free(ins);
@@ -141,7 +200,7 @@ uint32_t mov(char **args) {
   ins->s = 0;
   ins->rn = 0;
   ins->rd = valueToInt(args[0]);
-  ins->operand2 = operand2(args[1]);
+  ins->operand2 = operand2(args[1], args[2]);
 
   uint32_t result = buildDataProcess(ins);
   free(ins);
@@ -160,3 +219,50 @@ uint32_t cmp(char **args) {
   return flagsetter(args, 10);
 }
 
+typedef struct multiplyInstruction {
+  int a;
+  int rd;
+  int rn;
+  int rs;
+  int rm;
+} multiply;
+
+uint32_t buildMultiply(multiply *ins) {
+  const int OFFSET_COND = 0x1C;
+  const int OFFSET_A = 0x15;
+  const int OFFSET_RD = 0x10;
+  const int OFFSET_RN = 0xC;
+  const int OFFSET_RS = 0x8;
+  const int OFFSET_1001 = 0x4;
+  const int OFFSET_RM = 0x0; 
+  int cond = 14;
+  return (cond << OFFSET_COND) | (ins->a << OFFSET_A) |
+      (ins->rd << OFFSET_RD) | (ins->rn << OFFSET_RN) |
+      (ins->rs << OFFSET_RS) | (0x9 << OFFSET_1001) |
+      (ins->rm << OFFSET_RM);
+}
+
+uint32_t mul(char **args){
+  multiply *ins = malloc(sizeof(multiply));
+  ins->a = 0;
+  ins->rd = valueToInt(args[0]);
+  ins->rs = valueToInt(args[2]);
+  ins->rm = valueToInt(args[1]);
+
+  uint32_t result = buildMultiply(ins);
+  free(ins);
+  return result;
+}
+
+uint32_t mla(char **args){
+  multiply *ins = malloc(sizeof(multiply));
+  ins->a = 1; 
+  ins->rd = valueToInt(args[0]);
+  ins->rn = valueToInt(args[3]);
+  ins->rs = valueToInt(args[2]);
+  ins->rm = valueToInt(args[1]); 
+
+  uint32_t result = buildMultiply(ins);
+  free(ins);
+  return result;  
+}

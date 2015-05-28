@@ -20,7 +20,8 @@ void secondpass(symbol *table, char **filecontents, unsigned char *out) {
     char *firstspace = strchr(filecontents[i], ' ');
 
     if(firstspace == NULL) {
-      printf("Error: instruction \"%s\" invalid", filecontents[i]); 
+      printf("Error: instruction \"%s\" expected arguments\n", 
+          filecontents[i]);
       exit(EXIT_FAILURE);
     } 
 
@@ -32,7 +33,7 @@ void secondpass(symbol *table, char **filecontents, unsigned char *out) {
     instruction *ins = getInstruction(instructions, mnemonic);
     
     // if command doesnt have any args throw an error
-    if(ins == NULL && ins->createBinary != NULL) {
+    if(ins == NULL || ins->createBinary == NULL) {
       printf("Error: instruction \"%s %s\" invalid or not implemented\n", 
           mnemonic, argstr);
       exit(EXIT_FAILURE);
@@ -111,8 +112,10 @@ void initInstructions(instruction* instructions) {
 
   // MULTIPLICATION
   instructions[10].mnemonic = "mul";
-  
+  instructions[10].createBinary = &mul; 
+
   instructions[11].mnemonic = "mla";
+  instructions[11].createBinary = &mla;
 
   // SINGLE DATA TRANSFER
   instructions[12].mnemonic = "ldr";
