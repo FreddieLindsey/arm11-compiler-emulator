@@ -11,6 +11,7 @@ assemble: assemble.o assemble_/secondpass.c assemble_/instructions.c
 	$(CC) $(CFLAGS) assemble.c assemble_/secondpass.c assemble_/instructions.c -o assemble
 
 emulate: emulate.o emulate_/machine/machine.c emulate_/machine/fileio.c
+	$(CC) $(CFLAGS) emulate.c emulate_/machine/machine.c emulate_/machine/fileio.c -o emulate
 
 clean:
 	rm -f $(wildcard *.o)
