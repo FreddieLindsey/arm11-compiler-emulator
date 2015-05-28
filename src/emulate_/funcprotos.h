@@ -2,6 +2,7 @@
 #define FUNCPROTO
 
 #include "machine/machine.h"
+#include "machine/fileio.h"
 
 /*
  *  FUNCTION PROTOTYPES
