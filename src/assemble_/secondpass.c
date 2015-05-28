@@ -112,8 +112,9 @@ void initInstructions(instruction* instructions) {
 
   // MULTIPLICATION
   instructions[10].mnemonic = "mul";
-  
+
   instructions[11].mnemonic = "mla";
+  instructions[11].createBinary = &mla;
 
   // SINGLE DATA TRANSFER
   instructions[12].mnemonic = "ldr";
