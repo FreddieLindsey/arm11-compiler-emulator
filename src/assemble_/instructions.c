@@ -242,6 +242,18 @@ uint32_t buildMultiply(multiply *ins) {
       (ins->rm << OFFSET_RM);
 }
 
+uint32_t mul(char **args){
+  multiply *ins = malloc(sizeof(multiply));
+  ins->a = 0;
+  ins->rd = valueToInt(args[0]);
+  ins->rs = valueToInt(args[2]);
+  ins->rm = valueToInt(args[1]);
+
+  uint32_t result = buildMultiply(ins);
+  free(ins);
+  return result;
+}
+
 uint32_t mla(char **args){
   multiply *ins = malloc(sizeof(multiply));
   ins->a = 1; 
@@ -252,6 +264,5 @@ uint32_t mla(char **args){
 
   uint32_t result = buildMultiply(ins);
   free(ins);
-  return result;
-  
+  return result;  
 }

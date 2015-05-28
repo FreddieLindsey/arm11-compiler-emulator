@@ -17,6 +17,7 @@ uint32_t mov(char **args);
 uint32_t tst(char **args);
 uint32_t teq(char **args);
 uint32_t cmp(char **args);
+uint32_t mul(char **args);
 uint32_t mla(char **args); 
 
 #endif
