@@ -3,6 +3,7 @@
 
 #include "machine/machine.h"
 #include "machine/fileio.h"
+#include "pipeline.h"
 
 /*
  *  FUNCTION PROTOTYPES

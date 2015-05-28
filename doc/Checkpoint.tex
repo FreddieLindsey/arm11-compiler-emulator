@@ -4,27 +4,41 @@
 
 \begin{document}
 
-\title{ARM Checkpoint... }
-\author{TODO}
+\title{ARM Checkpoint Report}
+\author{Freddie Lindsey, Adam Hosier, Pontus Liljeblad, Dylan Tracey}
 
 \maketitle
 
 \section{Group Organisation}
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-culpa qui officia deserunt mollit anim id est laborum.
+In order to work efficiently and not be working on the same code at the same time, we decided to split our group in half and assign two members to Part I, the Emulator, and assign the other two members to Part II, the Assembler.
 
-\section{Implementation Strategies}
+Freddie Lindsey and Dylan Tracey are assigned to write and test the emulator part of the project, whilst Adam Hosier and Pontus Liljeblad are assigned to write and test the assembler.
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-culpa qui officia deserunt mollit anim id est laborum.
+For each part, we are working on different folders and files, having structured our design as below. This means that whilst pushing and pulling code from the repository, there is as little risk as possible of overwriting or 'breaking' code.
+
+We decided not to use any other branches since these are normally only used for feature addition and different stages of development rather than splitting workloads. Due to issues with the repository, we are using GitHub as an additional host for our repository, and synchronising the repositories when signficant changes have been made.
+
+\section{Group Evaluation}
+
+We started the project by creating a list of \textit{TODOs} for the parts we were going to immediately implement. This gave a structure and the ability for group members to know exactly what was needed and to see our progress.
+
+As a group, we've been communicating well and consequently are making steady and consistent progress.
+
+\section{Emulator Structure}
+
+We structured our emulator into three sections: \\
+\\
+  - The machine being emulated \\
+  - The instructions supported including decoding and execution \\
+  - The pipeline feature of the ARM architecture.\\
+
+By structuring it in this manner, it should mean we have the ability to reuse a significant proportion of our instructions code for the assembler. For example, the emulator focuses on decoding instructions, whilst the assembler focuses on encoding them. This means that the codebase is essentially opposite, but it would seem sensible to include basic information shared across the two processes in the same files to avoid duplicate lines.
+
+\section{Implementation difficulties anticipated}
+
+None of the members of the group have any experience with IO using the Raspberry Pi. Consequently, it may be that we spend some time trying to connect the GPIO outputs with our program. 
+
+We are currently in the stage of building the pipeline for the emulator, and simultaneously finishing the instructions implementation for the assembler. There may well be unforeseen difficulties laying ahead.
 
 \end{document}
