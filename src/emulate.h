@@ -19,8 +19,10 @@ typedef struct pipeline {
 typedef struct machine {
   memchunk_t *memory;
   uint32_t memsize;
-  memchunk_t *registers;
+  instruction_t *registers;
   uint32_t regcount;
+  instruction_t *pc;
+  instruction_t *cpsr;
   pipeline_t *pipeline;
 } machine_t;
 
@@ -43,5 +45,8 @@ void run_pipeline(machine_t *machine);
 void init_machine(machine_t *machine);
 void close_machine(machine_t *machine);
 void print_machine(machine_t *machine);
+
+/*  EXECUTE */
+
 
 #endif

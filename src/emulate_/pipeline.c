@@ -8,7 +8,7 @@
  *  Parts of the pipeline should only be executed
  *  by the pipeline itself
  */
-static void execute(machine_t *machine);
+static int execute(machine_t *machine);
 static void decode(machine_t *machine);
 static void fetch(machine_t *machine);
 
@@ -25,13 +25,24 @@ void close_pipeline(pipeline_t *pipeline) {
 }
 
 void run_pipeline(machine_t *machine) {
-  execute(machine);
+  int result;
+  do {
   decode(machine);
   fetch(machine);
+  ++(machine->pc);
+  result = execute(machine);
+  } while (result != -1);
 }
 
-static void execute(machine_t *machine) {
-
+/*
+ *  Returns -1 iff the instruction is halt.
+ *  Returns  0 otherwise.
+ */
+static int execute(machine_t *machine) {
+  if (machine->pipeline->decoded != NULL) {
+    return instruction_execute(machine->pipeline->decoded, machine);
+  }
+  return 0;
 }
 
 static void decode(machine_t *machine) {
@@ -40,7 +51,7 @@ static void decode(machine_t *machine) {
 }
 
 static void fetch(machine_t *machine) {
-  /* Set fetched to be the next  */
+  /* Set fetched to be the next instruction */
   machine->pipeline->fetched = 
     machine->memory[machine->registers[machine->regcount - 2]];
 }

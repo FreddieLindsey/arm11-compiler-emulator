@@ -6,17 +6,22 @@
 
 static const uint32_t machine_memory_size = 65536;
 static const uint32_t machine_register_count = 16;
+/* static instruction_t big_to_little_end(instruction_t); */
 
 void init_machine(machine_t *machine) {
   machine->memory = calloc(machine_memory_size, sizeof(memchunk_t));
   machine->memsize = machine_memory_size;
   machine->registers = calloc(machine_register_count, sizeof(memchunk_t));
   machine->regcount = machine_register_count;
+  machine->pc = machine->registers + (machine->regcount - 2);
+  machine->cpsr = machine->registers + (machine->regcount - 1);
+  machine->pipeline = calloc(sizeof(pipeline_t), 1);
 }
 
 void close_machine(machine_t *machine) {
   free(machine->memory);
   free(machine->registers);
+  free(machine->pipeline);
 }
 
 void print_machine(machine_t *machine) {
@@ -35,7 +40,8 @@ void print_machine(machine_t *machine) {
   int i, j;
   for (i = 0; i < (machine_memory_size / sizeof(instruction_t)); ++i) {
     /* Get the memory position of the first byte of the instruction */
-    memchunk_t *memoryposition = &machine->memory[(i+1) * sizeof(instruction_t) - 1];
+    memchunk_t *memoryposition = 
+      &machine->memory[(i+1) * sizeof(instruction_t) - 1];
 
     /* Initialise the instruction to 0 */
     instruction_t instruction = 0;
@@ -55,3 +61,13 @@ void print_machine(machine_t *machine) {
   /* Signal end of machine to user */
   printf("\nEnd of machine state.\n");
 }
+
+/* TODO
+static void big_to_little_end(instruction_t *instruction) {
+  int i = (int) (sizeof(instruction_t) / (2 * sizeof(memchunk_t)));
+  while (i > 0) {
+    instruction_t outside_mask, inside_mask;
+    outside_mask = 0;
+    memchunk_t temp = instruction << (i) & outside_mask;
+  }
+}*/
