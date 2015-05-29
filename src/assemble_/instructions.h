@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "secondpass.h"
+#include "assemble.h"
 
 // data processing
 uint32_t and(char **args);
@@ -24,6 +25,9 @@ uint32_t mul(char **args);
 uint32_t mla(char **args); 
 
 // single data transfer
+
+// branch
+uint32_t beq(int offset);
 
 // special
 uint32_t andeq(char **args);
