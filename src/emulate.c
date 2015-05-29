@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
   run_pipeline(&machine);
 
   /*  Print the final state of the machine */
-  if (!verbose) print_machine(&machine); 
+  print_machine(&machine); 
 
   /*  Frees the machine by closing it */
   close_machine(&machine);

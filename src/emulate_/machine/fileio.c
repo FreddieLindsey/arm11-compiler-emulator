@@ -10,7 +10,7 @@ void loadfile(FILE *file, machine_t *machine) {
     exit(EXIT_FAILURE);
   }
 
-  /* Read the file into memory. */
+  /* Read the file into memory. N.B. Retains formatting of data (LE/BE) */
   fread(machine->memory, machine->memsize, sizeof(memchunk_t), file);
 
   /* Close the file after reading */

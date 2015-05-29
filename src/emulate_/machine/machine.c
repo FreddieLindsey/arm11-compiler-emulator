@@ -40,8 +40,8 @@ void print_machine(machine_t *machine) {
   printf("\nNon-zero memory:\n");
   int i;
   for (i = 0; i < (machine_memory_size / sizeof(instruction_t)); ++i) {
-    /* Initialise the instruction to 0 */
-    instruction_t instruction = fetch_instruction_pos_be(machine, i);
+    /* Initialise the instruction to the Big Endian format */
+    instruction_t instruction = fetch_instruction_pos_format(machine, i);
 
     /* Print the instruction / *-byte boundary if non-zero */
     if (instruction != 0) { 

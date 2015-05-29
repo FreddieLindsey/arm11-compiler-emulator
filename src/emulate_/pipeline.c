@@ -30,10 +30,12 @@ void run_pipeline(machine_t *machine) {
     decode(machine);
     fetch(machine);
     printf("Value of PC before:\t0x%08x\n", *(machine->pc));
+    printf("Value of PC mem:\t0x%08x\n", fetch_instruction(machine));
     *(machine->pc) += sizeof(instruction_t);
     printf("Value of PC after:\t0x%08x\n", *(machine->pc));
+    printf("Value of PC mem:\t0x%08x\n", fetch_instruction(machine));
     result = execute(machine);
-  } while (result != -1);
+  } while (result == -1);
 }
 
 /*
@@ -41,7 +43,7 @@ void run_pipeline(machine_t *machine) {
  *  Returns  0 otherwise.
  */
 static int execute(machine_t *machine) {
-  if (machine->pipeline->decoded != NULL) {
+  if (machine->pipeline->decoded[0] != NULL) {
     return instruction_execute(machine->pipeline->decoded, machine);
   }
   return 0;
