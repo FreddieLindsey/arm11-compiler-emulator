@@ -5,6 +5,7 @@
  *  TYPEDEFS / STRUCTS / UNIONS
  */
 
+/*  GENERAL */
 typedef uint32_t instruction_t;
 typedef uint8_t memchunk_t;
 
@@ -37,9 +38,6 @@ void loadfile(FILE *file, machine_t *machine);
 void init_pipeline(pipeline_t *pipeline);
 void close_pipeline(pipeline_t *pipeline);
 void run_pipeline(machine_t *machine);
-void execute(machine_t *machine);
-void decode(machine_t *machine);
-void fetch(machine_t *machine);
 
 /*  MACHINE */
 void init_machine(machine_t *machine);
