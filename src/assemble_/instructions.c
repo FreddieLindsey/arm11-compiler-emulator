@@ -1,12 +1,13 @@
 #include "secondpass.h"
 
+
 /*
  *  Converts a register string, i.e. "r4" to the registers int value i.e. 4
  *  Also works with immediate numbers such as "#2"
  */
-uint32_t valueToInt(char* str) {
+int valueToInt(char* str) {
   // increments str to remove first charcter, then converts to int
-  return (uint32_t) strtol(++str, NULL, 0);
+  return strtoi(++str);
 }
 
 
@@ -269,6 +270,49 @@ uint32_t mla(char **args){
 }
 
 // SINGLE DATA TRANSFER
+
+
+// BRANCH
+
+// XXXX1010 XXXXXXXX XXXXXXXX XXXXXXXX
+// COND     {         OFFSET         }
+ 
+uint32_t buildBranch(int offset, int opcode) {
+  int OFFSET_COND = 0x1C;
+  int OFFSET_101 = 0x19;
+  int OFFSET_OFFSET = 0;
+  return (opcode << OFFSET_COND) | (0x5 << OFFSET_101) | 
+      ((offset & ((1 << 24) - 1)) << OFFSET_OFFSET);
+
+}
+
+uint32_t beq(int offset) {
+  return buildBranch(offset, 0);
+}
+
+uint32_t bne(int offset) {
+  return buildBranch(offset, 1);
+}
+
+uint32_t bge(int offset) {
+  return buildBranch(offset, 10);
+}
+
+uint32_t blt(int offset) {
+  return buildBranch(offset, 11);
+}
+
+uint32_t bgt(int offset) {
+  return buildBranch(offset, 12);
+}
+
+uint32_t ble(int offset) {
+  return buildBranch(offset, 13);
+}
+
+uint32_t b(int offset) {
+  return buildBranch(offset, 14);
+}
 
 // SPECIAL
 uint32_t andeq(char **args) {

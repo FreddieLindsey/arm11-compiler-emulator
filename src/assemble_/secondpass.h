@@ -8,7 +8,7 @@
 #include "assemble.h"
 
 typedef enum instructionType {
-  DATA_PROCESSING, MULTIPLY, SINGLE_DATA_TRANSFER, BRANCH, SPECIAL
+  DATA_PROCESS, MULTIPLY, SINGLE_DATA_TRANSFER, BRANCH, SPECIAL
 } instructionType;
 
 typedef struct instruction instruction;
@@ -17,7 +17,10 @@ struct instruction {
   char *mnemonic;
 
   // function to create binary
-  uint32_t (*createBinary)(char **args); 
+  uint32_t (*createBinary)(); 
+
+  // type of instruction (see enum above);
+  instructionType type;
 };
 
 void secondpass(symbol *table, char **filecontents, unsigned char *out);

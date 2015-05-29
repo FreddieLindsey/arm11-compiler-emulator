@@ -102,6 +102,16 @@ int main(int argc, char **argv) {
   return EXIT_SUCCESS;
 }
 
+/* 
+ *  Basic string to int function
+ */
+int strtoi(char *str){
+  return (int) strtol(str, NULL, 0);
+}
+
+/*
+ *  Free all memory used by a symboltable
+ */
 void freeTable(symbol *table) {
   symbol *next, *current = table;
   while(current->next != NULL) {
@@ -109,6 +119,21 @@ void freeTable(symbol *table) {
     free(current);
     current = next;
   }
+}
+
+/*
+ *  Gets a symbol's address given its name
+ */
+int getSymbolAddressByName(symbol *table, char *name) {
+  symbol *current = table;
+  while(current->next != NULL) {
+    if(strcmp(current->name, name) == 0) {
+      return current->address; 
+    }
+    current = current->next;
+  }
+  printf("Error: symbol \"%s\" not found\n", name);
+  exit(0);
 }
 
 /*
@@ -180,9 +205,12 @@ void trimAfter(char *str) {
  */
 char *getlabel(char *str) {
 
-  // find first non-alphabetical character
+  // check first char is alphetical
+  if(!isalpha(str[0])) return NULL;
+
+  // find first non-alphanumeric character
   char* current = str;
-  while(isalpha(*current)) {
+  while(isalnum(*current)) {
     current++;
   }
 

@@ -4,7 +4,9 @@
 struct symbol;
 typedef struct symbolTableEntry symbol;
 
+int strtoi(char *str);
 void freeTable(symbol *table);
+int getSymbolAddressByName(symbol *table, char *name);
 void printTable(symbol *table);
 void printFileContents(char **filecontents);
 void printBinary(unsigned char *binary);

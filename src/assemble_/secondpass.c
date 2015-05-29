@@ -29,6 +29,7 @@ void secondpass(symbol *table, char **filecontents, unsigned char *out) {
     *firstspace = '\0';
     char *mnemonic = filecontents[i]; 
     char *argstr = firstspace + 1;
+    trim(argstr);
 
     instruction *ins = getInstruction(instructions, mnemonic);
     
@@ -38,27 +39,33 @@ void secondpass(symbol *table, char **filecontents, unsigned char *out) {
           mnemonic, argstr);
       exit(EXIT_FAILURE);
     }
-
-    // count number of args
+ 
     int numargs;
-    char *original = argstr;
-    for(numargs = 1; argstr[numargs]; 
-        argstr[numargs] == ',' ? numargs++ : *argstr++);
-    argstr = original;
+    char **args;
+    uint32_t binary;
+    if(ins->type == BRANCH) {
+      binary = ins->createBinary(getSymbolAddressByName(table, argstr) - i - 2);
+    } else {
+      // count number of args
+      char *original = argstr;
+      for(numargs = 1; argstr[numargs]; 
+          argstr[numargs] == ',' ? numargs++ : *argstr++);
+      argstr = original;
+  
+      // split args from string to array
+      args = calloc(numargs, sizeof(char*));
+      char *arg = strtok(argstr, ",");
+      for(int i = 0; i < numargs; i++) {
+        args[i] = arg;
+        trim(args[i]);
+        arg = strtok(NULL, ",");
+      }
 
-    // split args from string to array
-    char **args = calloc(numargs, sizeof(char*));
-    char *arg = strtok(argstr, ",");
-    for(int i = 0; i < numargs; i++) {
-      args[i] = arg;
-      trim(args[i]);
-      arg = strtok(NULL, ",");
+      // create binary and free arguments
+      binary = ins->createBinary(args);
+      free(args);
     }
-   
-    // call function to create binary for this argument
-    uint32_t binary = ins->createBinary(args);
-    free(args);
-    
+
     // write to output in reverse order
     out[4*i] = binary;
     out[4*i+1] = binary >> 8;
@@ -80,6 +87,7 @@ instruction *getInstruction(instruction* instructions, char *mnemonic) {
 void initInstructions(instruction* instructions) {
   
   // DATA PROCESS
+  for(int i = 0; i <= 9; i++) instructions[i].type = DATA_PROCESS;
   instructions[0].mnemonic = "add";
   instructions[0].createBinary = &add;
 
@@ -111,6 +119,7 @@ void initInstructions(instruction* instructions) {
   instructions[9].createBinary = &cmp;
 
   // MULTIPLICATION
+  for(int i = 10; i <= 11; i++) instructions[i].type = MULTIPLY; 
   instructions[10].mnemonic = "mul";
   instructions[10].createBinary = &mul; 
 
@@ -118,25 +127,36 @@ void initInstructions(instruction* instructions) {
   instructions[11].createBinary = &mla;
 
   // SINGLE DATA TRANSFER
+  for(int i = 12; i <= 13; i++) instructions[i].type = SINGLE_DATA_TRANSFER;
   instructions[12].mnemonic = "ldr";
   
   instructions[13].mnemonic = "str";
   
+  // BRANCH
+  for(int i = 14; i <= 20; i++) instructions[i].type = BRANCH;
   instructions[14].mnemonic = "beq";
+  instructions[14].createBinary = &beq;
   
   instructions[15].mnemonic = "bne";
+  instructions[15].createBinary = &bne;
   
   instructions[16].mnemonic = "bge";
+  instructions[16].createBinary = &bge;
   
   instructions[17].mnemonic = "blt";
+  instructions[17].createBinary = &blt;
   
   instructions[18].mnemonic = "bgt";
+  instructions[18].createBinary = &bgt;
   
   instructions[19].mnemonic = "ble";
+  instructions[19].createBinary = &ble;
   
   instructions[20].mnemonic = "b";
+  instructions[20].createBinary = &b;
  
   // SPECIAL
+  for(int i = 21; i <= 22; i++) instructions[i].type = SPECIAL;
   instructions[21].mnemonic = "lsl";
   instructions[21].createBinary = &lsl;
   
