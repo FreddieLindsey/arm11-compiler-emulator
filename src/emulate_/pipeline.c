@@ -27,10 +27,12 @@ void close_pipeline(pipeline_t *pipeline) {
 void run_pipeline(machine_t *machine) {
   int result;
   do {
-  decode(machine);
-  fetch(machine);
-  ++(machine->pc);
-  result = execute(machine);
+    decode(machine);
+    fetch(machine);
+    printf("Value of PC before:\t0x%08x\n", *(machine->pc));
+    *(machine->pc) += sizeof(instruction_t);
+    printf("Value of PC after:\t0x%08x\n", *(machine->pc));
+    result = execute(machine);
   } while (result != -1);
 }
 
@@ -52,6 +54,5 @@ static void decode(machine_t *machine) {
 
 static void fetch(machine_t *machine) {
   /* Set fetched to be the next instruction */
-  machine->pipeline->fetched = 
-    machine->memory[machine->registers[machine->regcount - 2]];
+  machine->pipeline->fetched = fetch_instruction(machine);
 }
