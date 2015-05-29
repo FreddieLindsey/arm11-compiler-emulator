@@ -205,9 +205,12 @@ void trimAfter(char *str) {
  */
 char *getlabel(char *str) {
 
-  // find first non-alphabetical character
+  // check first char is alphetical
+  if(!isalpha(str[0])) return NULL;
+
+  // find first non-alphanumeric character
   char* current = str;
-  while(isalpha(*current)) {
+  while(isalnum(*current)) {
     current++;
   }
 

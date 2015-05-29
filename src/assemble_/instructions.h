@@ -28,6 +28,12 @@ uint32_t mla(char **args);
 
 // branch
 uint32_t beq(int offset);
+uint32_t bne(int offset);
+uint32_t bge(int offset);
+uint32_t blt(int offset);
+uint32_t bgt(int offset);
+uint32_t ble(int offset);
+uint32_t b(int offset);
 
 // special
 uint32_t andeq(char **args);

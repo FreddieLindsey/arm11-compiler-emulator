@@ -282,11 +282,36 @@ uint32_t buildBranch(int offset, int opcode) {
   int OFFSET_101 = 0x19;
   int OFFSET_OFFSET = 0;
   return (opcode << OFFSET_COND) | (0x5 << OFFSET_101) | 
-      (offset << OFFSET_OFFSET);
+      ((offset & ((1 << 24) - 1)) << OFFSET_OFFSET);
+
 }
 
 uint32_t beq(int offset) {
   return buildBranch(offset, 0);
+}
+
+uint32_t bne(int offset) {
+  return buildBranch(offset, 1);
+}
+
+uint32_t bge(int offset) {
+  return buildBranch(offset, 10);
+}
+
+uint32_t blt(int offset) {
+  return buildBranch(offset, 11);
+}
+
+uint32_t bgt(int offset) {
+  return buildBranch(offset, 12);
+}
+
+uint32_t ble(int offset) {
+  return buildBranch(offset, 13);
+}
+
+uint32_t b(int offset) {
+  return buildBranch(offset, 14);
 }
 
 // SPECIAL

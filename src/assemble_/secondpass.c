@@ -138,16 +138,22 @@ void initInstructions(instruction* instructions) {
   instructions[14].createBinary = &beq;
   
   instructions[15].mnemonic = "bne";
+  instructions[15].createBinary = &bne;
   
   instructions[16].mnemonic = "bge";
+  instructions[16].createBinary = &bge;
   
   instructions[17].mnemonic = "blt";
+  instructions[17].createBinary = &blt;
   
   instructions[18].mnemonic = "bgt";
+  instructions[18].createBinary = &bgt;
   
   instructions[19].mnemonic = "ble";
+  instructions[19].createBinary = &ble;
   
   instructions[20].mnemonic = "b";
+  instructions[20].createBinary = &b;
  
   // SPECIAL
   for(int i = 21; i <= 22; i++) instructions[i].type = SPECIAL;
