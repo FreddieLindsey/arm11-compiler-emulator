@@ -1,7 +1,7 @@
 # ARM11 Project for Imperial Year 1
 
-#### Group
+### Group
 
-###### Frederick Lindsey, Adam Hosier, Dylan Tracey, Pontus Liljeblad
+#### Frederick Lindsey, Adam Hosier, Dylan Tracey, Pontus Liljeblad
 
 All Imperial year 1

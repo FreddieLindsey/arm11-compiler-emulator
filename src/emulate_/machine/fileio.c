@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include "machine.h"
+#include "../../emulate.h"
 
 void loadfile(FILE *file, machine_t *machine) {
   /* Ensure file is not NULL */

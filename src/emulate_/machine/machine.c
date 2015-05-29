@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <limits.h>
-#include "machine.h"
+#include "../../emulate.h"
 
 static const uint32_t machine_memory_size = 65536;
 static const uint32_t machine_register_count = 16;
@@ -32,7 +32,8 @@ void print_machine(machine_t *machine) {
 
   /* Print non-zero memory */
   printf("\nNon-zero memory:\n");
-  for (int i = 0; i < (machine_memory_size / sizeof(instruction_t)); ++i) {
+  int i, j;
+  for (i = 0; i < (machine_memory_size / sizeof(instruction_t)); ++i) {
     /* Get the memory position of the first byte of the instruction */
     memchunk_t *memoryposition = &machine->memory[(i+1) * sizeof(instruction_t) - 1];
 
@@ -40,7 +41,7 @@ void print_machine(machine_t *machine) {
     instruction_t instruction = 0;
 
     /* Compile the instruction from Big-Endian to Little-Endian */
-    for (int j = 0; j < sizeof(instruction_t); ++j) {
+    for (j = 0; j < sizeof(instruction_t); ++j) {
       instruction |= *(memoryposition - j) << (j * CHAR_BIT);
     }
 

@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include "pipeline.h"
-#include "../instructions/_decoder.h"
+#include "../emulate.h"
+#include "../instructions.h"
 
 void init_pipeline(pipeline_t *pipeline) {
   pipeline->decoded = NULL;
@@ -16,21 +16,22 @@ void close_pipeline(pipeline_t *pipeline) {
   }
 }
 
-void run_pipeline(pipeline_t *pipeline, machine_t *machine) {
-  execute(pipeline, machine);
-  decode(pipeline, machine);
-  fetch(pipeline, machine);
+void run_pipeline(machine_t *machine) {
+  execute(machine);
+  decode(machine);
+  fetch(machine);
 }
 
-void execute(pipeline_t *pipeline, machine_t *machine) {
+void execute(machine_t *machine) {
 
 }
 
-void decode(pipeline_t *pipeline, machine_t *machine) {
-  pipeline->decoded = instruction_decode(pipeline->fetched);
+void decode(machine_t *machine) {
+  machine->pipeline->decoded = 
+    instruction_decode(machine->pipeline->fetched);
 }
 
-void fetch(pipeline_t *pipeline, machine_t *machine) {
-  pipeline->fetched = 
+void fetch(machine_t *machine) {
+  machine->pipeline->fetched = 
     machine->memory[machine->registers[machine->regcount - 2]];
 }

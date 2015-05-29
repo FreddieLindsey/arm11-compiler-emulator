@@ -34,3 +34,5 @@ assemble
 *.nav
 *.toc
 
+#ignore .dSYM directories
+*.dSYM

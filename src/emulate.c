@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <libgen.h>
 #include <string.h>
-#include "emulate_/funcprotos.h"
+#include "emulate.h"
 
 /*
  *  MAIN
@@ -51,7 +51,8 @@ int main(int argc, char** argv) {
   /*  Print the state of the machine prior to any execution */
   if (verbose) print_machine(&machine);
 
-  /* */
+  /*  Execute the pipeline model of the ARM architecture */
+  run_pipeline(&machine);
 
   /*  Print the final state of the machine */
   if (!verbose) print_machine(&machine); 
