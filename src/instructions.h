@@ -8,7 +8,7 @@
  */
 
 typedef enum instruction_k {
-  dataproc = 0, multiply = 1, singledatatransfer = 2, branch = 3
+  dataproc = 0, multiply = 1, singledatatransfer = 2, branch = 3, special = -1
 } instruction_kt;
 
 typedef struct decoded_instruction {
