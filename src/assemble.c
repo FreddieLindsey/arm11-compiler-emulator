@@ -17,6 +17,7 @@ struct symbolTableEntry {
 
 int main(int argc, char **argv) {
 
+  // check correct number of arguments
   if(argc != 3) {
     printf("Usage: assemble <input source> <output binary>\n");
     exit(EXIT_FAILURE);
@@ -79,11 +80,6 @@ int main(int argc, char **argv) {
   free(line);
   fclose(file);
   
-  //printf("Labels defined as:\n");
-  //printTable(symbolTable);
-  //printf("\nCode:\n");
-  //printFileContents(filecontents);
-
   // allocate space for each 4 byte binary instruction
   unsigned char *binary = calloc(numInstructions*4, 1);
   secondpass(symbolTable, filecontents, binary);
@@ -96,6 +92,10 @@ int main(int argc, char **argv) {
   //printBinary(binary);
  
   // write binary to file
+  FILE *out = fopen(argv[2], "wb");
+  if(out == NULL) {
+     
+  }
   fwrite(binary, 1, numInstructions * 4, fopen(argv[2], "wb"));
 
   free(binary);
@@ -223,3 +223,4 @@ char *getlabel(char *str) {
   }
 
 }
+

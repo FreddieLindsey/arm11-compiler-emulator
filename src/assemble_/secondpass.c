@@ -1,5 +1,6 @@
 #include "secondpass.h"
 #include "instructions.h"
+#include "../instructions/_encoder.c"
 
 #define NUM_INSTRUCTIONS 23
 

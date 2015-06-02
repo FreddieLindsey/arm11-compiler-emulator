@@ -1,6 +1,5 @@
 #include "secondpass.h"
 
-
 /*
  *  Converts a register string, i.e. "r4" to the registers int value i.e. 4
  *  Also works with immediate numbers such as "#2"
