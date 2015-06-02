@@ -4,7 +4,7 @@
 #include "../emulate.h"
 #include "../instructions.h"
 
-/* 
+/*
  *  Parts of the pipeline should only be executed
  *  by the pipeline itself
  */
@@ -29,11 +29,7 @@ void run_pipeline(machine_t *machine) {
   do {
     decode(machine);
     fetch(machine);
-    printf("Value of PC before:\t0x%08x\n", *(machine->pc));
-    printf("Value of PC mem:\t0x%08x\n", fetch_instruction(machine));
     *(machine->pc) += sizeof(instruction_t);
-    printf("Value of PC after:\t0x%08x\n", *(machine->pc));
-    printf("Value of PC mem:\t0x%08x\n", fetch_instruction(machine));
     result = execute(machine);
   } while (result == -1);
 }
@@ -50,7 +46,7 @@ static int execute(machine_t *machine) {
 }
 
 static void decode(machine_t *machine) {
-  machine->pipeline->decoded = 
+  machine->pipeline->decoded =
     instruction_decode(machine->pipeline->fetched);
 }
 

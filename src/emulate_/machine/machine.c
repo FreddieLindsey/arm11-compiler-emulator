@@ -7,7 +7,6 @@
 
 static const uint32_t machine_memory_size = 65536;
 static const uint32_t machine_register_count = 16;
-/* static instruction_t big_to_little_end(instruction_t); */
 
 void init_machine(machine_t *machine) {
   machine->memory = calloc(machine_memory_size, sizeof(memchunk_t));
@@ -26,40 +25,28 @@ void close_machine(machine_t *machine) {
 }
 
 void print_machine(machine_t *machine) {
-  /* Signal start of machine to user */
-  printf("\nPrinting machine state:\n");
-
   /* Print register values */
-  printf("\nRegister values:\n");
-  for (int i = 0; i < machine_register_count; ++i) {
-    printf("Register No. %2i:\t0x%08x\n", i + 1,
-           machine->registers[i]);
+  printf("Registers:\n");
+  int loop_read = (machine_register_count < 12) ? machine_register_count : 12;
+  for (int i = 0; i <= loop_read; ++i) {
+    printf("$%-3i:\t%8d (0x%08x)\n", i, machine->registers[i], machine->registers[i]);
   }
 
+  /* Print PC and CPSR */
+  printf("%s:\t%8d (0x%08x)\n", "PC  ", *(machine->pc), *(machine->pc));
+  printf("%s:\t%8d (0x%08x)\n", "CPSR", *(machine->cpsr), *(machine->cpsr));
+
   /* Print non-zero memory */
-  printf("\nNon-zero memory:\n");
+  printf("Non-zero memory:\n");
   int i;
   for (i = 0; i < (machine_memory_size / sizeof(instruction_t)); ++i) {
     /* Initialise the instruction to the Big Endian format */
-    instruction_t instruction = fetch_instruction_pos_format(machine, i);
+    instruction_t instruction = fetch_instruction_pos(machine, i);
 
     /* Print the instruction / *-byte boundary if non-zero */
-    if (instruction != 0) { 
-      printf("Memory Location 0x%08lx:\t0x%08x\n", 
+    if (instruction != 0) {
+      printf("0x%08lx: 0x%08x\n",
               i * sizeof(instruction_t), instruction);
     }
   }
-
-  /* Signal end of machine to user */
-  printf("\nEnd of machine state.\n");
 }
-
-/* TODO
-static void big_to_little_end(instruction_t *instruction) {
-  int i = (int) (sizeof(instruction_t) / (2 * sizeof(memchunk_t)));
-  while (i > 0) {
-    instruction_t outside_mask, inside_mask;
-    outside_mask = 0;
-    memchunk_t temp = instruction << (i) & outside_mask;
-  }
-}*/

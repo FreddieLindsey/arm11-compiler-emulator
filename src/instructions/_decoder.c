@@ -6,7 +6,7 @@
 #include "../instructions.h"
 
 char** instruction_decode(instruction_t instruction) {
-  char** result = calloc(sizeof(instruction_t) * CHAR_BIT, 
+  char** result = calloc(sizeof(instruction_t) * CHAR_BIT,
                          sizeof(instruction_t) * CHAR_BIT);
   if (result[0] != NULL) {
     printf("Result currently:\t");
@@ -17,6 +17,5 @@ char** instruction_decode(instruction_t instruction) {
     }
     printf("\n");
   }
-  printf("Value of instruction:\t0x%08x\n", instruction);
   return result;
 }

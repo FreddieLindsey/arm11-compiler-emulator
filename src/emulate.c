@@ -18,15 +18,15 @@ int main(int argc, char** argv) {
       return if not */
   if (argc != 2 && !(argc == 3 && (strcmp(argv[2], "v") == 0))) {
     usage();
-    printf("You have supplied %s arguments.\nEXITING\n", 
+    printf("You have supplied %s arguments.\nEXITING\n",
           (argc < 2) ? "too few" : "too many" );
     exit(EXIT_FAILURE);
-  } else if (argc == 3 && (strcmp(argv[2], "v") == 0 
+  } else if (argc == 3 && (strcmp(argv[2], "v") == 0
                         || strcmp(argv[2], "V") == 0)) {
     verbose = 1;
   }
 
-  /*  Check a given filename exists, and return if not */ 
+  /*  Check a given filename exists, and return if not */
   FILE *file;
   if ((file = fopen(argv[1], "r")) == NULL) {
     perror("Error opening file!");
@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
   /*  Create and initialise a machine and a pipeline */
   machine_t machine;
   pipeline_t pipeline;
-  init_machine(&machine);  
+  init_machine(&machine);
   if (verbose) printf("Machine initialised.\n");
   init_pipeline(&pipeline);
   if (verbose) printf("Pipeline initialised.\n");
@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
   run_pipeline(&machine);
 
   /*  Print the final state of the machine */
-  print_machine(&machine); 
+  print_machine(&machine);
 
   /*  Frees the machine by closing it */
   close_machine(&machine);
