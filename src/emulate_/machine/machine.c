@@ -11,7 +11,7 @@ static const uint32_t machine_register_count = 16;
 void init_machine(machine_t *machine) {
   machine->memory = calloc(machine_memory_size, sizeof(memchunk_t));
   machine->memsize = machine_memory_size;
-  machine->registers = calloc(machine_register_count, sizeof(memchunk_t));
+  machine->registers = calloc(machine_register_count, sizeof(instruction_t));
   machine->regcount = machine_register_count;
   machine->pc = machine->registers + (machine->regcount - 2);
   machine->cpsr = machine->registers + (machine->regcount - 1);
