@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "secondpass.h"
+#include "build_instruction.h"
 
 #define NUM_INSTRUCTIONS 23
 
@@ -97,6 +98,7 @@ void initInstructions(instruction_str_t *instructions) {
   // DATA PROCESS
   for(int i = 0; i <= 9; i++) instructions[i].type = DATA_PROCESS;
   instructions[0].mnemonic = "add";
+  instructions[0].buildInstruction = &build_add;
 
   instructions[1].mnemonic = "sub";
   

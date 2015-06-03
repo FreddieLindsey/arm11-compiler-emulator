@@ -28,16 +28,18 @@ typedef struct decoded_instruction {
   uint8_t prepost;
   uint8_t up;
   uint8_t loadstore;
-  instruction_t regd;
-  instruction_t regs1;
-  instruction_t regs2;
-  instruction_t regs3;
-  instruction_t other;
-} decoded_instruction_t ;
+  uint8_t regd;
+  uint8_t regn;
+  uint16_t operand2;
+  uint8_t regs;
+  uint8_t regm;
+  uint32_t sdt_offset;
+  uint32_t branch_offset;
+} decoded_instruction_t;
 
 /*  PIPELINE */
 typedef struct pipeline {
-  decoded_instruction_t decoded;
+  char **decoded;
   instruction_t fetched;
 } pipeline_t;
 
