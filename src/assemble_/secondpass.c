@@ -68,11 +68,11 @@ void secondpass(symbol *table, char **filecontents, unsigned char *out) {
 
       // create binary and free arguments
       decoded = ins->buildInstruction(args);
-      free(decoded);
       free(args);
     }
 
     instruction_t binary = instruction_encode(decoded);
+    free(decoded);
 
     // write to output in reverse order
     out[4*i] = binary;
@@ -111,6 +111,7 @@ void initInstructions(instruction_str_t *instructions) {
   instructions[5].mnemonic = "orr";
   
   instructions[6].mnemonic = "mov";
+  instructions[6].buildInstruction = &build_mov;
 
   instructions[7].mnemonic = "tst";
   

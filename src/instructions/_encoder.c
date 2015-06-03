@@ -12,7 +12,7 @@ instruction_t encode_data_process(decoded_instruction_t *decoded) {
   const int OFFSET_RD = 0xC;
   const int OFFSET_OPERAND2 = 0x0;
   const int COND = 14;
-  return (cond << OFFSET_COND) | (decoded->immediate << OFFSET_I) | 
+  return (COND << OFFSET_COND) | (decoded->immediate << OFFSET_I) | 
       (decoded->opcode << OFFSET_OPCODE) | (decoded->set << OFFSET_S) | 
       (decoded->regn << OFFSET_RN) | (decoded->regd << OFFSET_RD) | 
       (decoded->operand2 << OFFSET_OPERAND2);
