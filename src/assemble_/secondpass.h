@@ -1,30 +1,23 @@
 #ifndef SECONDPASS_H 
 #define SECONDPASS_H
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
 #include "assemble.h"
+#include "../instructions.h"
 
-typedef enum instructionType {
-  DATA_PROCESS, MULTIPLY, SINGLE_DATA_TRANSFER, BRANCH, SPECIAL
-} instructionType;
-
-typedef struct instruction instruction;
-struct instruction {
+typedef struct instruction_str {
   // instruction mnemonic (mov, add, and ...)
   char *mnemonic;
 
   // function to create binary
-  uint32_t (*createBinary)(); 
+  decoded_instruction_t *(*buildInstruction)(); 
 
   // type of instruction (see enum above);
-  instructionType type;
-};
+  instruction_kt type;
+} instruction_str_t;
 
 void secondpass(symbol *table, char **filecontents, unsigned char *out);
-void initInstructions(instruction* instructions);
-instruction *getInstruction(instruction* instructions, char *mnemonic);
+void initInstructions(instruction_str_t* instructions);
+instruction_str_t *getInstruction(instruction_str_t* instructions,
+    char *mnemonic);
 
 #endif
