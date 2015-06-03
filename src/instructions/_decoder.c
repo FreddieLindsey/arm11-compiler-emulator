@@ -20,5 +20,5 @@ decoded_instruction_t* instruction_decode(instruction_t instruction) {
   } else if (is_datproc) {
     return dataprocess_decode(instruction);
   }
-  return NULL
+  return NULL;
 }
