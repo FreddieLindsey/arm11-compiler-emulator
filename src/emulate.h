@@ -1,31 +1,12 @@
 #ifndef FUNCPROTO
 #define FUNCPROTO
 
+#include "instructions.h"
+
 /*
  *  TYPEDEFS / STRUCTS / UNIONS
  */
 
-/*  GENERAL */
-typedef uint32_t instruction_t;
-typedef uint8_t memchunk_t;
-typedef uint32_t addressable_t;
-
-/*  PIPELINE */
-typedef struct pipeline {
-  char** decoded;
-  instruction_t fetched;
-} pipeline_t;
-
-/*  MACHINE */
-typedef struct machine {
-  memchunk_t *memory;
-  addressable_t memsize;
-  instruction_t *registers;
-  addressable_t regcount;
-  instruction_t *pc;
-  instruction_t *cpsr;
-  pipeline_t *pipeline;
-} machine_t;
 
 /*
  *  FUNCTION PROTOTYPES

@@ -9,7 +9,6 @@ int valueToInt(char* str) {
   return strtoi(++str);
 }
 
-
 // DATA PROCESSING
 //
 // COND  I     S Rn   Rd 

@@ -1,31 +1,58 @@
 #ifndef _DECODER
 #define _DECODER
 
-#include "emulate.h"
+#include <stdint.h>
+#include <stdio.h>
 
 /*
  *  TYPEDEFS / STRUCTS / UNIONS
  */
 
+/*  GENERAL */
+typedef uint8_t memchunk_t;
+typedef uint32_t addressable_t;
+typedef uint32_t instruction_t;
+
+/* INSTRUCTION TYPES */
 typedef enum instruction_k {
-  dataproc = 0, multiply = 1, singledatatransfer = 2, branch = 3, special = -1
+  DATA_PROCESS, MULTIPLY, SINGLE_DATA_TRANSFER, BRANCH, LSL, ANDEQ
 } instruction_kt;
 
+/* INSTRUCTION */
 typedef struct decoded_instruction {
   instruction_kt kind;
   uint8_t cond;
   uint8_t opcode;
   uint8_t immediate;
+  uint8_t accumulate;
   uint8_t set;
   uint8_t prepost;
   uint8_t up;
   uint8_t loadstore;
-  instruction_t regd;
-  instruction_t regs1;
-  instruction_t regs2;
-  instruction_t regs3;
-  instruction_t other;
-} decoded_instruction_t ;
+  uint8_t regd;
+  uint8_t regn;
+  uint16_t operand2;
+  uint8_t regs;
+  uint8_t regm;
+  uint32_t offset; 
+} decoded_instruction_t;
+
+/*  PIPELINE */
+typedef struct pipeline {
+  char **decoded;
+  instruction_t fetched;
+} pipeline_t;
+
+/*  MACHINE */
+typedef struct machine {
+  memchunk_t *memory;
+  addressable_t memsize;
+  instruction_t *registers;
+  addressable_t regcount;
+  instruction_t *pc;
+  instruction_t *cpsr;
+  pipeline_t *pipeline;
+} machine_t;
 
 /*
  *  FUNCTION PROTOTYPES

@@ -102,12 +102,6 @@ int main(int argc, char **argv) {
   return EXIT_SUCCESS;
 }
 
-/* 
- *  Basic string to int function
- */
-int strtoi(char *str){
-  return (int) strtol(str, NULL, 0);
-}
 
 /*
  *  Free all memory used by a symboltable
