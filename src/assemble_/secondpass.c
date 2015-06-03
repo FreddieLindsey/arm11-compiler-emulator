@@ -101,29 +101,39 @@ void initInstructions(instruction_str_t *instructions) {
   instructions[0].buildInstruction = &build_add;
 
   instructions[1].mnemonic = "sub";
+  instructions[1].buildInstruction = &build_sub;
   
   instructions[2].mnemonic = "rsb";
+  instructions[2].buildInstruction = &build_rsb;
   
   instructions[3].mnemonic = "and";
+  instructions[3].buildInstruction = &build_and;
   
   instructions[4].mnemonic = "eor";
+  instructions[4].buildInstruction = &build_eor;
   
   instructions[5].mnemonic = "orr";
+  instructions[5].buildInstruction = &build_orr;
   
   instructions[6].mnemonic = "mov";
   instructions[6].buildInstruction = &build_mov;
 
   instructions[7].mnemonic = "tst";
+  instructions[7].buildInstruction = &build_tst;
   
   instructions[8].mnemonic = "teq";
+  instructions[8].buildInstruction = &build_teq;
   
   instructions[9].mnemonic = "cmp";
+  instructions[9].buildInstruction = &build_cmp;
 
   // MULTIPLICATION
   for(int i = 10; i <= 11; i++) instructions[i].type = MULTIPLY; 
   instructions[10].mnemonic = "mul";
+  instructions[10].buildInstruction = &build_mul;
 
   instructions[11].mnemonic = "mla";
+  instructions[11].buildInstruction = &build_mla;
 
   // SINGLE DATA TRANSFER
   for(int i = 12; i <= 13; i++) instructions[i].type = SINGLE_DATA_TRANSFER;
@@ -134,22 +144,32 @@ void initInstructions(instruction_str_t *instructions) {
   // BRANCH
   for(int i = 14; i <= 20; i++) instructions[i].type = BRANCH;
   instructions[14].mnemonic = "beq";
+  instructions[14].buildInstruction = &build_beq;
   
   instructions[15].mnemonic = "bne";
+  instructions[15].buildInstruction = &build_bne;
   
   instructions[16].mnemonic = "bge";
+  instructions[16].buildInstruction = &build_bge;
   
   instructions[17].mnemonic = "blt";
+  instructions[17].buildInstruction = &build_blt;
   
   instructions[18].mnemonic = "bgt";
+  instructions[18].buildInstruction = &build_bgt;
   
   instructions[19].mnemonic = "ble";
+  instructions[19].buildInstruction = &build_ble;
   
   instructions[20].mnemonic = "b";
+  instructions[20].buildInstruction = &build_b;
  
   // SPECIAL
-  for(int i = 21; i <= 22; i++) instructions[i].type = SPECIAL;
   instructions[21].mnemonic = "lsl";
+  instructions[21].type = LSL;
+  instructions[21].buildInstruction = &build_lsl;
   
   instructions[22].mnemonic = "andeq";
+  instructions[22].type = ANDEQ;
+  instructions[22].buildInstruction = &build_andeq;
 }

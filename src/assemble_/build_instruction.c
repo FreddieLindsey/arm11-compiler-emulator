@@ -20,6 +20,8 @@ int valueToInt(char* str) {
   return strtoi(++str);
 }
 
+/* DATA TRANSFER */
+
 /*
  *  Given a [str] calculate the operand2 binary
  */
@@ -124,9 +126,46 @@ decoded_instruction_t *computable(char **args, int opcode) {
   return ins;
 }
 
+/*
+ * Functions that set the flags
+ */
+decoded_instruction_t *flagsetter(char **args, int opcode) {
+  decoded_instruction_t *ins = malloc(sizeof(decoded_instruction_t));
+  ins->kind = DATA_PROCESS;
+  ins->opcode = opcode;
+  ins->immediate = args[1][0] == '#' ? 1 : 0;
+  ins->set = 1;
+  ins->regn = valueToInt(args[0]);
+  ins->regd = 0;
+  ins->operand2 = operand2(args[1], args[2]);
+
+  return ins;
+}
+
 decoded_instruction_t *build_add(char **args) {
   return computable(args, 4);
 }
+
+decoded_instruction_t *build_sub(char **args) {
+  return computable(args, 2);
+}
+
+decoded_instruction_t *build_rsb(char **args) {
+  return computable(args, 3);
+}
+
+decoded_instruction_t *build_and(char **args) {
+  return computable(args, 0);
+}
+
+decoded_instruction_t *build_eor(char **args) {
+  return computable(args, 1);
+}
+
+decoded_instruction_t *build_orr(char **args) {
+  return computable(args, 12);
+}
+
 
 decoded_instruction_t *build_mov(char **args) {
   decoded_instruction_t *ins = malloc(sizeof(decoded_instruction_t));
@@ -139,4 +178,111 @@ decoded_instruction_t *build_mov(char **args) {
   ins->operand2 = operand2(args[1], args[2]);
 
   return ins;
+}
+
+decoded_instruction_t *build_tst(char **args) {
+  return flagsetter(args, 8);
+}
+
+decoded_instruction_t *build_teq(char **args) {
+  return flagsetter(args, 9);
+}
+
+decoded_instruction_t *build_cmp(char **args) {
+  return flagsetter(args, 10);
+}
+
+/* MULTIPLY */
+
+decoded_instruction_t *build_mul(char **args) {
+  decoded_instruction_t *ins = malloc(sizeof(decoded_instruction_t));
+  ins->kind = MULTIPLY;
+  ins->accumulate = 0;
+  ins->regd = valueToInt(args[0]);
+  ins->regs = valueToInt(args[2]);
+  ins->regm = valueToInt(args[1]);
+
+  return ins;
+}
+
+decoded_instruction_t *build_mla(char **args) {
+  decoded_instruction_t *ins = malloc(sizeof(decoded_instruction_t));
+  ins->kind = MULTIPLY;
+  ins->accumulate = 1;
+  ins->regd = valueToInt(args[0]);
+  ins->regn = valueToInt(args[3]);
+  ins->regs = valueToInt(args[2]);
+  ins->regm = valueToInt(args[1]);
+
+  return ins;
+}
+
+/* SINGLE DATA TRANSFER */
+// TODO
+
+/* BRANCH */
+  
+decoded_instruction_t *branch(int offset, int opcode) {
+  decoded_instruction_t *ins = malloc(sizeof(decoded_instruction_t));
+  ins->kind = BRANCH;
+  ins->cond = opcode;
+  ins->offset = offset;
+  
+  return ins;
+}
+
+decoded_instruction_t *build_beq(int offset) {
+  return branch(offset, 0);
+}
+
+decoded_instruction_t *build_bne(int offset) {
+  return branch(offset, 1);
+}
+
+decoded_instruction_t *build_bge(int offset) {
+  return branch(offset, 10);
+}
+
+decoded_instruction_t *build_blt(int offset) {
+  return branch(offset, 11);
+}
+
+decoded_instruction_t *build_bgt(int offset) {
+  return branch(offset, 12);
+}
+
+decoded_instruction_t *build_ble(int offset) {
+  return branch(offset, 13);
+}
+
+decoded_instruction_t *build_b(int offset) {
+  return branch(offset, 14);
+}
+
+/* SPECIAL */
+
+decoded_instruction_t *build_andeq(void) {
+  decoded_instruction_t *ins = malloc(sizeof(decoded_instruction_t));
+  ins->kind = ANDEQ;
+
+  return ins;
+}
+
+decoded_instruction_t *build_lsl(char **args) {
+  
+  // create space for 4 arguments
+  char **movargs = malloc(3 * sizeof(char*));
+  movargs[0] = args[0];
+  movargs[1] = args[0];
+  char *arg3 = malloc(512);
+  memset(arg3, 0, 512);
+  memcpy(arg3, "lsl ", 4*sizeof(char));
+  movargs[2] = strcat(arg3, args[1]);
+
+  decoded_instruction_t *result = build_mov(movargs);
+  
+  free(arg3);
+  free(movargs);
+
+  return result;
 }

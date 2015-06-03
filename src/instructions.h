@@ -15,7 +15,7 @@ typedef uint32_t instruction_t;
 
 /* INSTRUCTION TYPES */
 typedef enum instruction_k {
-  DATA_PROCESS, MULTIPLY, SINGLE_DATA_TRANSFER, BRANCH, SPECIAL
+  DATA_PROCESS, MULTIPLY, SINGLE_DATA_TRANSFER, BRANCH, LSL, ANDEQ
 } instruction_kt;
 
 /* INSTRUCTION */
@@ -24,6 +24,7 @@ typedef struct decoded_instruction {
   uint8_t cond;
   uint8_t opcode;
   uint8_t immediate;
+  uint8_t accumulate;
   uint8_t set;
   uint8_t prepost;
   uint8_t up;
@@ -33,8 +34,7 @@ typedef struct decoded_instruction {
   uint16_t operand2;
   uint8_t regs;
   uint8_t regm;
-  uint32_t sdt_offset;
-  uint32_t branch_offset;
+  uint32_t offset; 
 } decoded_instruction_t;
 
 /*  PIPELINE */
