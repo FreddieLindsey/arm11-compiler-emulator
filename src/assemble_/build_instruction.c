@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX_ARG_SIZE 512 * sizeof(char)
+
 /*
  *  Converts a register string, i.e. "r4" to the registers int value i.e. 4
  *  Also works with immediate numbers such as "#2"
@@ -20,18 +22,20 @@ int valueToInt(char* str) {
  *  Given a [str] calculate the operand2 binary
  */
 uint16_t operand2(char *str, char *shiftstr) {
+
+  instruction_t value = valueToInt(str);
   
   // if value is an immediate value
   if(str[0] == '#') {
     
-    // convert to int, check for overflow
-    uint32_t value = valueToInt(str);
-    int shift = 0;
-    
     // shift to fit in 8`bits
+    int shift = 0;
+
+    // while value does not fit in 8 bits
     while(value > (1 << 8) - 1) {
       // rotate twice
-      int excess = (value & (11 << 30)) >> 30;
+      int mask = 11 << 30;
+      int excess = (value & mask) >> 30;
       value = (value << 2) | excess;
       shift++;
     }
@@ -39,9 +43,6 @@ uint16_t operand2(char *str, char *shiftstr) {
     const int SHIFT_OFFSET = 0x8;
     return value + (shift << SHIFT_OFFSET);
   } else if(str[0] == 'r') {
-    
-    // get register number
-    int value = valueToInt(str);
 
     // if value needs to be shifted
     if(shiftstr != NULL) {
@@ -109,14 +110,15 @@ uint16_t operand2(char *str, char *shiftstr) {
 decoded_instruction_t *computable(char **args, int opcode) {
   // create instruction object struct in heap
   decoded_instruction_t *ins = malloc(sizeof(decoded_instruction_t));
+  failif(ins == NULL, ERROR_MALLOC);
   ins->kind = DATA_PROCESS;
   ins->opcode = opcode;
   ins->immediate = args[2][0] == '#' ? 1 : 0;
   ins->set = 0;
   ins->regn = valueToInt(args[1]);
   ins->regd = valueToInt(args[0]);
-  ins->operand2 = operand2(args[2], NULL);
-  
+  ins->operand2 = operand2(args[2], args[3]); 
+      //sizeof(args) / sizeof(args[0]) == 3 ? NULL : args[3]);
   return ins;
 }
 
@@ -132,34 +134,18 @@ decoded_instruction_t *flagsetter(char **args, int opcode) {
   ins->regn = valueToInt(args[0]);
   ins->regd = 0;
   ins->operand2 = operand2(args[1], args[2]);
-
   return ins;
 }
 
-decoded_instruction_t *build_add(char **args) {
-  return computable(args, 4);
-}
-
-decoded_instruction_t *build_sub(char **args) {
-  return computable(args, 2);
-}
-
-decoded_instruction_t *build_rsb(char **args) {
-  return computable(args, 3);
-}
-
-decoded_instruction_t *build_and(char **args) {
-  return computable(args, 0);
-}
-
-decoded_instruction_t *build_eor(char **args) {
-  return computable(args, 1);
-}
-
-decoded_instruction_t *build_orr(char **args) {
-  return computable(args, 12);
-}
-
+decoded_instruction_t *build_add(char **args) { return computable(args, 4); }
+decoded_instruction_t *build_sub(char **args) { return computable(args, 2); }
+decoded_instruction_t *build_rsb(char **args) { return computable(args, 3); } 
+decoded_instruction_t *build_and(char **args) { return computable(args, 0); }
+decoded_instruction_t *build_eor(char **args) { return computable(args, 1); }
+decoded_instruction_t *build_orr(char **args) { return computable(args, 12); }
+decoded_instruction_t *build_tst(char **args) { return flagsetter(args, 8); }
+decoded_instruction_t *build_teq(char **args) { return flagsetter(args, 9); }
+decoded_instruction_t *build_cmp(char **args) { return flagsetter(args, 10); }
 
 decoded_instruction_t *build_mov(char **args) {
   decoded_instruction_t *ins = malloc(sizeof(decoded_instruction_t));
@@ -170,20 +156,7 @@ decoded_instruction_t *build_mov(char **args) {
   ins->regn = 0;
   ins->regd = valueToInt(args[0]);
   ins->operand2 = operand2(args[1], args[2]);
-
   return ins;
-}
-
-decoded_instruction_t *build_tst(char **args) {
-  return flagsetter(args, 8);
-}
-
-decoded_instruction_t *build_teq(char **args) {
-  return flagsetter(args, 9);
-}
-
-decoded_instruction_t *build_cmp(char **args) {
-  return flagsetter(args, 10);
 }
 
 /* MULTIPLY */
@@ -195,7 +168,7 @@ decoded_instruction_t *build_mul(char **args) {
   ins->regd = valueToInt(args[0]);
   ins->regs = valueToInt(args[2]);
   ins->regm = valueToInt(args[1]);
-
+  ins->regn = 0;
   return ins;
 }
 
@@ -207,7 +180,6 @@ decoded_instruction_t *build_mla(char **args) {
   ins->regn = valueToInt(args[3]);
   ins->regs = valueToInt(args[2]);
   ins->regm = valueToInt(args[1]);
-
   return ins;
 }
 
@@ -221,44 +193,22 @@ decoded_instruction_t *branch(int offset, int opcode) {
   ins->kind = BRANCH;
   ins->cond = opcode;
   ins->offset = offset;
-  
   return ins;
 }
 
-decoded_instruction_t *build_beq(int offset) {
-  return branch(offset, 0);
-}
-
-decoded_instruction_t *build_bne(int offset) {
-  return branch(offset, 1);
-}
-
-decoded_instruction_t *build_bge(int offset) {
-  return branch(offset, 10);
-}
-
-decoded_instruction_t *build_blt(int offset) {
-  return branch(offset, 11);
-}
-
-decoded_instruction_t *build_bgt(int offset) {
-  return branch(offset, 12);
-}
-
-decoded_instruction_t *build_ble(int offset) {
-  return branch(offset, 13);
-}
-
-decoded_instruction_t *build_b(int offset) {
-  return branch(offset, 14);
-}
+decoded_instruction_t *build_beq(int offset) { return branch(offset, 0); }
+decoded_instruction_t *build_bne(int offset) { return branch(offset, 1); }
+decoded_instruction_t *build_bge(int offset) { return branch(offset, 10); }
+decoded_instruction_t *build_blt(int offset) { return branch(offset, 11); }
+decoded_instruction_t *build_bgt(int offset) { return branch(offset, 12); }
+decoded_instruction_t *build_ble(int offset) { return branch(offset, 13); }
+decoded_instruction_t *build_b(int offset) { return branch(offset, 14); }
 
 /* SPECIAL */
 
 decoded_instruction_t *build_andeq(void) {
   decoded_instruction_t *ins = malloc(sizeof(decoded_instruction_t));
   ins->kind = ANDEQ;
-
   return ins;
 }
 
@@ -266,10 +216,11 @@ decoded_instruction_t *build_lsl(char **args) {
   
   // create space for 4 arguments
   char **movargs = malloc(3 * sizeof(char*));
+  failif(movargs == NULL, ERROR_MALLOC);
   movargs[0] = args[0];
   movargs[1] = args[0];
-  char *arg3 = malloc(512);
-  memset(arg3, 0, 512);
+  char *arg3 = malloc(MAX_ARG_SIZE);
+  memset(arg3, 0, MAX_ARG_SIZE);
   memcpy(arg3, "lsl ", 4*sizeof(char));
   movargs[2] = strcat(arg3, args[1]);
 

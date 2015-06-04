@@ -53,21 +53,26 @@ void secondpass(symbol *table, char **filecontents, unsigned char *out) {
       decoded = ins->buildInstruction(
           getSymbolAddressByName(table, argstr) - i - 2);
     } else {
-      // count number of args
-      char *original = argstr;
-      for(numargs = 1; argstr[numargs]; 
-          argstr[numargs] == ',' ? numargs++ : *argstr++);
-      argstr = original;
+      if(ins->type == DATA_PROCESS) {
+        numargs = 4;
+      } else {
+        // count number of args
+        char *original = argstr;
+        for(numargs = 1; argstr[numargs]; 
+            argstr[numargs] == ',' ? numargs++ : *argstr++);
+        argstr = original;
+      }
   
       // split args from string to array
       args = calloc(numargs, sizeof(char*));
       char *arg = strtok(argstr, ",");
-      for(int i = 0; i < numargs; i++) {
+      int i;
+      for(i = 0; arg != NULL; i++) {
         args[i] = arg;
         trim(args[i]);
         arg = strtok(NULL, ",");
       }
-
+      
       // create binary and free arguments
       decoded = ins->buildInstruction(args);
       free(args);
