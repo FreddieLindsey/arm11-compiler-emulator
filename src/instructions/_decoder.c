@@ -5,9 +5,10 @@
 #include "../emulate.h"
 #include "../instructions.h"
 
+static const int MAX_INSTR_SIZE=10
+
 char** instruction_decode(instruction_t instruction) {
-  char** result = calloc(sizeof(instruction_t) * CHAR_BIT,
-                         sizeof(instruction_t) * CHAR_BIT);
+  char** result = calloc(sizeof(instruction_t) * CHAR_BIT, MAX_INSTR_SIZE);
   if (result[0] != NULL) {
     printf("Result currently:\t");
     int i = 0;
