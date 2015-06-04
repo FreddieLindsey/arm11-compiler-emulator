@@ -7,18 +7,18 @@
 
 int execute_instruction(decoded_instruction_t* decoded, machine_t* machine) {
   switch(decoded->kind) {
-    case branch: 
+    case BRANCH: 
       branch_execute(decoded, machine);
       break;
-    case singledatatransfer: 
+    case SINGLE_DATA_TRANSFER: 
       sdt_execute(decoded, machine);
-      break:
-    case multiply: 
+      break;
+    case MULTIPLY: 
       multiply_execute(decoded, machine);
-      break:
-    case dataprocess: 
+      break;
+    case DATA_PROCESS: 
       dataprocess_execute(decoded, machine);
-      break:
+      break;
     default: /* Inform of unsupported instruction */
       if (verbose) 
         printf("Incorrect instruction received.\n");
