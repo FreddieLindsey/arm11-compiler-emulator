@@ -2,9 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "assemble_/str_utils.h"
 #include "assemble_/assemble.h"
 #include "assemble_/secondpass.h"
 
+#define MAX_ERROR_STRING_SIZE 128 * sizeof(char)
 #define MAX_LINE_SIZE 512 * sizeof(char)
 #define MEMORY_SIZE 65536
 
@@ -18,28 +20,26 @@ struct symbolTableEntry {
 int main(int argc, char **argv) {
 
   // check correct number of arguments
-  if(argc != 3) {
-    printf("Usage: assemble <input source> <output binary>\n");
-    exit(EXIT_FAILURE);
-  }
+  failif(argc != 3, ERROR_USAGE);
 
   // open file
   FILE *file = fopen(argv[1], "r");
-  if(file == NULL) {
-    printf("File \"%s\" not found\n", argv[1]);
-    exit(EXIT_FAILURE);
-  }
+  failif(file == NULL, ERROR_INPUT_FILE_NOT_FOUND);
 
   // define symbol table
   symbol *symbolTable = malloc(sizeof(symbol));
+  failif(symbolTable == NULL, ERROR_MALLOC);
   symbol *currentSymbol = symbolTable;
 
   // space to hold file contents
   char **filecontents = calloc(MEMORY_SIZE, sizeof(char*));
+  failif(filecontents == NULL, ERROR_CALLOC);
 
   // read file line by line
   int i = 0;
   char *line = (char*) malloc(MAX_LINE_SIZE);
+  failif(line == NULL, ERROR_MALLOC);
+
   while(fgets(line, MAX_LINE_SIZE, file) != NULL) {
 
     // ignore empty lines 
@@ -68,6 +68,7 @@ int main(int argc, char **argv) {
     } else {
       // copy line and add it to filecontents
       char* linedup = malloc(sizeof(line));
+      failif(linedup == NULL, ERROR_MALLOC);
       linedup = strdup(line);
       filecontents[i] = linedup;
       i++;
@@ -82,21 +83,19 @@ int main(int argc, char **argv) {
   
   // allocate space for each 4 byte binary instruction
   unsigned char *binary = calloc(numInstructions*4, 1);
+  failif(binary == NULL, ERROR_CALLOC);
   secondpass(symbolTable, filecontents, binary);
   
   // free memory
   freeTable(symbolTable);
   free(filecontents);
 
-  //printf("\nBinary:\n");
-  //printBinary(binary);
- 
   // write binary to file
   FILE *out = fopen(argv[2], "wb");
-  if(out == NULL) {
-     
-  }
-  fwrite(binary, 1, numInstructions * 4, fopen(argv[2], "wb"));
+  failif(out == NULL, ERROR_OUTPUT_FILE);
+
+  size_t out = fwrite(binary, 1, numInstructions * 4, fopen(argv[2], "wb"));
+  failif(out == 0, ERROR_OUTPUT_FILE_WRITE);
 
   free(binary);
   return EXIT_SUCCESS;
@@ -156,43 +155,6 @@ void printBinary(unsigned char *binary) {
   }
 }
 
-/*
- *  Removes whitespace from the start and end of a string
- */
-void trim(char *str) {
-  trimBefore(str);
-  trimAfter(str);
-}
-
-/*
- *  Removes whitespace from the start of a string
- */
-void trimBefore(char *str) {
-  
-  // find first non-whitespace character
-  char* newstart = str;
-  while(*newstart != '\0' && isspace(*newstart)) {
-    newstart++;
-  }
-
-  // remove everything before [newstart]
-  memmove(str, newstart, strlen(newstart) + 1);
-}
-
-/*
- *  Removes whitespace from the end of a string
- */
-void trimAfter(char *str) {
-  
-  // find last non-whitespace character
-  char *newend = str + strlen(str) - 1;
-  while(newend > str && isspace(*newend)) {
-    newend--;
-  }
-  
-  // end the string here 
-  newend[1] = '\0';
-}
 
 /*
  *  Checks if [str] is a label, returns the label name if true, NULL otherwise
@@ -216,5 +178,44 @@ char *getlabel(char *str) {
     return NULL;
   }
 
+}
+
+/*
+ *  Throws an error given an error code [code]
+ */
+void fail(error_code_t code) {
+  char *error_string = malloc(MAX_ERROR_STRING_SIZE);
+  switch(code) {
+    case ERROR_USAGE:
+      error_string = "Usage: assemble <input source> <output binary>";
+      break;
+    case ERROR_INPUT_FILE_NOT_FOUND:
+      error_string = "Input file not found";
+      break;
+    case ERROR_MALLOC:
+      error_string = "Malloc";
+      break;
+    case ERROR_CALLOC:
+      error_string = "Calloc";
+      break;
+    case ERROR_OUTPUT_FILE:
+      error_string = "Loading output file failed, check directory exists";
+      break;
+    case ERROR_OUTPUT_FILE_WRITE:
+      error_string = "Writing to output file failed";
+      break;
+    default:
+      error_string = "Unknown";
+      break;
+  }
+  fprintf(stdout, "Error: %s\n", error_string);
+  exit(EXIT_FAILURE);
+}
+
+/*
+ *  Throws an error if [cond] is false
+ */
+void failif(int cond, error_code_t code) {
+  if(cond) fail(code);
 }
 

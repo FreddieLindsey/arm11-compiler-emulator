@@ -1,15 +1,9 @@
 #include "../instructions.h"
 #include "build_instruction.h"
+#include "str_utils.h"
 #include "assemble.h"
 #include <stdlib.h>
 #include <string.h>
-
-/* 
- *  Basic string to int function
- */
-int strtoi(char *str){
-  return (int) strtol(str, NULL, 0);
-}
 
 /*
  *  Converts a register string, i.e. "r4" to the registers int value i.e. 4
@@ -25,7 +19,7 @@ int valueToInt(char* str) {
 /*
  *  Given a [str] calculate the operand2 binary
  */
-int operand2(char *str, char *shiftstr) {
+uint8_t operand2(char *str, char *shiftstr) {
   
   // if value is an immediate value
   if(str[0] == '#') {
