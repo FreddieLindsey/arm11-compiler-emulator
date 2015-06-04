@@ -82,9 +82,14 @@ int main(int argc, char **argv) {
   fclose(file);
   
   // allocate space for each 4 byte binary instruction
-  unsigned char *binary = calloc(numInstructions*4, 1);
-  failif(binary == NULL, ERROR_CALLOC);
-  secondpass(symbolTable, filecontents, binary);
+  output_data_t *output = malloc(sizeof(output_data_t));
+  output->data = calloc(numInstructions * 4 * 2, 1);
+  output->numInstructions = numInstructions;
+  output->numExtra = 0;
+  failif(output == NULL, ERROR_MALLOC);
+
+  // run secondpass
+  secondpass(symbolTable, filecontents, output);
   
   // free memory
   freeTable(symbolTable);
@@ -94,11 +99,12 @@ int main(int argc, char **argv) {
   FILE *out = fopen(argv[2], "wb");
   failif(out == NULL, ERROR_OUTPUT_FILE);
 
-  size_t writesize = 
-      fwrite(binary, 1, numInstructions * 4, fopen(argv[2], "wb"));
+  size_t writesize = fwrite(output->data, 1, 
+     (numInstructions + output->numExtra) * 4, fopen(argv[2], "wb"));
   failif(writesize == 0, ERROR_OUTPUT_FILE_WRITE);
 
-  free(binary);
+  free(output->data);
+  free(output);
   return EXIT_SUCCESS;
 }
 

@@ -1,9 +1,10 @@
 #include "../instructions.h"
+#include "assemble.h"
 #include "build_instruction.h"
 #include "str_utils.h"
-#include "assemble.h"
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #define MAX_ARG_SIZE 512 * sizeof(char)
 
@@ -12,8 +13,21 @@
  *  Also works with immediate numbers such as "#2"
  */
 int valueToInt(char* str) {
+  
+  char *newstr = malloc(sizeof(str)); 
+  strcpy(newstr, str);
+
+  // removes first & last char if its a [ or ]
+  if(str[0] == '[') str++;
+  if(newstr[strlen(newstr) - 1] == ']') newstr[strlen(newstr) - 1] = '\0';
+ 
+  if(strcmp(newstr, "[PC") == 0) return 15;
+
+  free(newstr);
+
   // increments str to remove first charcter, then converts to int
-  return strtoi(++str);
+  if(!isdigit(str[0])) str++;
+  return strtoi(str);
 }
 
 /* DATA TRANSFER */
@@ -26,7 +40,7 @@ uint16_t operand2(char *str, char *shiftstr) {
   instruction_t value = valueToInt(str);
   
   // if value is an immediate value
-  if(str[0] == '#') {
+  if(str[0] == '#' || str[0] == '=') {
     
     // shift to fit in 8`bits
     int shift = 0;
@@ -151,7 +165,7 @@ decoded_instruction_t *build_mov(char **args) {
   decoded_instruction_t *ins = malloc(sizeof(decoded_instruction_t));
   ins->kind = DATA_PROCESS;
   ins->opcode = 13;
-  ins->immediate = args[1][0] == '#' ? 1 : 0;
+  ins->immediate = args[1][0] == '#' || args[1][0] == '=' ? 1 : 0;
   ins->set = 0;
   ins->regn = 0;
   ins->regd = valueToInt(args[0]);
@@ -184,7 +198,80 @@ decoded_instruction_t *build_mla(char **args) {
 }
 
 /* SINGLE DATA TRANSFER */
-// TODO
+
+decoded_instruction_t *build_sdt(char **args, int loadstore) {
+  decoded_instruction_t *ins = malloc(sizeof(decoded_instruction_t));  
+  ins->kind = SINGLE_DATA_TRANSFER;
+  
+  // offset set only if arg2 exists
+  int offset = args[2] == NULL ? 0 : valueToInt(args[2]);
+
+  // check for negative offset
+  if(offset < 0) {
+    ins->offset = -1 * offset;
+    ins->up = 0;
+  } else {
+    ins->offset = offset;
+    ins->up = 1;
+  }
+
+  // P bit set if there is only 1 argument, or if the 2nd ends with a ']' 
+  ins->prepost = (args[2] == NULL || args[2][strlen(args[2]) - 1] == ']') ?
+      1 : 0;
+
+  ins->immediate = args[2] != NULL && args[2][0] == 'r' ? 1 : 0;
+  ins->loadstore = loadstore;
+  ins->regn = valueToInt(args[1]);
+  ins->regd = valueToInt(args[0]);
+
+  return ins;
+}
+
+decoded_instruction_t *build_ldr(char **args, output_data_t *out, int pos) {
+
+  decoded_instruction_t *ins;
+  if(args[1][0] == '=') {
+    int value = valueToInt(args[1]);
+    
+    // if value fits in mov instruction
+    if(value <= 0xFF) {
+      return build_mov(args);
+    } else {
+      // load extra data into the end of the binary file
+      out->data[(out->numInstructions + out->numExtra) * 4] = value;
+      out->data[(out->numInstructions + out->numExtra) * 4 + 1] = value >> 8;
+      out->data[(out->numInstructions + out->numExtra) * 4 + 2] = value >> 16;
+      out->data[(out->numInstructions + out->numExtra) * 4 + 3] = value >> 24;
+
+      // calculate offset 
+      int offset = (out->numInstructions - pos + out->numExtra) * 4 - 8;
+      out->numExtra++;
+
+      // build new arguments + recurse
+      char *newarg1 = malloc(MAX_ARG_SIZE * sizeof(char));
+      char *newarg2 = malloc(MAX_ARG_SIZE * sizeof(char));
+      sprintf(newarg1, "[PC");
+      sprintf(newarg2, "%d]", offset);
+      args[1] = newarg1; 
+      args[2] = newarg2; 
+      decoded_instruction_t *result = build_ldr(args, out, pos);
+      free(newarg1);
+      free(newarg2);
+      return result;
+    }
+  } else if(args[1][0] == '[') {
+    return build_sdt(args, 1); 
+  } else {
+    printf("Error: invalid argument to ldr \"%s\"\n", args[1]);
+    exit(EXIT_FAILURE);
+  }
+
+  return ins;
+}
+
+decoded_instruction_t *build_str(char **args, output_data_t *out, int pos) {
+  return build_sdt(args, 0);
+}
 
 /* BRANCH */
   

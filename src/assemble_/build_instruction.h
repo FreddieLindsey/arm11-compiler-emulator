@@ -18,6 +18,8 @@ decoded_instruction_t *build_mul(char **args);
 decoded_instruction_t *build_mla(char **args);
 
 /* SINGLE DATA TRANSFER */
+decoded_instruction_t *build_ldr(char **args, output_data_t *out, int pos);
+decoded_instruction_t *build_str(char **args, output_data_t *out, int pos);
 
 /* BRANCH */
 decoded_instruction_t *build_beq(int offset);

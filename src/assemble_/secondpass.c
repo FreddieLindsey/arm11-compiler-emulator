@@ -11,9 +11,10 @@
  *    Performs the second pass on code written in [filecontents]
  *  [table] is a linked list of symbolTableEntry objects
  *  [filecontents] is an array of strings which should be converted to binary
- *  and written to [out]
+ *  and written to [out], any extra binary used by ldr instructions in stored
+ *  in [extradata]
  */
-void secondpass(symbol *table, char **filecontents, unsigned char *out) {
+void secondpass(symbol *table, char **filecontents, output_data_t *out) {
   instruction_str_t *instructions = 
       calloc(NUM_INSTRUCTIONS, sizeof(instruction_str_t));
   failif(instructions == NULL, ERROR_CALLOC);
@@ -53,7 +54,7 @@ void secondpass(symbol *table, char **filecontents, unsigned char *out) {
       decoded = ins->buildInstruction(
           getSymbolAddressByName(table, argstr) - i - 2);
     } else {
-      if(ins->type == DATA_PROCESS) {
+      if(ins->type == DATA_PROCESS || ins->type == SINGLE_DATA_TRANSFER) {
         numargs = 4;
       } else {
         // count number of args
@@ -66,15 +67,20 @@ void secondpass(symbol *table, char **filecontents, unsigned char *out) {
       // split args from string to array
       args = calloc(numargs, sizeof(char*));
       char *arg = strtok(argstr, ",");
-      int i;
-      for(i = 0; arg != NULL; i++) {
-        args[i] = arg;
-        trim(args[i]);
+      int j;
+      for(j = 0; arg != NULL; j++) {
+        args[j] = arg;
+        trim(args[j]);
         arg = strtok(NULL, ",");
       }
       
       // create binary and free arguments
-      decoded = ins->buildInstruction(args);
+      if(ins->type == SINGLE_DATA_TRANSFER) {
+        decoded = ins->buildInstruction(args, out, i);   
+      } else {
+        decoded = ins->buildInstruction(args);
+      }
+
       free(args);
     }
 
@@ -82,10 +88,10 @@ void secondpass(symbol *table, char **filecontents, unsigned char *out) {
     free(decoded);
 
     // write to output in reverse order
-    out[4*i] = binary;
-    out[4*i+1] = binary >> 8;
-    out[4*i+2] = binary >> 16;
-    out[4*i+3] = binary >> 24;
+    out->data[4*i] = binary;
+    out->data[4*i+1] = binary >> 8;
+    out->data[4*i+2] = binary >> 16;
+    out->data[4*i+3] = binary >> 24;
     
   }
 }
@@ -145,8 +151,10 @@ void initInstructions(instruction_str_t *instructions) {
   // SINGLE DATA TRANSFER
   for(int i = 12; i <= 13; i++) instructions[i].type = SINGLE_DATA_TRANSFER;
   instructions[12].mnemonic = "ldr";
+  instructions[12].buildInstruction = &build_ldr;
   
   instructions[13].mnemonic = "str";
+  instructions[13].buildInstruction = &build_str;
   
   // BRANCH
   for(int i = 14; i <= 20; i++) instructions[i].type = BRANCH;

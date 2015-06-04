@@ -15,7 +15,7 @@ typedef struct instruction_str {
   instruction_kt type;
 } instruction_str_t;
 
-void secondpass(symbol *table, char **filecontents, unsigned char *out);
+void secondpass(symbol *table, char **filecontents, output_data_t *out);
 void initInstructions(instruction_str_t* instructions);
 instruction_str_t *getInstruction(instruction_str_t* instructions,
     char *mnemonic);

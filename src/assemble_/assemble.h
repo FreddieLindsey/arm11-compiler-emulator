@@ -9,6 +9,12 @@ typedef enum error_code {
   ERROR_CALLOC, ERROR_OUTPUT_FILE, ERROR_OUTPUT_FILE_WRITE
 } error_code_t;
 
+typedef struct output_data {
+  unsigned char *data;
+  int numInstructions;
+  int numExtra;
+} output_data_t;
+
 void freeTable(symbol *table);
 int getSymbolAddressByName(symbol *table, char *name);
 void printTable(symbol *table);

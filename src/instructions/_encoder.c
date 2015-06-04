@@ -34,7 +34,21 @@ instruction_t encode_multiply(decoded_instruction_t *decoded) {
 }
 
 instruction_t encode_single_data_transfer(decoded_instruction_t *decoded) {
-  return 0;
+  const int OFFSET_COND = 0x1C;
+  const int OFFSET_1 = 0x1A;
+  const int OFFSET_I = 0x19;
+  const int OFFSET_P = 0x18;
+  const int OFFSET_U = 0x17;
+  const int OFFSET_L = 0x14;
+  const int OFFSET_RN = 0x10;
+  const int OFFSET_RD = 0xC;
+  const int OFFSET_OFFSET = 0x0;
+  const int COND = 14;
+  return (COND << OFFSET_COND) | (0x1 << OFFSET_1) | 
+      (decoded->immediate << OFFSET_I) | (decoded->prepost << OFFSET_P) |
+      (decoded->up << OFFSET_U) | (decoded->loadstore << OFFSET_L) |
+      (decoded->regn << OFFSET_RN) | (decoded->regd << OFFSET_RD) |
+      (decoded->offset << OFFSET_OFFSET);
 }
 
 instruction_t encode_branch(decoded_instruction_t *decoded) {
