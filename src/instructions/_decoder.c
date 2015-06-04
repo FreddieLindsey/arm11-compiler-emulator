@@ -5,18 +5,20 @@
 #include "../emulate.h"
 #include "../instructions.h"
 
-static const int MAX_INSTR_SIZE=10
-
-char** instruction_decode(instruction_t instruction) {
-  char** result = calloc(sizeof(instruction_t) * CHAR_BIT, MAX_INSTR_SIZE);
-  if (result[0] != NULL) {
-    printf("Result currently:\t");
-    int i = 0;
-    while (result[i] != NULL) {
-    printf("%s\t", result[i]);
-      ++i;
-    }
-    printf("\n");
+decoded_instruction_t* instruction_decode(instruction_t instruction) {
+  int is_branch   = (instruction & 0x0f000000) == 0x0a000000;
+  int is_sdt      = (instruction & 0x0c000000) == 0x04000000;
+  int is_mult     = (instruction & 0x0e000000) == 0 &&
+                    (instruction & 0x000000f0) == 0x00000090;
+  int is_datproc  = 1; /* TODO Implementation necessary before submitting */
+  if (is_branch) {
+    return branch_decode(instruction);
+  } else if (is_sdt) {
+    return singledatatransfer_decode(instruction);
+  } else if (is_mult) {
+    return multiply_decode(instruction);
+  } else if (is_datproc) {
+    return dataprocess_decode(instruction);
   }
-  return result;
+  return NULL;
 }

@@ -5,9 +5,22 @@
 #include "../emulate.h"
 #include "../instructions.h"
 
-int instruction_execute(char** instruction_decoded, machine_t *machine) {
-  if (instruction_decoded != NULL) {
-    if (strcmp(instruction_decoded[0], "halt") == 0) return -1;
+int execute_instruction(decoded_instruction_t* decoded, machine_t* machine) {
+  switch(decoded->kind) {
+    case BRANCH: 
+      branch_execute(decoded, machine);
+      break;
+    case SINGLE_DATA_TRANSFER: 
+      sdt_execute(decoded, machine);
+      break;
+    case MULTIPLY: 
+      multiply_execute(decoded, machine);
+      break;
+    case DATA_PROCESS: 
+      dataprocess_execute(decoded, machine);
+      break;
+    default: /* Inform of unsupported instruction */
+      if (verbose) 
+        printf("Incorrect instruction received.\n");
   }
-  return 0;
 }
