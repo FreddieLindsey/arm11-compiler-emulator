@@ -94,8 +94,9 @@ int main(int argc, char **argv) {
   FILE *out = fopen(argv[2], "wb");
   failif(out == NULL, ERROR_OUTPUT_FILE);
 
-  size_t out = fwrite(binary, 1, numInstructions * 4, fopen(argv[2], "wb"));
-  failif(out == 0, ERROR_OUTPUT_FILE_WRITE);
+  size_t writesize = 
+      fwrite(binary, 1, numInstructions * 4, fopen(argv[2], "wb"));
+  failif(writesize == 0, ERROR_OUTPUT_FILE_WRITE);
 
   free(binary);
   return EXIT_SUCCESS;
@@ -126,7 +127,8 @@ int getSymbolAddressByName(symbol *table, char *name) {
     current = current->next;
   }
   printf("Error: symbol \"%s\" not found\n", name);
-  exit(0);
+  fail(ERROR_NONE);
+  return 0;
 }
 
 /*
@@ -154,7 +156,6 @@ void printBinary(unsigned char *binary) {
         binary[i], binary[i+1], binary[i+2], binary[i+3]);
   }
 }
-
 
 /*
  *  Checks if [str] is a label, returns the label name if true, NULL otherwise
@@ -186,6 +187,7 @@ char *getlabel(char *str) {
 void fail(error_code_t code) {
   char *error_string = malloc(MAX_ERROR_STRING_SIZE);
   switch(code) {
+    case ERROR_NONE: break;
     case ERROR_USAGE:
       error_string = "Usage: assemble <input source> <output binary>";
       break;

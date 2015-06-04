@@ -19,7 +19,7 @@ int valueToInt(char* str) {
 /*
  *  Given a [str] calculate the operand2 binary
  */
-uint8_t operand2(char *str, char *shiftstr) {
+uint16_t operand2(char *str, char *shiftstr) {
   
   // if value is an immediate value
   if(str[0] == '#') {

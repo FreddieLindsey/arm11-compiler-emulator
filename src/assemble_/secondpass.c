@@ -16,6 +16,7 @@
 void secondpass(symbol *table, char **filecontents, unsigned char *out) {
   instruction_str_t *instructions = 
       calloc(NUM_INSTRUCTIONS, sizeof(instruction_str_t));
+  failif(instructions == NULL, ERROR_CALLOC);
   initInstructions(instructions);
 
   // for each instruction
@@ -23,7 +24,7 @@ void secondpass(symbol *table, char **filecontents, unsigned char *out) {
 
     // find first space in string
     char *firstspace = strchr(filecontents[i], ' ');
-
+    
     if(firstspace == NULL) {
       printf("Error: instruction \"%s\" expected arguments\n", 
           filecontents[i]);

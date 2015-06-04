@@ -5,8 +5,8 @@
 struct symbol;
 typedef struct symbolTableEntry symbol;
 typedef enum error_code {
-  ERROR_USAGE, ERROR_INPUT_FILE_NOT_FOUND, ERROR_MALLOC, ERROR_CALLOC,
-  ERROR_OUTPUT_FILE, ERROR_OUTPUT_FILE_WRITE
+  ERROR_NONE, ERROR_USAGE, ERROR_INPUT_FILE_NOT_FOUND, ERROR_MALLOC,
+  ERROR_CALLOC, ERROR_OUTPUT_FILE, ERROR_OUTPUT_FILE_WRITE
 } error_code_t;
 
 void freeTable(symbol *table);
