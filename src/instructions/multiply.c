@@ -25,16 +25,22 @@ decoded_instruction_t* multiply_decode(instruction_t *instruction) {
     calloc(sizeof(decoded_instruction_t), 1);
   decoded_instruction->kind       = MULTIPLY;
   decoded_instruction->cond       = (*instruction & 0xf0000000) >> 28;
-  decoded_instruction->immediate  = (*instruction & 0x02000000) != 0;
-  decoded_instruction->prepost    = (*instruction & 0x01000000) != 0;
-  decoded_instruction->up         = (*instruction & 0x00800000) != 0;
-  decoded_instruction->loadstore  = (*instruction & 0x00100000) != 0;
-  decoded_instruction->regn       = (*instruction & 0x000f0000) >> 16;
-  decoded_instruction->regd       = (*instruction & 0x0000f000) >> 12;
-  decoded_instruction->offset     = (*instruction & 0x00000fff);
+  decoded_instruction->accumulate = (*instruction & 0x00200000) != 0;
+  decoded_instruction->set        = (*instruction & 0x00100000) != 0;
+  decoded_instruction->regd       = (*instruction & 0x000f0000) >> 16;
+  decoded_instruction->regn       = (*instruction & 0x0000f000) >> 12;
+  decoded_instruction->regs       = (*instruction & 0x00000f00) >> 8;
+  decoded_instruction->regm       = (*instruction & 0x0000000f);
   return decoded_instruction;
 }
 
 int multiply_execute(decoded_instruction_t* decoded, machine_t* machine) {
+  if (condition_met(decoded, machine) == 0) {
+    machine->registers[decoded->regd] = machine->registers[decoded->regm]
+                                        * machine->registers[decoded->regs];
+    if (decoded->accumulate != 0) {
+      machine->registers[decoded->regd] += machine->registers[decoded->regn];
+    }
+  }
   return 0;
 }
