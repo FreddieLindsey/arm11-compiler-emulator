@@ -38,5 +38,14 @@ decoded_instruction_t* dataprocess_decode(instruction_t *instruction) {
 }
 
 int dataprocess_execute(decoded_instruction_t* decoded, machine_t* machine) {
-  return 0;
+  if (condition_met(decoded, machine) != 0) {
+    switch(decoded->opcode) {
+      case 13:
+        machine->registers[decoded->regd] =
+          *(get_operand(decoded->operand2, decoded->immediate));
+      default:
+        printf("Unsupported instruction %08i\n", decoded->opcode);
+    }
+  }
+  return 1;
 }

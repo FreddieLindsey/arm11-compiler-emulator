@@ -5,6 +5,8 @@
 #include "../emulate.h"
 #include "../instructions.h"
 
+static void rotate(instruction_t* operand, uint8_t rotate);
+
 int instruction_execute(decoded_instruction_t* decoded, machine_t* machine) {
   switch(decoded->kind) {
     case BRANCH:
@@ -48,5 +50,25 @@ int get_bit(cpsr_bit_t bit, machine_t* machine) {
     default:
       printf("Bit given is unsupported");
       return -1;
+  }
+}
+
+instruction_t* get_operand(instruction_t operand, uint8_t immediate) {
+  instruction_t *operand_o = 0;
+  if (immediate != 0) {
+    *operand_o = (operand & 0x000000ff) << 24;
+    uint8_t rotate_ = (operand & 0x00000f00) >> 8;
+    rotate(operand_o, rotate_);
+  } else {
+
+  }
+  return operand_o;
+}
+
+static void rotate(instruction_t* operand, uint8_t rotate) {
+  int i;
+  for (i = 0; i < rotate * 2; ++i) {
+    instruction_t rotation = (*operand & 0x00000001) << 31;
+    *operand = (*operand >> 1) | rotation;
   }
 }
