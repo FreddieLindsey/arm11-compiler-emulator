@@ -14,10 +14,19 @@ instruction_t branch_encode(decoded_instruction_t *decoded) {
 }
 
 decoded_instruction_t* branch_decode(instruction_t *instruction) {
-  decoded_instruction_t *decoded_instruction = calloc(sizeof(decoded_instruction_t), 1);
+  decoded_instruction_t *decoded_instruction =
+    calloc(sizeof(decoded_instruction_t), 1);
+  decoded_instruction->kind = BRANCH;
+  decoded_instruction->cond = (*instruction & 0xf0000000) >> 28;
+  decoded_instruction->offset = (*instruction & 0x00ffffff) << 2;
   return decoded_instruction;
 }
 
 int branch_execute(decoded_instruction_t* decoded, machine_t* machine) {
-  return 0;
+  if (condition_met(decoded, machine) == 0) {
+    machine->pipeline->decoded = NULL;
+    machine->pipeline->fetched = 0;
+    machine->pc += decoded->offset;
+    return 0;
+  }
 }

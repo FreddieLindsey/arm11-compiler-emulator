@@ -1,5 +1,5 @@
 #ifndef _INSTRUCTIONS
-#define _INSTRUCTIONS 
+#define _INSTRUCTIONS
 
 #include <stdint.h>
 #include <stdio.h>
@@ -13,6 +13,11 @@ typedef uint8_t memchunk_t;
 typedef uint32_t addressable_t;
 typedef uint32_t instruction_t;
 
+/*  CONDITIONS */
+typedef enum condition_k {
+
+} condition_kt;
+
 /*  INSTRUCTION TYPES */
 typedef enum instruction_k {
   DATA_PROCESS, MULTIPLY, SINGLE_DATA_TRANSFER, BRANCH, LSL, ANDEQ
@@ -21,7 +26,7 @@ typedef enum instruction_k {
 /*  DECODED INSTRUCTION */
 typedef struct decoded_instruction {
   instruction_kt kind;
-  uint8_t cond;
+  condition_kt cond;
   uint8_t opcode;
   uint8_t immediate;
   uint8_t accumulate;
@@ -34,7 +39,7 @@ typedef struct decoded_instruction {
   instruction_t operand2;
   uint8_t regs;
   uint8_t regm;
-  instruction_t offset;
+  int32_t offset;
 } decoded_instruction_t;
 
 /*  PIPELINE */
@@ -58,8 +63,9 @@ typedef struct machine {
  *  FUNCTION PROTOTYPES
  */
 
-/*  EXECUTOR */
+/*  EXECUTOR (include auxilary functions in source) */
 int instruction_execute(decoded_instruction_t* decoded, machine_t* machine);
+int condition_met(condition_kt cond, machine_t* machine);
 
 /*  ENCODER */
 instruction_t instruction_encode(decoded_instruction_t* decoded);

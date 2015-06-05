@@ -24,3 +24,11 @@ int instruction_execute(decoded_instruction_t* decoded, machine_t* machine) {
       return 0;
   }
 }
+
+int condition_met(decoded_instruction_t* decoded, machine_t* machine) {
+  switch(decoded->cond) {
+    default:
+      printf("Condition %08i not understood!\n", decoded->cond);
+      return -1;
+  }
+}
