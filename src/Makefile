@@ -11,6 +11,7 @@ ASS_OBJS = assemble_/str_utils.c assemble_/secondpass.c \
 assemble_/build_instruction.c instructions/_encoder.c \
 instructions/dataprocess.c instructions/multiply.c \
 instructions/singledatatransfer.c instructions/branch.c \
+instructions/_executor.c \
 assemble.c
 ASS_OUT = assemble
 assemble:

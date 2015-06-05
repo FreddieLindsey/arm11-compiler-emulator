@@ -10,7 +10,8 @@
 
 /*
  *  Converts a register string, i.e. "r4" to the registers int value i.e. 4
- *  Also works with immediate numbers such as "#2"
+ *  Also works with immediate numbers such as "#2" and values with square 
+ *  brackets e.g. "[r3]"
  */
 int valueToInt(char* str) {
   
@@ -21,6 +22,7 @@ int valueToInt(char* str) {
   if(str[0] == '[') str++;
   if(newstr[strlen(newstr) - 1] == ']') newstr[strlen(newstr) - 1] = '\0';
  
+  // deal with PC
   if(strcmp(newstr, "[PC") == 0) return 15;
 
   free(newstr);
@@ -220,7 +222,6 @@ decoded_instruction_t *build_sdt(char **args, int loadstore) {
     if(args[3] == NULL) {
       int offset = valueToInt(args[2]); 
 
-
       // if offset is a register
       if(args[2][0] == 'r') {
         ins->immediate = 1;
@@ -256,6 +257,8 @@ decoded_instruction_t *build_sdt(char **args, int loadstore) {
 decoded_instruction_t *build_ldr(char **args, output_data_t *out, int pos) {
 
   decoded_instruction_t *ins;
+  
+  // constant values
   if(args[1][0] == '=') {
     int value = valueToInt(args[1]);
     
