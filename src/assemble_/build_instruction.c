@@ -327,7 +327,7 @@ decoded_instruction_t *build_andeq(void) {
 
 decoded_instruction_t *build_lsl(char **args) {
   
-  // create space for 4 arguments
+  // create space for 4 arguments to simulate mov instruction
   char **movargs = malloc(3 * sizeof(char*));
   failif(movargs == NULL, ERROR_MALLOC);
   movargs[0] = args[0];
