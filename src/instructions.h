@@ -1,5 +1,5 @@
 #ifndef _INSTRUCTIONS
-#define _INSTRUCTIONS 
+#define _INSTRUCTIONS
 
 #include <stdint.h>
 #include <stdio.h>
@@ -34,7 +34,7 @@ typedef struct decoded_instruction {
   instruction_t operand2;
   uint8_t regs;
   uint8_t regm;
-  instruction_t offset;
+  signed int32_t offset;
 } decoded_instruction_t;
 
 /*  PIPELINE */
