@@ -58,8 +58,9 @@ typedef struct machine {
  *  FUNCTION PROTOTYPES
  */
 
-/*  EXECUTOR */
+/*  EXECUTOR (include auxilary functions in source) */
 int instruction_execute(decoded_instruction_t* decoded, machine_t* machine);
+// int condition_met(decoded_instruction_t* decoded, machine_t* machine);
 
 /*  ENCODER */
 instruction_t instruction_encode(decoded_instruction_t* decoded);
