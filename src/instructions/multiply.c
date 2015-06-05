@@ -41,6 +41,11 @@ int multiply_execute(decoded_instruction_t* decoded, machine_t* machine) {
     if (decoded->accumulate != 0) {
       machine->registers[decoded->regd] += machine->registers[decoded->regn];
     }
+    if (machine->registers[decoded->regd] == 0) {
+      set_bit(Z, machine);
+    } else if ((machine->registers[decoded->regd] & 0x80000000) != 0) {
+      set_bit(N, machine);
+    }
   }
   return 0;
 }

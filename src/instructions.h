@@ -13,9 +13,14 @@ typedef uint8_t memchunk_t;
 typedef uint32_t addressable_t;
 typedef uint32_t instruction_t;
 
+/*  CPSR BITS */
+typedef enum cpsr_bit {
+  N = 31, Z = 30, C = 29, V = 28
+} cpsr_bit_t;
+
 /*  CONDITIONS */
 typedef enum condition_k {
-
+  eq = 0, ne = 1, ge = 10, lt = 11, gt = 12, le = 13, al = 14
 } condition_kt;
 
 /*  INSTRUCTION TYPES */
@@ -64,8 +69,11 @@ typedef struct machine {
  */
 
 /*  EXECUTOR (include auxilary functions in source) */
+/*  Return 1 when not successful, -1 to halt, 0 for OK */
 int instruction_execute(decoded_instruction_t* decoded, machine_t* machine);
-int condition_met(condition_kt cond, machine_t* machine);
+int condition_met(decoded_instruction_t* decoded, machine_t* machine);
+void set_bit(cpsr_bit_t bit, machine_t* machine);
+int get_bit(cpsr_bit_t bit, machine_t* machine);
 
 /*  ENCODER */
 instruction_t instruction_encode(decoded_instruction_t* decoded);
@@ -80,25 +88,21 @@ instruction_t fetch_instruction_pos_format(machine_t *machine,
 instruction_t fetch_instruction_pos(machine_t *machine, addressable_t mempos);
 
 /*  DATA_PROCESS */
-
 instruction_t dataprocess_encode(decoded_instruction_t *decoded);
 decoded_instruction_t* dataprocess_decode(instruction_t *instruction);
 int dataprocess_execute(decoded_instruction_t* decoded, machine_t* machine);
 
 /*  MULTIPLY */
-
 instruction_t multiply_encode(decoded_instruction_t *decoded);
 decoded_instruction_t* multiply_decode(instruction_t *instruction);
 int multiply_execute(decoded_instruction_t* decoded, machine_t* machine);
 
 /*  SINGLE_DATA_TRANSFER */
-
 instruction_t singledatatransfer_encode(decoded_instruction_t *decoded);
 decoded_instruction_t* singledatatransfer_decode(instruction_t *instruction);
 int singledatatransfer_execute(decoded_instruction_t* decoded, machine_t* machine);
 
 /*  BRANCH */
-
 instruction_t branch_encode(decoded_instruction_t *decoded);
 decoded_instruction_t* branch_decode(instruction_t *instruction);
 int branch_execute(decoded_instruction_t* decoded, machine_t* machine);
