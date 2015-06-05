@@ -23,6 +23,10 @@ typedef enum condition_k {
   eq = 0, ne = 1, ge = 10, lt = 11, gt = 12, le = 13, al = 14
 } condition_kt;
 
+typedef enum shift_k {
+  lsl = 0, lsr = 1, asr = 2, ror = 3
+} shift_t;
+
 /*  INSTRUCTION TYPES */
 typedef enum instruction_k {
   DATA_PROCESS, MULTIPLY, SINGLE_DATA_TRANSFER, BRANCH, LSL, ANDEQ
