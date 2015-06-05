@@ -29,4 +29,5 @@ int branch_execute(decoded_instruction_t* decoded, machine_t* machine) {
     machine->pc += decoded->offset;
     return 0;
   }
+  return 1;
 }
