@@ -1,5 +1,5 @@
-#ifndef _DECODER
-#define _DECODER
+#ifndef _INSTRUCTIONS
+#define _INSTRUCTIONS 
 
 #include <stdint.h>
 #include <stdio.h>

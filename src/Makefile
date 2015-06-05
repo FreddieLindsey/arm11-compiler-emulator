@@ -7,7 +7,11 @@ CFLAGS  = -Wall -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
 
 all: assemble emulate
 
-ASS_OBJS = assemble_/str_utils.c assemble_/secondpass.c assemble_/build_instruction.c instructions/_encoder.c assemble.c
+ASS_OBJS = assemble_/str_utils.c assemble_/secondpass.c \
+assemble_/build_instruction.c instructions/_encoder.c \
+instructions/dataprocess.c instructions/multiply.c \
+instructions/singledatatransfer.c instructions/branch.c \
+assemble.c
 ASS_OUT = assemble
 assemble:
 	$(CC) $(CFLAGS) $(ASS_OBJS) -o $(ASS_OUT)

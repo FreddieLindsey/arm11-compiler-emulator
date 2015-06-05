@@ -9,13 +9,13 @@
 instruction_t instruction_encode(decoded_instruction_t *decoded) {
   switch(decoded->kind) {
     case DATA_PROCESS:
-      return encode_data_process(decoded);
+      return dataprocess_encode(decoded);
     case MULTIPLY:
-      return encode_multiply(decoded);
+      return multiply_encode(decoded);
     case SINGLE_DATA_TRANSFER:
-      return encode_single_data_transfer(decoded);
+      return singledatatransfer_encode(decoded);
     case BRANCH:
-      return encode_branch(decoded);
+      return branch_encode(decoded);
     case ANDEQ:
       return 0;
     default:
