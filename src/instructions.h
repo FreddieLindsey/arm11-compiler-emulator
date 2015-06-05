@@ -34,7 +34,7 @@ typedef struct decoded_instruction {
   instruction_t operand2;
   uint8_t regs;
   uint8_t regm;
-  signed int32_t offset;
+  int32_t offset;
 } decoded_instruction_t;
 
 /*  PIPELINE */
