@@ -14,12 +14,13 @@ decoded_instruction_t* singledatatransfer_decode(instruction_t *instruction) {
     calloc(sizeof(decoded_instruction_t), 1);
   decoded_instruction->kind       = SINGLE_DATA_TRANSFER;
   decoded_instruction->cond       = (*instruction & 0xf0000000) >> 28;
-  decoded_instruction->accumulate = (*instruction & 0x00200000) != 0;
-  decoded_instruction->set        = (*instruction & 0x00100000) != 0;
-  decoded_instruction->regd       = (*instruction & 0x000f0000) >> 16;
-  decoded_instruction->regn       = (*instruction & 0x0000f000) >> 12;
-  decoded_instruction->regs       = (*instruction & 0x00000f00) >> 8;
-  decoded_instruction->regm       = (*instruction & 0x0000000f);
+  decoded_instruction->immediate  = (*instruction & 0x02000000) != 0;
+  decoded_instruction->prepost    = (*instruction & 0x01000000) != 0;
+  decoded_instruction->up         = (*instruction & 0x00800000) != 0;
+  decoded_instruction->loadstore  = (*instruction & 0x00100000) != 0;
+  decoded_instruction->regn       = (*instruction & 0x000f0000) >> 16;
+  decoded_instruction->regd       = (*instruction & 0x0000f000) >> 12;
+  decoded_instruction->offset     = (*instruction & 0x00000fff);
   return decoded_instruction;
 }
 
