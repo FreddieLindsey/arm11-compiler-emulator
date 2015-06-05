@@ -13,12 +13,12 @@ typedef uint8_t memchunk_t;
 typedef uint32_t addressable_t;
 typedef uint32_t instruction_t;
 
-/* INSTRUCTION TYPES */
+/*  INSTRUCTION TYPES */
 typedef enum instruction_k {
   DATA_PROCESS, MULTIPLY, SINGLE_DATA_TRANSFER, BRANCH, LSL, ANDEQ
 } instruction_kt;
 
-/* INSTRUCTION */
+/*  DECODED INSTRUCTION */
 typedef struct decoded_instruction {
   instruction_kt kind;
   uint8_t cond;
@@ -31,16 +31,16 @@ typedef struct decoded_instruction {
   uint8_t loadstore;
   uint8_t regd;
   uint8_t regn;
-  uint16_t operand2;
+  instruction_t operand2;
   uint8_t regs;
   uint8_t regm;
-  uint32_t offset; 
+  instruction_t offset;
 } decoded_instruction_t;
 
 /*  PIPELINE */
 typedef struct pipeline {
-  char **decoded;
-  instruction_t fetched;
+  decoded_instruction_t* decoded;
+  instruction_t* fetched;
 } pipeline_t;
 
 /*  MACHINE */
@@ -59,18 +59,46 @@ typedef struct machine {
  */
 
 /*  EXECUTOR */
-int instruction_execute(decoded_instruction_t *decoded, machine_t *machine);
+int instruction_execute(decoded_instruction_t* decoded, machine_t* machine);
 
 /*  ENCODER */
 instruction_t instruction_encode(decoded_instruction_t* decoded);
 
 /*  DECODER */
-decoded_instruction_t* instruction_decode(instruction_t instruction);
+decoded_instruction_t* instruction_decode(instruction_t *instruction);
 
 /*  FETCH */
 instruction_t fetch_instruction(machine_t *machine);
-instruction_t fetch_instruction_pos_format(machine_t *machine, 
+instruction_t fetch_instruction_pos_format(machine_t *machine,
   addressable_t mempos);
 instruction_t fetch_instruction_pos(machine_t *machine, addressable_t mempos);
+
+/*  DATA_PROCESS */
+
+instruction_t dataprocess_encode(decoded_instruction_t *decoded);
+decoded_instruction_t* dataprocess_decode(instruction_t *instruction);
+int dataprocess_execute(decoded_instruction_t* decoded, machine_t* machine);
+
+/*  MULTIPLY */
+
+instruction_t multiply_encode(decoded_instruction_t *decoded);
+decoded_instruction_t* multiply_decode(instruction_t *instruction);
+int multiply_execute(decoded_instruction_t* decoded, machine_t* machine);
+
+/*  SINGLE_DATA_TRANSFER */
+
+instruction_t singledatatransfer_encode(decoded_instruction_t *decoded);
+decoded_instruction_t* singledatatransfer_decode(instruction_t *instruction);
+int singledatatransfer_execute(decoded_instruction_t* decoded, machine_t* machine);
+
+/*  BRANCH */
+
+instruction_t branch_encode(decoded_instruction_t *decoded);
+decoded_instruction_t* branch_decode(instruction_t *instruction);
+int branch_execute(decoded_instruction_t* decoded, machine_t* machine);
+
+/*  LSL */
+
+/*  ANDEQ */
 
 #endif

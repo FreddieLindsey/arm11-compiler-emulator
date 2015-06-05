@@ -39,7 +39,7 @@ void run_pipeline(machine_t *machine) {
  *  Returns  0 otherwise.
  */
 static int execute(machine_t *machine) {
-  if (machine->pipeline->decoded[0] != NULL) {
+  if (machine->pipeline->decoded != NULL) {
     return instruction_execute(machine->pipeline->decoded, machine);
   }
   return 0;
@@ -52,5 +52,5 @@ static void decode(machine_t *machine) {
 
 static void fetch(machine_t *machine) {
   /* Set fetched to be the next instruction */
-  machine->pipeline->fetched = fetch_instruction(machine);
+  *(machine->pipeline->fetched) = fetch_instruction(machine);
 }

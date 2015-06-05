@@ -5,11 +5,11 @@
 #include "../emulate.h"
 #include "../instructions.h"
 
-decoded_instruction_t* instruction_decode(instruction_t instruction) {
-  int is_branch   = (instruction & 0x0f000000) == 0x0a000000;
-  int is_sdt      = (instruction & 0x0c000000) == 0x04000000;
-  int is_mult     = (instruction & 0x0e000000) == 0 &&
-                    (instruction & 0x000000f0) == 0x00000090;
+decoded_instruction_t* instruction_decode(instruction_t* instruction) {
+  int is_branch   = (*instruction & 0x0f000000) == 0x0a000000;
+  int is_sdt      = (*instruction & 0x0c000000) == 0x04000000;
+  int is_mult     = (*instruction & 0x0e000000) == 0 &&
+                    (*instruction & 0x000000f0) == 0x00000090;
   int is_datproc  = 1; /* TODO Implementation necessary before submitting */
   if (is_branch) {
     return branch_decode(instruction);

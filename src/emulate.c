@@ -11,15 +11,15 @@
 
 int main(int argc, char** argv) {
 
-  /*  Constant to enable verbose mode */
+  /*  Constant that can be enabled for verbose mode */
   static int verbose = 0;
 
   /*  Check if a file has been given as an argument
       return if not */
   if (argc != 2 && !(argc == 3 && (strcmp(argv[2], "v") == 0))) {
-    usage();
     printf("You have supplied %s arguments.\nEXITING\n",
           (argc < 2) ? "too few" : "too many" );
+    usage();
     exit(EXIT_FAILURE);
   } else if (argc == 3 && (strcmp(argv[2], "v") == 0
                         || strcmp(argv[2], "V") == 0)) {
@@ -27,13 +27,14 @@ int main(int argc, char** argv) {
   }
 
   /*  Check a given filename exists, and return if not */
+  char* filename = basename(argv[1]);
   FILE *file;
   if ((file = fopen(argv[1], "r")) == NULL) {
     perror("Error opening file!");
-    printf("Does the file %s exist?\nEXITING\n", basename(argv[1]));
+    printf("Does the file %s exist?\nEXITING\n", filename);
     exit(EXIT_FAILURE);
   }
-  if (verbose) printf("File opened successfully:\t%s\n", basename(argv[1]));
+  if (verbose) printf("File opened successfully:\t%s\n", filename);
 
   /*  Create and initialise a machine and a pipeline */
   machine_t machine;
@@ -44,9 +45,9 @@ int main(int argc, char** argv) {
   if (verbose) printf("Pipeline initialised.\n");
 
   /*  Load a file into machine memory, then close it */
-  if (verbose) printf("Loading file\t\t\t%s\n", basename(argv[1]));
+  if (verbose) printf("Loading file\t\t\t%s\n", filename);
   loadfile(file, &machine);
-  if (verbose) printf("Loaded file\t\t\t%s\n", basename(argv[1]));
+  if (verbose) printf("Loaded file\t\t\t%s\n", filename);
 
   /*  Print the state of the machine prior to any execution */
   if (verbose) print_machine(&machine);
