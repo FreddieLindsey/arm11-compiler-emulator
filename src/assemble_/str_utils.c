@@ -11,6 +11,13 @@ int strtoi(char *str){
 }
 
 /*
+ *  Returns the last char in a string
+ */
+char lastChar(char *str) {
+  return str[strlen(str) - 1];
+}
+
+/*
  *  Removes whitespace from the start and end of a string
  */
 void trim(char *str) {
