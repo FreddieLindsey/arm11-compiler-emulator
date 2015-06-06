@@ -27,7 +27,6 @@ void close_pipeline(pipeline_t *pipeline) {
 void run_pipeline(machine_t *machine) {
   int result;
   do {
-    printf("\nCycle No.\t%10i\n", *(machine->pc) / 4);
     decode(machine);
     fetch(machine);
     *(machine->pc) += sizeof(instruction_t);

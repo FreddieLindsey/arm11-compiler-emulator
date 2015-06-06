@@ -41,7 +41,6 @@ int dataprocess_execute(decoded_instruction_t* decoded, machine_t* machine) {
   if (condition_met(decoded, machine) != 0) {
     switch(decoded->opcode) {
       case add:
-        printf("Adding\n");
         machine->registers[decoded->regd] =
           machine->registers[decoded->regn] &
           (get_operand(decoded->operand2, decoded->immediate));
@@ -52,7 +51,6 @@ int dataprocess_execute(decoded_instruction_t* decoded, machine_t* machine) {
           (get_operand(decoded->operand2, decoded->immediate));
         break;
       case mov:
-        printf( "Moving\nReg D:\t\t0x%8x\nOperand:\t0x8x\n", get_operand(decoded->operand2, decoded->immediate));
         machine->registers[decoded->regd] =
           (get_operand(decoded->operand2, decoded->immediate));
         break;
