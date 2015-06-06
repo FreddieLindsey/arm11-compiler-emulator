@@ -116,21 +116,21 @@ static int add_execute(decoded_instruction_t* decoded, machine_t* machine) {
 
 static int tst_execute(decoded_instruction_t* decoded, machine_t* machine) {
   instruction_t test =
-    machine->registers[decoded->regn]
+    machine->registers[decoded->regn] &
     get_operand(decoded->operand2, decoded->immediate);
   return 1;
 }
 
 static int teq_execute(decoded_instruction_t* decoded, machine_t* machine) {
   instruction_t test =
-    machine->registers[decoded->regn]
+    machine->registers[decoded->regn] ^
     get_operand(decoded->operand2, decoded->immediate);
   return 1;
 }
 
 static int cmp_execute(decoded_instruction_t* decoded, machine_t* machine) {
   instruction_t test =
-    machine->registers[decoded->regn]
+    machine->registers[decoded->regn] -
     get_operand(decoded->operand2, decoded->immediate);
   return 1;
 }
