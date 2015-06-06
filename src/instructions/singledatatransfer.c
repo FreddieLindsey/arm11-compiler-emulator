@@ -39,16 +39,23 @@ decoded_instruction_t* singledatatransfer_decode(instruction_t *instruction) {
 }
 
 void loaddata(decoded_instruction_t* decoded, machine_t* machine) {
-  //TODO
+machine->registers[decoded->regd] = 
+machine->memory[machine->registers[decoded->regn]]; 
 }
    
 void storedata(decoded_instruction_t* decoded, machine_t* machine) {
-  //TODO
+machine->memory[machine->registers[decoded->regn]] = 
+machine->registers[decoded->regd];
 }
 
 void offsetregister(decoded_instruction_t* decoded, machine_t* machine,
                     int offsetval) {
-  //TODO
+  int temp = machine->registers[decoded->regn];
+  if(-temp > offsetval) {
+    // ERROR MESSAGE OR SOMETHING
+  }
+  temp += offsetval;
+  machine->registers[decoded->regn] = temp;
 }
 
 int singledatatransfer_execute(decoded_instruction_t* decoded,
