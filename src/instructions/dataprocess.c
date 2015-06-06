@@ -118,6 +118,7 @@ static int tst_execute(decoded_instruction_t* decoded, machine_t* machine) {
   instruction_t test =
     machine->registers[decoded->regn] &
     get_operand(decoded->operand2, decoded->immediate);
+  if (test == 0) set_bit(Z, machine);
   return 1;
 }
 
@@ -125,6 +126,7 @@ static int teq_execute(decoded_instruction_t* decoded, machine_t* machine) {
   instruction_t test =
     machine->registers[decoded->regn] ^
     get_operand(decoded->operand2, decoded->immediate);
+  if (test == 0) set_bit(Z, machine);
   return 1;
 }
 
@@ -132,6 +134,7 @@ static int cmp_execute(decoded_instruction_t* decoded, machine_t* machine) {
   instruction_t test =
     machine->registers[decoded->regn] -
     get_operand(decoded->operand2, decoded->immediate);
+  if (test == 0) set_bit(Z, machine);
   return 1;
 }
 
