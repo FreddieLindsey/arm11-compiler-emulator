@@ -51,8 +51,8 @@ machine->registers[decoded->regd];
 void offsetregister(decoded_instruction_t* decoded, machine_t* machine,
                     int offsetval) {
   int temp = machine->registers[decoded->regn];
-  if(-temp > offsetval) {
-    // ERROR MESSAGE OR SOMETHING
+  if(-temp > offsetval || (temp + offsetval) > 65536) {
+    printf("Offset to large causing invalid memory address");
   }
   temp += offsetval;
   machine->registers[decoded->regn] = temp;
