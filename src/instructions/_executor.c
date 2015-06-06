@@ -141,7 +141,7 @@ instruction_t get_operand_singledatatransfer(instruction_t operand,
                                              uint8_t immediate,
                                              machine_t* machine) {
   instruction_t operand_o = 0;
-  if (immediate != 0) {
+  if (immediate != 1) {
     operand_o = (operand & 0x000000ff);
     uint8_t rotate_ = (operand & 0x00000f00) >> 8;
     while (rotate_ > 0) {
