@@ -86,7 +86,9 @@ int instruction_execute(decoded_instruction_t* decoded, machine_t* machine);
 int condition_met(decoded_instruction_t* decoded, machine_t* machine);
 void set_bit(cpsr_bit_t bit, machine_t* machine);
 int get_bit(cpsr_bit_t bit, machine_t* machine);
-instruction_t get_operand_dataprocess(instruction_t operand, uint8_t immediate);
+instruction_t get_operand_dataprocess(instruction_t operand,
+                                      uint8_t immediate,
+                                      machine_t* machine);
 
 /*  ENCODER */
 instruction_t instruction_encode(decoded_instruction_t* decoded);
