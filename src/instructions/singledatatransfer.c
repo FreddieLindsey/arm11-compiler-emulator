@@ -16,7 +16,7 @@ instruction_t singledatatransfer_encode(decoded_instruction_t *decoded) {
   const int OFFSET_RD = 0xC;
   const int OFFSET_OFFSET = 0x0;
   const int COND = 14;
-  return (COND << OFFSET_COND) | (0x1 << OFFSET_1) | 
+  return (COND << OFFSET_COND) | (0x1 << OFFSET_1) |
       (decoded->immediate << OFFSET_I) | (decoded->prepost << OFFSET_P) |
       (decoded->up << OFFSET_U) | (decoded->loadstore << OFFSET_L) |
       (decoded->regn << OFFSET_RN) | (decoded->regd << OFFSET_RD) |
@@ -39,12 +39,12 @@ decoded_instruction_t* singledatatransfer_decode(instruction_t *instruction) {
 }
 
 void loaddata(decoded_instruction_t* decoded, machine_t* machine) {
-machine->registers[decoded->regd] = 
-machine->memory[machine->registers[decoded->regn]]; 
+machine->registers[decoded->regd] =
+machine->memory[machine->registers[decoded->regn]];
 }
-   
+
 void storedata(decoded_instruction_t* decoded, machine_t* machine) {
-machine->memory[machine->registers[decoded->regn]] = 
+machine->memory[machine->registers[decoded->regn]] =
 machine->registers[decoded->regd];
 }
 
@@ -62,8 +62,8 @@ int singledatatransfer_execute(decoded_instruction_t* decoded,
                                 machine_t* machine) {
   if(condition_met(decoded, machine) != 0) {
 
-    int offsetvalue = 
-                   get_operand(decoded->offset, decoded->immediate);
+    int offsetvalue =
+      get_operand_dataprocess(decoded->offset, decoded->immediate);
     offsetvalue = (decoded->up == 1) ? offsetvalue : -offsetvalue;
 
     if(decoded->loadstore != 0) {
@@ -77,7 +77,7 @@ int singledatatransfer_execute(decoded_instruction_t* decoded,
         loaddata(decoded, machine);
         offsetregister(decoded, machine, offsetvalue);
       }
-    } else { 
+    } else {
       if(decoded->prepost != 0) {
         //offset register, store into memory then reset register
         offsetregister(decoded, machine, offsetvalue);
@@ -88,7 +88,7 @@ int singledatatransfer_execute(decoded_instruction_t* decoded,
         storedata(decoded, machine);
         offsetregister(decoded, machine, offsetvalue);
       }
-    } 
+    }
   }
-  return 1; 
+  return 1;
 }
