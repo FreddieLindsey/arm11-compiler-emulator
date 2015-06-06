@@ -40,11 +40,11 @@ decoded_instruction_t* singledatatransfer_decode(instruction_t *instruction) {
 
 void loaddata(decoded_instruction_t* decoded, machine_t* machine) {
   instruction_t loaded = 0; 
-  instruction_t address = machine->registers[decoded->regn];
-  loaded = machine->memory[address]     << 24 |
-           machine->memory[address + 1] << 16 |
-           machine->memory[address + 2] << 8  |
-           machine->memory[address + 3];
+  instruction_t address = machine->registers[decoded->regn] + 2;
+  loaded = machine->memory[address - 1] << 24 |
+           machine->memory[address - 2] << 16 |
+           machine->memory[address - 3] << 8  |
+           machine->memory[address - 4];
   machine->registers[decoded->regd] = loaded;
 }
 
