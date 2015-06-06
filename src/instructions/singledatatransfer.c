@@ -39,8 +39,8 @@ decoded_instruction_t* singledatatransfer_decode(instruction_t *instruction) {
 }
 
 void loaddata(decoded_instruction_t* decoded, machine_t* machine) {
-  instruction_t loaded = 0; 
-  instruction_t address = machine->registers[decoded->regn] / 2;
+  instruction_t loaded = 0;  
+  instruction_t address = machine->registers[decoded->regn];
   loaded = machine->memory[address + 3] << 24 |
            machine->memory[address + 2] << 16 |
            machine->memory[address + 1] << 8  |
@@ -50,7 +50,7 @@ void loaddata(decoded_instruction_t* decoded, machine_t* machine) {
 
 void storedata(decoded_instruction_t* decoded, machine_t* machine) {
   instruction_t value = machine->registers[decoded->regd];
-  instruction_t address = machine->registers[decoded->regn] / 2;
+  instruction_t address = machine->registers[decoded->regn];
   machine->memory[address + 3] = (value << 24);
   machine->memory[address + 2] = (value << 16) - (0 | (value << 24));
   machine->memory[address + 1] = (value << 8)  - (0 | (value << 16));
@@ -71,10 +71,10 @@ int singledatatransfer_execute(decoded_instruction_t* decoded,
                                 machine_t* machine) {
   if(condition_met(decoded, machine) != 0) {
 
-    int offsetvalue =
-      get_operand(decoded->offset, (decoded->immediate != 0),
-                                     machine);
-    offsetvalue = (decoded->up == 1) ? offsetvalue : -offsetvalue;
+    int offsetvalue = (decoded->immediate == 1) ? 
+        get_operand(decoded->offset, 1, machine) : decoded->offset;
+
+    offsetvalue = ((decoded->up == 1) ? offsetvalue : -offsetvalue);
 
     if(decoded->loadstore != 0) {
       if(decoded->prepost != 0) {
