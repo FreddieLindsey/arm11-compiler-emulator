@@ -84,13 +84,13 @@ int get_bit(cpsr_bit_t bit, machine_t* machine) {
 }
 
 instruction_t get_operand_dataprocess(instruction_t operand, uint8_t immediate) {
-  return 1;
   instruction_t operand_o = 0;
   if (immediate != 0) {
     operand_o = (operand & 0x000000ff) << 24;
     uint8_t rotate_ = (operand & 0x00000f00) >> 8;
     while (rotate_ > 0) shift(ror, &operand_o); --rotate_;
   } else {
+    return 1;
     if ((operand & 0x00000008) != 0) {
       operand_o = 1;
     } else {
