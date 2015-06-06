@@ -7,6 +7,7 @@
 #include <ctype.h>
 
 #define MAX_ARG_SIZE 512 * sizeof(char)
+#define PC_ADDRESS 15
 
 /*
  *  Converts a register string, i.e. "r4" to the registers int value i.e. 4
@@ -14,23 +15,39 @@
  *  brackets e.g. "[r3]"
  */
 int valueToInt(char* str) {
-  
-  char *newstr = malloc(sizeof(str)); 
-  strcpy(newstr, str);
+  char *copy = strdup(str);
+  char *copyOrig = copy;
 
-  // removes first & last char if its a [ or ]
-  if(str[0] == '[') str++;
-  if(newstr[strlen(newstr) - 1] == ']') newstr[strlen(newstr) - 1] = '\0';
- 
-  // deal with PC
-  if(strcmp(newstr, "[PC") == 0) return 15;
+  // remove starting [ and ending ]
+  if(copy[0] == '[') copy++;
+  if(lastChar(copy) == ']') copy[strlen(copy) - 1] = '\0'; 
 
-  free(newstr);
+  // check for PC
+  if(strcmp(copy, "PC") == 0) return PC_ADDRESS;
 
-  // increments str to remove first charcter, then converts to int
-  if(!isdigit(str[0])) str++;
-  return strtoi(str);
+  // remove first char if its not numeric
+  if(!isdigit(copy[0])) copy++;
+
+  int result = strtoi(str);
+  free(copyOrig);
+  return result;
 }
+
+
+//  char *newstr = strdup(str);
+//
+//  // removes first & last char if its a [ or ]
+//  if(str[0] == '[') str++;
+//  if(newstr[strlen(newstr) - 1] == ']') newstr[strlen(newstr) - 1] = '\0';
+// 
+//  // deal with PC
+//  if(strcmp(newstr, "[PC") == 0) return 15;
+//
+//  free(newstr);
+//
+//  // increments str to remove first charcter, then converts to int
+//  if(!isdigit(str[0])) str++;
+//  return strtoi(str);
 
 uint16_t build_shift(char *shiftstr) {
   
