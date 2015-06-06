@@ -67,6 +67,18 @@ int condition_met(decoded_instruction_t* decoded, machine_t* machine) {
 
 void set_bit(cpsr_bit_t bit, machine_t* machine) {
   switch(bit) {
+    case N:
+      *(machine->cpsr) |= 0x80000000;
+      break;
+    case Z:
+      *(machine->cpsr) |= 0x40000000; 
+      break;
+    case C:
+      *(machine->cpsr) |= 0x20000000;
+      break;
+    case V:
+      *(machine->cpsr) |= 0x10000000;
+      break;
     default:
       printf("Bit given is unsupported\n");
   }
@@ -77,6 +89,12 @@ int get_bit(cpsr_bit_t bit, machine_t* machine) {
   switch(bit) {
     case N:
       return (*(machine->cpsr) & 0x80000000) != 0;
+    case Z:
+      return (*(machine->cpsr) & 0x40000000) != 0;
+    case C:
+      return (*(machine->cpsr) & 0x20000000) != 0;
+    case V:
+      return (*(machine->cpsr) & 0x10000000) != 0;
     default:
       printf("Bit given is unsupported\n");
       return -1;
