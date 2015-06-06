@@ -45,14 +45,17 @@ int dataprocess_execute(decoded_instruction_t* decoded, machine_t* machine) {
         machine->registers[decoded->regd] =
           machine->registers[decoded->regn] &
           (get_operand(decoded->operand2, decoded->immediate));
+        break;
       case eor:
         machine->registers[decoded->regd] =
           machine->registers[decoded->regn] ^
           (get_operand(decoded->operand2, decoded->immediate));
+        break;
       case mov:
         printf( "Moving\nReg D:\t\t0x%8x\nOperand:\t0x8x\n", get_operand(decoded->operand2, decoded->immediate));
         machine->registers[decoded->regd] =
           (get_operand(decoded->operand2, decoded->immediate));
+        break;
       default:
         printf("Unsupported data process instruction:\t0x%04x\n",
                   decoded->opcode);

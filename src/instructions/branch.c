@@ -25,9 +25,8 @@ decoded_instruction_t* branch_decode(instruction_t *instruction) {
 int branch_execute(decoded_instruction_t* decoded, machine_t* machine) {
   if (condition_met(decoded, machine) == 0) {
     machine->pipeline->decoded = NULL;
-    machine->pipeline->fetched = 0;
+    machine->pipeline->fetched = NULL;
     machine->pc += decoded->offset;
-    return 0;
   }
-  return 1;
+  return 0;
 }
