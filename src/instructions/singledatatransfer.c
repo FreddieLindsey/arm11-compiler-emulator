@@ -42,7 +42,8 @@ decoded_instruction_t* singledatatransfer_decode(instruction_t *instruction) {
 
 void loaddata(decoded_instruction_t* decoded, machine_t* machine) {
   instruction_t loaded = 0;  
-  instruction_t address = machine->registers[decoded->regn];
+  instruction_t address = decoded->regn == PC_REG ? *machine->pc : 
+      machine->registers[decoded->regn];
   loaded = machine->memory[address + 3] << 24 |
            machine->memory[address + 2] << 16 |
            machine->memory[address + 1] << 8  |
@@ -61,12 +62,8 @@ void storedata(decoded_instruction_t* decoded, machine_t* machine) {
 
 void offsetregister(decoded_instruction_t* decoded, machine_t* machine,
                     int offsetval) {
-  int temp = machine->registers[decoded->regn];
-  if(-temp > offsetval || (temp + offsetval) > 65536) {
-    printf("Offset to large causing invalid memory address");
-  }
-  temp += offsetval;
-  machine->registers[decoded->regn] = temp;
+  if(decoded->regn == PC_REG) *machine->pc += offsetval;
+  else machine->registers[decoded->regn] += offsetval;
 }
 
 int singledatatransfer_execute(decoded_instruction_t* decoded,
@@ -76,8 +73,6 @@ int singledatatransfer_execute(decoded_instruction_t* decoded,
     int offsetvalue = (decoded->immediate == 1) ? 
         get_operand(decoded->offset, 0, machine) : decoded->offset;
     offsetvalue = ((decoded->up == 1) ? offsetvalue : -offsetvalue);
-
-    if(decoded->regn == PC_REG) offsetvalue += 8;
 
     if(decoded->loadstore != 0) {
       if(decoded->prepost != 0) {
@@ -91,6 +86,7 @@ int singledatatransfer_execute(decoded_instruction_t* decoded,
         offsetregister(decoded, machine, offsetvalue);
       }
     } else {
+      if(decoded->regn == PC_REG) offsetvalue += 8;
       if(decoded->prepost != 0) {
         //offset register, store into memory then reset register
         offsetregister(decoded, machine, offsetvalue);
