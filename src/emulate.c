@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
   pipeline_t pipeline;
   init_machine(&machine);
   if (verbose) printf("Machine initialised.\n");
-  init_pipeline(&pipeline);
+  init_pipeline(&pipeline, &machine);
   if (verbose) printf("Pipeline initialised.\n");
 
   /*  Load a file into machine memory, then close it */

@@ -40,11 +40,20 @@ decoded_instruction_t* dataprocess_decode(instruction_t *instruction) {
 int dataprocess_execute(decoded_instruction_t* decoded, machine_t* machine) {
   if (condition_met(decoded, machine) != 0) {
     switch(decoded->opcode) {
-      case 13:
+      case add:
+        machine->registers[decoded->regd] =
+          machine->registers[decoded->regn] &
+          *(get_operand(decoded->operand2, decoded->immediate));
+      case eor:
+        machine->registers[decoded->regd] =
+          machine->registers[decoded->regn] ^
+          *(get_operand(decoded->operand2, decoded->immediate));
+      case mov:
         machine->registers[decoded->regd] =
           *(get_operand(decoded->operand2, decoded->immediate));
       default:
-        printf("Unsupported instruction %08i\n", decoded->opcode);
+        printf("Unsupported data process instruction:\t%08i\n",
+                  decoded->opcode);
     }
   }
   return 1;

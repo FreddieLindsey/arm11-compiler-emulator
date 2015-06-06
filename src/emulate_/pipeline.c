@@ -12,9 +12,8 @@ static int execute(machine_t *machine);
 static void decode(machine_t *machine);
 static void fetch(machine_t *machine);
 
-void init_pipeline(pipeline_t *pipeline) {
+void init_pipeline(pipeline_t *pipeline, machine_t *machine) {
   pipeline->decoded = NULL;
-  pipeline->fetched = 0;
 }
 
 void close_pipeline(pipeline_t *pipeline) {
@@ -28,6 +27,7 @@ void run_pipeline(machine_t *machine) {
   int result;
   do {
     decode(machine);
+    print_decoded(*(machine->pipeline->decoded));
     fetch(machine);
     *(machine->pc) += sizeof(instruction_t);
     result = execute(machine);
@@ -47,10 +47,10 @@ static int execute(machine_t *machine) {
 
 static void decode(machine_t *machine) {
   machine->pipeline->decoded =
-    instruction_decode(machine->pipeline->fetched);
+    instruction_decode(&(machine->pipeline->fetched));
 }
 
 static void fetch(machine_t *machine) {
   /* Set fetched to be the next instruction */
-  *(machine->pipeline->fetched) = fetch_instruction(machine);
+  machine->pipeline->fetched = fetch_instruction(machine);
 }

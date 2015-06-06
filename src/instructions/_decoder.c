@@ -22,3 +22,21 @@ decoded_instruction_t* instruction_decode(instruction_t* instruction) {
   }
   return NULL;
 }
+
+void print_decoded(decoded_instruction_t decoded) {
+  printf("0x%08x\n", decoded.kind);
+  printf("0x%08x\n", decoded.cond);
+  printf("0x%08x\n", decoded.opcode);
+  printf("0x%08x\n", decoded.immediate);
+  printf("0x%08x\n", decoded.accumulate);
+  printf("0x%08x\n", decoded.set);
+  printf("0x%08x\n", decoded.prepost);
+  printf("0x%08x\n", decoded.up);
+  printf("0x%08x\n", decoded.loadstore);
+  printf("0x%08x\n", decoded.regd);
+  printf("0x%08x\n", decoded.regn);
+  printf("0x%08x\n", decoded.operand2);
+  printf("0x%08x\n", decoded.regs);
+  printf("0x%08x\n", decoded.regm);
+  printf("0x%08x\n", decoded.offset);
+}

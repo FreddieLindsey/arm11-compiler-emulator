@@ -31,11 +31,27 @@ int instruction_execute(decoded_instruction_t* decoded, machine_t* machine) {
   }
 }
 
+/*
+ *  Returns  1 if condition met
+ *  Returns  0 if condition NOT met
+ *  Returns -1 if condition NOT understood
+ */
 int condition_met(decoded_instruction_t* decoded, machine_t* machine) {
   switch(decoded->cond) {
-    case eq: return get_bit(Z, machine);
-    case ne: return get_bit(Z, machine) ? 0: 1;
-
+    case eq:
+      return get_bit(Z, machine);
+    case ne:
+      return !get_bit(Z, machine);
+    case ge:
+      return get_bit(N, machine) == get_bit(V, machine);
+    case lt:
+      return get_bit(N, machine) != get_bit(V, machine);
+    case gt:
+      return !get_bit(Z, machine) && get_bit(N, machine) == get_bit(V, machine);
+    case le:
+      return get_bit(Z, machine) || get_bit(N, machine) != get_bit(V, machine);
+    case al:
+      return 1;
     default:
       printf("Condition %08i not understood!\n", decoded->cond);
       return -1;
@@ -45,14 +61,17 @@ int condition_met(decoded_instruction_t* decoded, machine_t* machine) {
 void set_bit(cpsr_bit_t bit, machine_t* machine) {
   switch(bit) {
     default:
-      printf("Bit given is unsupported");
+      printf("Bit given is unsupported\n");
   }
 }
 
 int get_bit(cpsr_bit_t bit, machine_t* machine) {
+  printf("Bit:\t0x%08x\n", bit);
   switch(bit) {
+    case N:
+      return (*(machine->cpsr) & 0x80000000) != 0;
     default:
-      printf("Bit given is unsupported");
+      printf("Bit given is unsupported\n");
       return -1;
   }
 }

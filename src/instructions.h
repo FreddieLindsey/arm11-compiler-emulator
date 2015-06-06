@@ -23,9 +23,16 @@ typedef enum condition_k {
   eq = 0, ne = 1, ge = 10, lt = 11, gt = 12, le = 13, al = 14
 } condition_kt;
 
+/*  SHIFT TYPES */
 typedef enum shift_k {
   lsl = 0, lsr = 1, asr = 2, ror = 3
 } shift_t;
+
+/* DATA PROCESS OPCODES */
+typedef enum opcode {
+  and = 0, eor = 1, sub = 2, rsb = 3, add = 4,
+  tst = 8, teq = 9, cmp = 10, orr = 12, mov = 13
+} opcode_t;
 
 /*  INSTRUCTION TYPES */
 typedef enum instruction_k {
@@ -36,7 +43,7 @@ typedef enum instruction_k {
 typedef struct decoded_instruction {
   instruction_kt kind;
   condition_kt cond;
-  uint8_t opcode;
+  opcode_t opcode;
   uint8_t immediate;
   uint8_t accumulate;
   uint8_t set;
@@ -54,7 +61,7 @@ typedef struct decoded_instruction {
 /*  PIPELINE */
 typedef struct pipeline {
   decoded_instruction_t* decoded;
-  instruction_t* fetched;
+  instruction_t fetched;
 } pipeline_t;
 
 /*  MACHINE */
@@ -85,6 +92,7 @@ instruction_t instruction_encode(decoded_instruction_t* decoded);
 
 /*  DECODER */
 decoded_instruction_t* instruction_decode(instruction_t *instruction);
+void print_decoded(decoded_instruction_t decoded);
 
 /*  FETCH */
 instruction_t fetch_instruction(machine_t *machine);
