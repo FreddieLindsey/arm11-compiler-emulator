@@ -28,6 +28,7 @@ int main(int argc, char **argv) {
 
   // define symbol table
   symbol *symbolTable = malloc(sizeof(symbol));
+  memset(symbolTable, 0, sizeof(symbol));
   failif(symbolTable == NULL, ERROR_MALLOC);
   symbol *currentSymbol = symbolTable;
 
@@ -64,12 +65,11 @@ int main(int argc, char **argv) {
       currentSymbol->name = strdup(label);
       currentSymbol->address = i; 
       currentSymbol->next = malloc(sizeof(symbol));
+      memset(currentSymbol->next, 0, sizeof(symbol));
       currentSymbol = currentSymbol->next;
     } else {
       // copy line and add it to filecontents
-      char* linedup = malloc(sizeof(line));
-      failif(linedup == NULL, ERROR_MALLOC);
-      linedup = strdup(line);
+      char *linedup = strdup(line);
       filecontents[i] = linedup;
       i++;
     }
@@ -93,6 +93,9 @@ int main(int argc, char **argv) {
   
   // free memory
   freeTable(symbolTable);
+  for(int i = 0; i < MEMORY_SIZE; i++) {
+    free(filecontents[i]);
+  }
   free(filecontents);
 
   // write binary to file
@@ -114,8 +117,9 @@ int main(int argc, char **argv) {
  */
 void freeTable(symbol *table) {
   symbol *next, *current = table;
-  while(current->next != NULL) {
+  while(current != NULL) {
     next = current->next;
+    free(current->name);
     free(current);
     current = next;
   }
