@@ -49,9 +49,13 @@ void loaddata(decoded_instruction_t* decoded, machine_t* machine) {
 }
 
 void storedata(decoded_instruction_t* decoded, machine_t* machine) {
-machine->memory[machine->registers[decoded->regn]] =
-machine->registers[decoded->regd];
-}
+  instruction_t value = machine->registers[decoded->regd];
+  instruction_t address = machine->registers[decoded->regn] / 2;
+  machine->memory[address + 3] = (value << 24);
+  machine->memory[address + 2] = (value << 16) - (0 | (value << 24));
+  machine->memory[address + 1] = (value << 8)  - (0 | (value << 16));
+  machine->memory[address]     = value - (0 | (value << 8)); 
+} 
 
 void offsetregister(decoded_instruction_t* decoded, machine_t* machine,
                     int offsetval) {
