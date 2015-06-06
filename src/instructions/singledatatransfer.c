@@ -44,7 +44,7 @@ void loaddata(decoded_instruction_t* decoded, machine_t* machine) {
   loaded = machine->memory[address]     << 24 |
            machine->memory[address + 1] << 16 |
            machine->memory[address + 2] << 8  |
-           machine->memory[address + 3]
+           machine->memory[address + 3];
   machine->registers[decoded->regd] = loaded;
 }
 
