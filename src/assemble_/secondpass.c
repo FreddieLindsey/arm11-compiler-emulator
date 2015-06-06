@@ -47,13 +47,15 @@ void secondpass(symbol *table, char **filecontents, output_data_t *out) {
       exit(EXIT_FAILURE);
     }
  
-    int numargs;
-    char **args;
     decoded_instruction_t *decoded;
     if(ins->type == BRANCH) {
       decoded = ins->buildInstruction(
           getSymbolAddressByName(table, argstr) - i - 2);
     } else {
+
+      int numargs;
+      char **args;
+
       if(ins->type == DATA_PROCESS || ins->type == SINGLE_DATA_TRANSFER) {
         numargs = 4;
       } else {
@@ -94,6 +96,8 @@ void secondpass(symbol *table, char **filecontents, output_data_t *out) {
     out->data[4*i+3] = binary >> 24;
     
   }
+
+  free(instructions);
 }
 
 instruction_str_t *getInstruction(instruction_str_t *instructions, 

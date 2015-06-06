@@ -38,7 +38,50 @@ decoded_instruction_t* singledatatransfer_decode(instruction_t *instruction) {
   return decoded_instruction;
 }
 
+void loaddata(decoded_instruction_t* decoded, machine_t* machine) {
+  //TODO
+}
+   
+void storedata(decoded_instruction_t* decoded, machine_t* machine) {
+  //TODO
+}
+
+void offsetregister(decoded_instruction_t* decoded, machine_t* machine,
+                    int offsetval) {
+  //TODO
+}
+
 int singledatatransfer_execute(decoded_instruction_t* decoded,
                                 machine_t* machine) {
-  return 0;
+  if(condition_met(decoded, machine) != 0) {
+
+    int offsetvalue = 
+                   get_operand(decoded->offset, decoded->immediate);
+    offsetvalue = (decoded->up == 1) ? offsetvalue : -offsetvalue;
+
+    if(decoded->loadstore != 0) {
+      if(decoded->prepost != 0) {
+        //offset register, load data then reset register
+        offsetregister(decoded, machine, offsetvalue);
+        loaddata(decoded, machine);
+        offsetregister(decoded, machine, -offsetvalue);
+      } else {
+        //load data then offset register
+        loaddata(decoded, machine);
+        offsetregister(decoded, machine, offsetvalue);
+      }
+    } else { 
+      if(decoded->prepost != 0) {
+        //offset register, store into memory then reset register
+        offsetregister(decoded, machine, offsetvalue);
+        storedata(decoded, machine);
+        offsetregister(decoded, machine, -offsetvalue);
+      } else {
+        //store into memory then offset register
+        storedata(decoded, machine);
+        offsetregister(decoded, machine, offsetvalue);
+      }
+    } 
+  }
+  return 1; 
 }
