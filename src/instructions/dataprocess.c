@@ -41,18 +41,20 @@ int dataprocess_execute(decoded_instruction_t* decoded, machine_t* machine) {
   if (condition_met(decoded, machine) != 0) {
     switch(decoded->opcode) {
       case add:
+        printf("Adding\n");
         machine->registers[decoded->regd] =
           machine->registers[decoded->regn] &
-          *(get_operand(decoded->operand2, decoded->immediate));
+          (get_operand(decoded->operand2, decoded->immediate));
       case eor:
         machine->registers[decoded->regd] =
           machine->registers[decoded->regn] ^
-          *(get_operand(decoded->operand2, decoded->immediate));
+          (get_operand(decoded->operand2, decoded->immediate));
       case mov:
+        printf( "Moving\nReg D:\t\t0x%8x\nOperand:\t0x8x\n", get_operand(decoded->operand2, decoded->immediate));
         machine->registers[decoded->regd] =
-          *(get_operand(decoded->operand2, decoded->immediate));
+          (get_operand(decoded->operand2, decoded->immediate));
       default:
-        printf("Unsupported data process instruction:\t%08i\n",
+        printf("Unsupported data process instruction:\t0x%04x\n",
                   decoded->opcode);
     }
   }

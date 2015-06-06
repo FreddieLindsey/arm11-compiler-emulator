@@ -7,7 +7,6 @@
  *  TYPEDEFS / STRUCTS / UNIONS
  */
 
-
 /*
  *  FUNCTION PROTOTYPES
  */

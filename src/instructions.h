@@ -36,7 +36,8 @@ typedef enum opcode {
 
 /*  INSTRUCTION TYPES */
 typedef enum instruction_k {
-  DATA_PROCESS, MULTIPLY, SINGLE_DATA_TRANSFER, BRANCH, LSL, ANDEQ
+  NULL_DECODE, HALT, DATA_PROCESS, MULTIPLY,
+  SINGLE_DATA_TRANSFER, BRANCH, LSL, ANDEQ
 } instruction_kt;
 
 /*  DECODED INSTRUCTION */
@@ -61,7 +62,7 @@ typedef struct decoded_instruction {
 /*  PIPELINE */
 typedef struct pipeline {
   decoded_instruction_t* decoded;
-  instruction_t fetched;
+  instruction_t* fetched;
 } pipeline_t;
 
 /*  MACHINE */
@@ -85,7 +86,7 @@ int instruction_execute(decoded_instruction_t* decoded, machine_t* machine);
 int condition_met(decoded_instruction_t* decoded, machine_t* machine);
 void set_bit(cpsr_bit_t bit, machine_t* machine);
 int get_bit(cpsr_bit_t bit, machine_t* machine);
-instruction_t* get_operand(instruction_t operand, uint8_t immediate);
+instruction_t get_operand(instruction_t operand, uint8_t immediate);
 
 /*  ENCODER */
 instruction_t instruction_encode(decoded_instruction_t* decoded);
