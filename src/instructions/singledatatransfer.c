@@ -63,7 +63,7 @@ int singledatatransfer_execute(decoded_instruction_t* decoded,
   if(condition_met(decoded, machine) != 0) {
 
     int offsetvalue =
-      get_operand_singledatatransfer(decoded->offset, decoded->immediate,
+      get_operand(decoded->offset, (decoded->immediate != 0),
                                      machine);
     offsetvalue = (decoded->up == 1) ? offsetvalue : -offsetvalue;
 
