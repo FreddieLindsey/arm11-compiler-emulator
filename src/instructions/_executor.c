@@ -119,6 +119,42 @@ instruction_t get_operand_dataprocess(instruction_t operand,
   return operand_o;
 }
 
+instruction_t get_operand_singledatatransfer(instruction_t operand,
+                                             uint8_t immediate,
+                                             machine_t* machine) {
+  instruction_t operand_o = 0;
+  if (immediate != 0) {
+    operand_o = (operand & 0x000000ff);
+    uint8_t rotate_ = (operand & 0x00000f00) >> 8;
+    while (rotate_ > 0) {
+      shift(ror, &operand_o);
+      shift(ror, &operand_o);
+      --rotate_;
+    }
+  } else {
+    if ((operand & 0x00000010) != 0) {
+      uint8_t rotate_ =
+        machine->registers[(operand & 0x00000f00) >> 7] &
+        0x0000000f;
+      shift_t shift_ = (operand & 0x00000060) >> 5;
+      operand_o = machine->registers[(operand & 0x0000000f)];
+      while (rotate_ > 0) {
+        shift(shift_, &operand_o);
+        --rotate_;
+      }
+    } else {
+      instruction_t rotate_ = (operand & 0x00000f80) >> 7;
+      shift_t shift_ = (operand & 0x00000060) >> 5;
+      operand_o = machine->registers[(operand & 0x0000000f)];
+      while (rotate_ > 0) {
+        shift(shift_, &operand_o);
+        --rotate_;
+      }
+    }
+  }
+  return operand_o;
+}
+
 static void shift(shift_t shift_, instruction_t* operand) {
   switch(shift_) {
     case lsl:
