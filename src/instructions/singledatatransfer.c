@@ -53,13 +53,13 @@ void offsetregister(decoded_instruction_t* decoded, machine_t* machine,
 
 int singledatatransfer_execute(decoded_instruction_t* decoded,
                                 machine_t* machine) {
-  if(condition_met(decoded, machine != 0)) {
+  if(condition_met(decoded, machine) != 0) {
 
     int offsetvalue = 
                    get_operand(decoded->offset, decoded->immediate);
     offsetvalue = (decoded->up == 1) ? offsetvalue : -offsetvalue;
 
-    if(decoded_loadstore != 0) {
+    if(decoded->loadstore != 0) {
       if(decoded->prepost != 0) {
         //offset register, load data then reset register
         offsetregister(decoded, machine, offsetvalue);
