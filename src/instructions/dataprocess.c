@@ -5,6 +5,17 @@
 #include "../emulate.h"
 #include "../instructions.h"
 
+static int and_execute(decoded_instruction_t* decoded, machine_t* machine);
+static int eor_execute(decoded_instruction_t* decoded, machine_t* machine);
+static int sub_execute(decoded_instruction_t* decoded, machine_t* machine);
+static int rsb_execute(decoded_instruction_t* decoded, machine_t* machine);
+static int add_execute(decoded_instruction_t* decoded, machine_t* machine);
+static int tst_execute(decoded_instruction_t* decoded, machine_t* machine);
+static int teq_execute(decoded_instruction_t* decoded, machine_t* machine);
+static int cmp_execute(decoded_instruction_t* decoded, machine_t* machine);
+static int orr_execute(decoded_instruction_t* decoded, machine_t* machine);
+static int mov_execute(decoded_instruction_t* decoded, machine_t* machine);
+
 /*
  *  Functions to encode the different types of instruction
  */
@@ -40,24 +51,102 @@ decoded_instruction_t* dataprocess_decode(instruction_t *instruction) {
 int dataprocess_execute(decoded_instruction_t* decoded, machine_t* machine) {
   if (condition_met(decoded, machine) != 0) {
     switch(decoded->opcode) {
-      case add:
-        machine->registers[decoded->regd] =
-          machine->registers[decoded->regn] &
-          (get_operand(decoded->operand2, decoded->immediate));
-        break;
+      case and:
+        return and_execute(decoded, machine);
       case eor:
-        machine->registers[decoded->regd] =
-          machine->registers[decoded->regn] ^
-          (get_operand(decoded->operand2, decoded->immediate));
-        break;
+        return eor_execute(decoded, machine);
+      case sub:
+        return sub_execute(decoded, machine);
+      case rsb:
+        return rsb_execute(decoded, machine);
+      case add:
+        return add_execute(decoded, machine);
+      case tst:
+        return tst_execute(decoded, machine);
+      case teq:
+        return teq_execute(decoded, machine);
+      case cmp:
+        return cmp_execute(decoded, machine);
+      case orr:
+        return orr_execute(decoded, machine);
       case mov:
-        machine->registers[decoded->regd] =
-          (get_operand(decoded->operand2, decoded->immediate));
-        break;
+        return mov_execute(decoded, machine);
       default:
         printf("Unsupported data process instruction:\t0x%04x\n",
                   decoded->opcode);
     }
   }
+  return 1;
+}
+
+static int and_execute(decoded_instruction_t* decoded, machine_t* machine) {
+  machine->registers[decoded->regd] =
+    machine->registers[decoded->regn] &
+    get_operand(decoded->operand2, decoded->immediate);
+  return 1;
+}
+
+static int eor_execute(decoded_instruction_t* decoded, machine_t* machine) {
+  machine->registers[decoded->regd] =
+    machine->registers[decoded->regn] ^
+    get_operand(decoded->operand2, decoded->immediate);
+  return 1;
+}
+
+static int sub_execute(decoded_instruction_t* decoded, machine_t* machine) {
+  machine->registers[decoded->regd] =
+    machine->registers[decoded->regn] -
+    get_operand(decoded->operand2, decoded->immediate);
+  return 1;
+}
+
+static int rsb_execute(decoded_instruction_t* decoded, machine_t* machine) {
+  machine->registers[decoded->regd] =
+    get_operand(decoded->operand2, decoded->immediate) -
+    machine->registers[decoded->regn];
+  return 1;
+}
+
+static int add_execute(decoded_instruction_t* decoded, machine_t* machine) {
+  machine->registers[decoded->regd] =
+    machine->registers[decoded->regn] +
+    get_operand(decoded->operand2, decoded->immediate);
+  return 1;
+}
+
+static int tst_execute(decoded_instruction_t* decoded, machine_t* machine) {
+  instruction_t test =
+    machine->registers[decoded->regn] &
+    get_operand(decoded->operand2, decoded->immediate);
+  if (test == 0) set_bit(Z, machine);
+  return 1;
+}
+
+static int teq_execute(decoded_instruction_t* decoded, machine_t* machine) {
+  instruction_t test =
+    machine->registers[decoded->regn] ^
+    get_operand(decoded->operand2, decoded->immediate);
+  if (test == 0) set_bit(Z, machine);
+  return 1;
+}
+
+static int cmp_execute(decoded_instruction_t* decoded, machine_t* machine) {
+  instruction_t test =
+    machine->registers[decoded->regn] -
+    get_operand(decoded->operand2, decoded->immediate);
+  if (test == 0) set_bit(Z, machine);
+  return 1;
+}
+
+static int orr_execute(decoded_instruction_t* decoded, machine_t* machine) {
+  machine->registers[decoded->regd] =
+    machine->registers[decoded->regn] |
+    get_operand(decoded->operand2, decoded->immediate);
+  return 1;
+}
+
+static int mov_execute(decoded_instruction_t* decoded, machine_t* machine) {
+  machine->registers[decoded->regd] =
+    get_operand(decoded->operand2, decoded->immediate);
   return 1;
 }
