@@ -28,26 +28,10 @@ int valueToInt(char* str) {
   // remove first char if its not numeric
   if(!isdigit(copy[0])) copy++;
 
-  int result = strtoi(str);
+  int result = strtoi(copy);
   free(copyOrig);
   return result;
 }
-
-
-//  char *newstr = strdup(str);
-//
-//  // removes first & last char if its a [ or ]
-//  if(str[0] == '[') str++;
-//  if(newstr[strlen(newstr) - 1] == ']') newstr[strlen(newstr) - 1] = '\0';
-// 
-//  // deal with PC
-//  if(strcmp(newstr, "[PC") == 0) return 15;
-//
-//  free(newstr);
-//
-//  // increments str to remove first charcter, then converts to int
-//  if(!isdigit(str[0])) str++;
-//  return strtoi(str);
 
 uint16_t build_shift(char *shiftstr) {
   
