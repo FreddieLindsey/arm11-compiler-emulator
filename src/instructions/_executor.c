@@ -92,6 +92,7 @@ instruction_t get_operand_dataprocess(instruction_t operand,
     uint8_t rotate_ = (operand & 0x00000f00) >> 8;
     while (rotate_ > 0) {
       shift(ror, &operand_o);
+      shift(ror, &operand_o);
       --rotate_;
     }
   } else {

@@ -35,7 +35,7 @@ decoded_instruction_t* multiply_decode(instruction_t *instruction) {
 }
 
 int multiply_execute(decoded_instruction_t* decoded, machine_t* machine) {
-  if (condition_met(decoded, machine) == 0) {
+  if (condition_met(decoded, machine) != 0) {
     machine->registers[decoded->regd] = machine->registers[decoded->regm]
                                         * machine->registers[decoded->regs];
     if (decoded->accumulate != 0) {
