@@ -5,6 +5,8 @@
 #include "../emulate.h"
 #include "../instructions.h"
 
+#define PC_REG 15
+
 instruction_t singledatatransfer_encode(decoded_instruction_t *decoded) {
   const int OFFSET_COND = 0x1C;
   const int OFFSET_1 = 0x1A;
@@ -51,10 +53,10 @@ void loaddata(decoded_instruction_t* decoded, machine_t* machine) {
 void storedata(decoded_instruction_t* decoded, machine_t* machine) {
   instruction_t value = machine->registers[decoded->regd];
   instruction_t address = machine->registers[decoded->regn];
-  machine->memory[address + 3] = (value << 24);
-  machine->memory[address + 2] = (value << 16) - (0 | (value << 24));
-  machine->memory[address + 1] = (value << 8)  - (0 | (value << 16));
-  machine->memory[address]     = value - (0 | (value << 8)); 
+  machine->memory[address + 3] = (value & (0xFF << 24)) >> 24;
+  machine->memory[address + 2] = (value & (0xFF << 16)) >> 16;
+  machine->memory[address + 1] = (value & (0xFF << 8)) >> 8;
+  machine->memory[address]     = value & 0xFF; 
 } 
 
 void offsetregister(decoded_instruction_t* decoded, machine_t* machine,
@@ -74,6 +76,8 @@ int singledatatransfer_execute(decoded_instruction_t* decoded,
     int offsetvalue = (decoded->immediate == 1) ? 
         get_operand(decoded->offset, 0, machine) : decoded->offset;
     offsetvalue = ((decoded->up == 1) ? offsetvalue : -offsetvalue);
+
+    if(decoded->regn == PC_REG) offsetvalue += 8;
 
     if(decoded->loadstore != 0) {
       if(decoded->prepost != 0) {
