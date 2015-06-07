@@ -65,19 +65,35 @@ int condition_met(decoded_instruction_t* decoded, machine_t* machine) {
   }
 }
 
-void set_bit(cpsr_bit_t bit, machine_t* machine) {
+void set_bit(cpsr_bit_t bit, machine_t* machine, int boolean) {
   switch(bit) {
     case N:
-      *(machine->cpsr) |= 0x80000000;
+      if (boolean != 0) {
+        *(machine->cpsr) |= 0x80000000;
+      } else {
+        *(machine->cpsr) &= 0x7fffffff;
+      }
       break;
     case Z:
-      *(machine->cpsr) |= 0x40000000;
+      if (boolean != 0) {
+        *(machine->cpsr) |= 0x40000000;
+      } else {
+        *(machine->cpsr) &= 0xbfffffff;
+      }
       break;
     case C:
-      *(machine->cpsr) |= 0x20000000;
+      if (boolean != 0) {
+        *(machine->cpsr) |= 0x20000000;
+      } else {
+        *(machine->cpsr) &= 0xdfffffff;
+      }
       break;
     case V:
-      *(machine->cpsr) |= 0x10000000;
+      if (boolean != 0) {
+        *(machine->cpsr) |= 0x10000000;
+      } else {
+        *(machine->cpsr) &= 0xefffffff;
+      }
       break;
     default:
       printf("Bit given is unsupported\n");

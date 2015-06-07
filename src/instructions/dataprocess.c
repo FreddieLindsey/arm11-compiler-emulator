@@ -83,6 +83,16 @@ static int and_execute(decoded_instruction_t* decoded, machine_t* machine) {
   machine->registers[decoded->regd] =
     machine->registers[decoded->regn] &
     get_operand(decoded->operand2, decoded->immediate, machine);
+  if (decoded->set) {
+    set_bit(N, machine,
+        (machine->registers[decoded->regn] & 0x80000000) != 0);
+    set_bit(Z, machine, machine->registers[decoded->regn] == 0);
+    set_bit(C, machine,
+        (machine->registers[decoded->regn] &
+        get_operand(decoded->operand2, decoded->immediate, machine)) >
+        0xffffffff);
+
+  }
   return 1;
 }
 
@@ -111,6 +121,14 @@ static int add_execute(decoded_instruction_t* decoded, machine_t* machine) {
   machine->registers[decoded->regd] =
     machine->registers[decoded->regn] +
     get_operand(decoded->operand2, decoded->immediate, machine);
+  if (decoded->set) {
+    set_bit(N, machine, (machine->registers[decoded->regd] & 0x80000000) != 0);
+    set_bit(Z, machine, machine->registers[decoded->regd] != 0);
+    set_bit(C, machine,
+      (machine->registers[decoded->regn] +
+      get_operand(decoded->operand2, decoded->immediate, machine))
+      > 0xffffffff);
+  }
   return 1;
 }
 
@@ -119,7 +137,7 @@ static int tst_execute(decoded_instruction_t* decoded, machine_t* machine) {
     machine->registers[decoded->regn] &
     get_operand(decoded->operand2, decoded->immediate, machine);
   if (decoded->set) {
-    if (test == 0) set_bit(Z, machine);
+    if (test == 0) set_bit(Z, machine, 1);
   }
   return 1;
 }
@@ -128,7 +146,7 @@ static int teq_execute(decoded_instruction_t* decoded, machine_t* machine) {
   instruction_t test =
     machine->registers[decoded->regn] ^
     get_operand(decoded->operand2, decoded->immediate, machine);
-  if (test == 0) set_bit(Z, machine);
+  if (test == 0) set_bit(Z, machine, 1);
   return 1;
 }
 
@@ -136,7 +154,13 @@ static int cmp_execute(decoded_instruction_t* decoded, machine_t* machine) {
   instruction_t test =
     machine->registers[decoded->regn] -
     get_operand(decoded->operand2, decoded->immediate, machine);
-  if (test == 0) set_bit(Z, machine);
+    if (decoded->set) {
+      set_bit(N, machine, (test & 0x80000000) != 0);
+      set_bit(Z, machine, test == 0);
+      set_bit(C, machine,
+        get_operand(decoded->operand2, decoded->immediate, machine) <=
+        machine->registers[decoded->regn]);
+    }
   return 1;
 }
 

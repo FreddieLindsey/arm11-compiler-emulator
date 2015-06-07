@@ -84,7 +84,7 @@ typedef struct machine {
 /*  Return 1 when not successful, -1 to halt, 0 for OK */
 int instruction_execute(decoded_instruction_t* decoded, machine_t* machine);
 int condition_met(decoded_instruction_t* decoded, machine_t* machine);
-void set_bit(cpsr_bit_t bit, machine_t* machine);
+void set_bit(cpsr_bit_t bit, machine_t* machine, int boolean);
 int get_bit(cpsr_bit_t bit, machine_t* machine);
 instruction_t get_operand(instruction_t operand,
                           uint8_t immediate,
@@ -102,6 +102,9 @@ instruction_t fetch_instruction(machine_t *machine);
 instruction_t fetch_instruction_pos_format(machine_t *machine,
   addressable_t mempos);
 instruction_t fetch_instruction_pos(machine_t *machine, addressable_t mempos);
+instruction_t fetch_instruction_mem(machine_t *machine, addressable_t mempos);
+void store_instruction_mem(machine_t *machine, instruction_t *instruction,
+                            addressable_t mempos);
 
 /*  DATA_PROCESS */
 instruction_t dataprocess_encode(decoded_instruction_t *decoded);
