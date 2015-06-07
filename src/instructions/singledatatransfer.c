@@ -5,8 +5,6 @@
 #include "../emulate.h"
 #include "../instructions.h"
 
-#define PC_REG 15
-
 instruction_t singledatatransfer_encode(decoded_instruction_t *decoded) {
   const int OFFSET_COND = 0x1C;
   const int OFFSET_1 = 0x1A;
@@ -40,64 +38,77 @@ decoded_instruction_t* singledatatransfer_decode(instruction_t *instruction) {
   return decoded_instruction;
 }
 
-void loaddata(decoded_instruction_t* decoded, machine_t* machine) {
-  instruction_t loaded = 0;  
-  instruction_t address = decoded->regn == PC_REG ? *machine->pc : 
-      machine->registers[decoded->regn];
-  loaded = machine->memory[address + 3] << 24 |
-           machine->memory[address + 2] << 16 |
-           machine->memory[address + 1] << 8  |
-           machine->memory[address];
-  machine->registers[decoded->regd] = loaded;
+instruction_t fetch_instruction_mem(machine_t *machine, addressable_t mempos) {
+  /* Initialise the instruction to 0, get the memory pointer */
+  instruction_t instruction = 0;
+  memchunk_t *memposptr =
+    &machine->memory[mempos + sizeof(instruction_t) - 1];
+
+  /* Compile the instruction */
+  int j;
+  for (j = 0; j < sizeof(instruction_t); ++j) {
+    instruction |=
+      *(memposptr - j) << ((sizeof(instruction_t) - j - 1) * CHAR_BIT);
+  }
+  return instruction;
 }
 
-void storedata(decoded_instruction_t* decoded, machine_t* machine) {
-  instruction_t value = machine->registers[decoded->regd];
-  instruction_t address = machine->registers[decoded->regn];
-  machine->memory[address + 3] = (value & (0xFF << 24)) >> 24;
-  machine->memory[address + 2] = (value & (0xFF << 16)) >> 16;
-  machine->memory[address + 1] = (value & (0xFF << 8)) >> 8;
-  machine->memory[address]     = value & 0xFF; 
-} 
+void store_instruction_mem(machine_t *machine, instruction_t *instruction,
+                            addressable_t mempos) {
+  /* Initialise the instruction to 0, get the memory pointer */
+  memchunk_t *memposptr =
+    &machine->memory[mempos];
 
-void offsetregister(decoded_instruction_t* decoded, machine_t* machine,
-                    int offsetval) {
-  if(decoded->regn == PC_REG) *machine->pc += offsetval;
-  else machine->registers[decoded->regn] += offsetval;
+  /* Compile the instruction */
+  int j;
+  for (j = 0; j < sizeof(instruction_t); ++j) {
+    *(memposptr + j) =
+      (*instruction >> ((sizeof(instruction_t) - j - 1) * CHAR_BIT))
+      & 0x000000ff;
+  }
+}
+
+int offsetregister(decoded_instruction_t* decoded, machine_t* machine,
+                    instruction_t offsetval, int neg) {
+  addressable_t temp = machine->registers[decoded->regn];
+  if (neg != 0 && temp < offsetval) {
+    printf("Error: Out of bounds memory access at address\n");
+    return -1;
+  }
+  temp += neg != 0 ? - offsetval : offsetval;
+  if (temp > machine->memsize) {
+    printf("Error: Out of bounds memory access at address 0x%08x\n",
+            temp);
+    return -1;
+  }
+  machine->registers[decoded->regn] = temp;
+  return 0;
 }
 
 int singledatatransfer_execute(decoded_instruction_t* decoded,
                                 machine_t* machine) {
-  if(condition_met(decoded, machine) != 0) {
+  if (condition_met(decoded, machine) != 0) {
 
-    int offsetvalue = (decoded->immediate == 1) ? 
-        get_operand(decoded->offset, 0, machine) : decoded->offset;
-    offsetvalue = ((decoded->up == 1) ? offsetvalue : -offsetvalue);
+    instruction_t offsetvalue =
+      (decoded->immediate == 0) ?
+      decoded->offset :
+      get_operand(decoded->offset, 0, machine);
+    int neg = (decoded->up != 0) ? 0 : 1;
 
-    if(decoded->loadstore != 0) {
-      if(decoded->prepost != 0) {
-        //offset register, load data then reset register
-        offsetregister(decoded, machine, offsetvalue);
-        loaddata(decoded, machine);
-        offsetregister(decoded, machine, -offsetvalue);
-      } else {
-        //load data then offset register
-        loaddata(decoded, machine);
-        offsetregister(decoded, machine, offsetvalue);
-      }
+    //offset register, load data then reset register
+    int ok = 1;
+    if (decoded->prepost != 0) ok = offsetregister(decoded, machine,
+                                                    offsetvalue, neg);
+    if (ok != 0) return 1;
+    if (decoded->loadstore != 0) {
+      machine->registers[decoded->regd] =
+        fetch_instruction_mem(machine, machine->registers[decoded->regn]);
     } else {
-      if(decoded->regn == PC_REG) offsetvalue += 8;
-      if(decoded->prepost != 0) {
-        //offset register, store into memory then reset register
-        offsetregister(decoded, machine, offsetvalue);
-        storedata(decoded, machine);
-        offsetregister(decoded, machine, -offsetvalue);
-      } else {
-        //store into memory then offset register
-        storedata(decoded, machine);
-        offsetregister(decoded, machine, offsetvalue);
-      }
+      store_instruction_mem(machine, &(machine->registers[decoded->regd]),
+                            machine->registers[decoded->regn]);
     }
+    offsetregister(decoded, machine, offsetvalue,
+      ((decoded->prepost != 0) ? neg == 0 : neg));
   }
   return 1;
 }

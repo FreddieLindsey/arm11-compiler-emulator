@@ -102,9 +102,6 @@ instruction_t fetch_instruction(machine_t *machine);
 instruction_t fetch_instruction_pos_format(machine_t *machine,
   addressable_t mempos);
 instruction_t fetch_instruction_pos(machine_t *machine, addressable_t mempos);
-instruction_t fetch_instruction_mem(machine_t *machine, addressable_t mempos);
-void store_instruction_mem(machine_t *machine, instruction_t *instruction,
-                            addressable_t mempos);
 
 /*  DATA_PROCESS */
 instruction_t dataprocess_encode(decoded_instruction_t *decoded);
@@ -119,7 +116,11 @@ int multiply_execute(decoded_instruction_t* decoded, machine_t* machine);
 /*  SINGLE_DATA_TRANSFER */
 instruction_t singledatatransfer_encode(decoded_instruction_t *decoded);
 decoded_instruction_t* singledatatransfer_decode(instruction_t *instruction);
-int singledatatransfer_execute(decoded_instruction_t* decoded, machine_t* machine);
+int singledatatransfer_execute(decoded_instruction_t* decoded,
+                                machine_t* machine);
+instruction_t fetch_instruction_mem(machine_t *machine, addressable_t mempos);
+void store_instruction_mem(machine_t *machine, instruction_t *instruction,
+                            addressable_t mempos);
 
 /*  BRANCH */
 instruction_t branch_encode(decoded_instruction_t *decoded);

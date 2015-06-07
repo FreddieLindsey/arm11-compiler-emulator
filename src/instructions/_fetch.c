@@ -48,33 +48,3 @@ instruction_t fetch_instruction_pos(machine_t *machine, addressable_t mempos) {
   }
   return instruction;
 }
-
-instruction_t fetch_instruction_mem(machine_t *machine, addressable_t mempos) {
-  /* Initialise the instruction to 0, get the memory pointer */
-  instruction_t instruction = 0;
-  memchunk_t *memposptr =
-    &machine->memory[mempos];
-
-  /* Compile the instruction */
-  int j;
-  for (j = 0; j < sizeof(instruction_t); ++j) {
-    instruction |=
-      *(memposptr + j) << ((sizeof(instruction_t) - j - 1) * CHAR_BIT);
-  }
-  return instruction;
-}
-
-void store_instruction_mem(machine_t *machine, instruction_t *instruction,
-                            addressable_t mempos) {
-  /* Initialise the instruction to 0, get the memory pointer */
-  memchunk_t *memposptr =
-    &machine->memory[mempos];
-
-  /* Compile the instruction */
-  int j;
-  for (j = 0; j < sizeof(instruction_t); ++j) {
-    *(memposptr + j) =
-      (*instruction >> ((sizeof(instruction_t) - j - 1) * CHAR_BIT))
-      & 0x000000ff;
-  }
-}
