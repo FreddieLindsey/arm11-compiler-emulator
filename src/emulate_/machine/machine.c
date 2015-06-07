@@ -29,7 +29,8 @@ void print_machine(machine_t *machine) {
   printf("Registers:\n");
   int loop_read = (machine_register_count < 12) ? machine_register_count : 12;
   for (int i = 0; i <= loop_read; ++i) {
-    printf("$%-3i: %10d (0x%08x)\n", i, machine->registers[i], machine->registers[i]);
+    printf("$%-3i: %10d (0x%08x)\n", i, machine->registers[i], 
+        machine->registers[i]);
   }
 
   /* Print PC and CPSR */
