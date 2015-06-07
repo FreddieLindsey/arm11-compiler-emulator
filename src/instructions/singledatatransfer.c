@@ -55,6 +55,7 @@ instruction_t fetch_instruction_mem(machine_t *machine, addressable_t mempos) {
 
 void store_instruction_mem(machine_t *machine, instruction_t *instruction,
                             addressable_t mempos) {
+  printf("Storing instruction:\t0x%08x\nin memory:\t0x%08x\n", *instruction, mempos);
   /* Initialise the instruction to 0, get the memory pointer */
   memchunk_t *memposptr =
     &machine->memory[mempos];
@@ -63,7 +64,7 @@ void store_instruction_mem(machine_t *machine, instruction_t *instruction,
   int j;
   for (j = 0; j < sizeof(instruction_t); ++j) {
     *(memposptr + j) =
-      (*instruction >> ((sizeof(instruction_t) - j - 1) * CHAR_BIT))
+      (*instruction >> j * CHAR_BIT)
       & 0x000000ff;
   }
 }
