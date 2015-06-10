@@ -48,7 +48,7 @@ int condition_met(decoded_instruction_t* decoded, machine_t* machine) {
     case eq:
       return get_bit(Z, machine);
     case ne:
-      return !get_bit(Z, machine);
+      return get_bit(Z, machine) == 0;
     case ge:
       return get_bit(N, machine) == get_bit(V, machine);
     case lt:

@@ -154,13 +154,13 @@ static int cmp_execute(decoded_instruction_t* decoded, machine_t* machine) {
   instruction_t test =
     machine->registers[decoded->regn] -
     get_operand(decoded->operand2, decoded->immediate, machine);
-    if (decoded->set) {
-      set_bit(N, machine, (test & 0x80000000) != 0);
-      set_bit(Z, machine, test == 0);
-      set_bit(C, machine,
-        get_operand(decoded->operand2, decoded->immediate, machine) <=
-        machine->registers[decoded->regn]);
-    }
+  if (decoded->set) {
+    set_bit(N, machine, (test & 0x80000000) != 0);
+    set_bit(Z, machine, test == 0);
+    set_bit(C, machine,
+      get_operand(decoded->operand2, decoded->immediate, machine) <=
+      machine->registers[decoded->regn]);
+  }
   return 1;
 }
 
