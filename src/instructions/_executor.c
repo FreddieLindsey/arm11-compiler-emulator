@@ -131,7 +131,7 @@ instruction_t get_operand(instruction_t operand,
   } else {
     if ((operand & 0x00000010) != 0) {
       uint8_t rotate_ =
-        machine->registers[(operand & 0x00000f00) >> 7] &
+        machine->registers[(operand & 0x00000f00) >> 8] &
         0x000000ff;
       shift_t shift_ = (operand & 0x00000060) >> 5;
       operand_o = machine->registers[(operand & 0x0000000f)];

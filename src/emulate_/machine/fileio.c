@@ -11,8 +11,11 @@ void loadfile(FILE *file, machine_t *machine) {
   }
 
   /* Read the file into memory. N.B. Retains formatting of data (LE/BE) */
-  fread(machine->memory, machine->memsize, sizeof(memchunk_t), file);
+  if (fread(machine->memory, machine->memsize, sizeof(memchunk_t), file) != 0) {
+    printf("Not all input read into file. EXITING\n");
+    exit(EXIT_FAILURE);
+  }
 
   /* Close the file after reading */
-  fclose(file); 
+  fclose(file);
 }
