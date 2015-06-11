@@ -34,46 +34,43 @@ instruction_t dataprocess_encode(decoded_instruction_t *decoded) {
       (decoded->operand2 << OFFSET_OPERAND2);
 }
 
-decoded_instruction_t* dataprocess_decode(instruction_t *instruction) {
-  decoded_instruction_t *decoded_instruction =
-    calloc(sizeof(decoded_instruction_t), 1);
-  decoded_instruction->kind       = DATA_PROCESS;
-  decoded_instruction->cond       = (*instruction & 0xf0000000) >> 28;
-  decoded_instruction->immediate  = (*instruction & 0x02000000) != 0;
-  decoded_instruction->opcode     = (*instruction & 0x01e00000) >> 21;
-  decoded_instruction->set        = (*instruction & 0x00100000) != 0;
-  decoded_instruction->regn       = (*instruction & 0x000f0000) >> 16;
-  decoded_instruction->regd       = (*instruction & 0x0000f000) >> 12;
-  decoded_instruction->operand2   = (*instruction & 0x00000fff);
-  return decoded_instruction;
+void dataprocess_decode(pipeline_t *pipeline) {
+  pipeline->decoded->kind       = DATA_PROCESS;
+  pipeline->decoded->cond       = (*pipeline->fetched & 0xf0000000) >> 28;
+  pipeline->decoded->immediate  = (*pipeline->fetched & 0x02000000) != 0;
+  pipeline->decoded->opcode     = (*pipeline->fetched & 0x01e00000) >> 21;
+  pipeline->decoded->set        = (*pipeline->fetched & 0x00100000) != 0;
+  pipeline->decoded->regn       = (*pipeline->fetched & 0x000f0000) >> 16;
+  pipeline->decoded->regd       = (*pipeline->fetched & 0x0000f000) >> 12;
+  pipeline->decoded->operand2   = (*pipeline->fetched & 0x00000fff);
 }
 
-int dataprocess_execute(decoded_instruction_t* decoded, machine_t* machine) {
-  if (condition_met(decoded, machine) != 0) {
-    switch(decoded->opcode) {
+int dataprocess_execute(machine_t* machine) {
+  if (condition_met(machine->pipeline->decoded, machine) != 0) {
+    switch(machine->pipeline->decoded->opcode) {
       case and:
-        return and_execute(decoded, machine);
+        return and_execute(machine->pipeline->decoded, machine);
       case eor:
-        return eor_execute(decoded, machine);
+        return eor_execute(machine->pipeline->decoded, machine);
       case sub:
-        return sub_execute(decoded, machine);
+        return sub_execute(machine->pipeline->decoded, machine);
       case rsb:
-        return rsb_execute(decoded, machine);
+        return rsb_execute(machine->pipeline->decoded, machine);
       case add:
-        return add_execute(decoded, machine);
+        return add_execute(machine->pipeline->decoded, machine);
       case tst:
-        return tst_execute(decoded, machine);
+        return tst_execute(machine->pipeline->decoded, machine);
       case teq:
-        return teq_execute(decoded, machine);
+        return teq_execute(machine->pipeline->decoded, machine);
       case cmp:
-        return cmp_execute(decoded, machine);
+        return cmp_execute(machine->pipeline->decoded, machine);
       case orr:
-        return orr_execute(decoded, machine);
+        return orr_execute(machine->pipeline->decoded, machine);
       case mov:
-        return mov_execute(decoded, machine);
+        return mov_execute(machine->pipeline->decoded, machine);
       default:
         printf("Unsupported data process instruction:\t0x%04x\n",
-                  decoded->opcode);
+                  machine->pipeline->decoded->opcode);
     }
   }
   return 1;

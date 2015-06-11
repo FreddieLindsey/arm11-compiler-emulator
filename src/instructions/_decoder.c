@@ -5,29 +5,31 @@
 #include "../emulate.h"
 #include "../instructions.h"
 
-static decoded_instruction_t* halt_decode(void);
+static void halt_decode(decoded_instruction_t *decoded_instruction);
 
-decoded_instruction_t* instruction_decode(instruction_t* instruction) {
-  int is_branch   = (*instruction & 0x0f000000) == 0x0a000000;
-  int is_sdt      = (*instruction & 0x0c000000) == 0x04000000;
-  int is_mult     = (*instruction & 0x0e000000) == 0 &&
-                    (*instruction & 0x000000f0) == 0x00000090;
-  int is_datproc  = *instruction != 0;
+void instruction_decode(pipeline_t *pipeline) {
+  int is_branch   = (*pipeline->fetched & 0x0f000000) == 0x0a000000;
+  int is_sdt      = (*pipeline->fetched & 0x0c000000) == 0x04000000;
+  int is_mult     = (*pipeline->fetched & 0x0e000000) == 0 &&
+                    (*pipeline->fetched & 0x000000f0) == 0x00000090;
+  int is_datproc  = *pipeline->fetched != 0;
   if (is_branch) {
-    return branch_decode(instruction);
+    branch_decode(pipeline);
+    return;
   } else if (is_sdt) {
-    return singledatatransfer_decode(instruction);
+    singledatatransfer_decode(pipeline);
+    return;
   } else if (is_mult) {
-    return multiply_decode(instruction);
+    multiply_decode(pipeline);
+    return;
   } else if (is_datproc) {
-    return dataprocess_decode(instruction);
+    dataprocess_decode(pipeline);
+    return;
   }
-  return halt_decode();
+  halt_decode(pipeline->decoded);
 }
 
-static decoded_instruction_t* halt_decode(void) {
-  decoded_instruction_t *decoded_instruction =
-    calloc(sizeof(decoded_instruction_t), 1);
+static void halt_decode(decoded_instruction_t *decoded_instruction) {
   decoded_instruction->kind       = HALT;
   decoded_instruction->cond       = 0;
   decoded_instruction->immediate  = 0;
@@ -36,5 +38,4 @@ static decoded_instruction_t* halt_decode(void) {
   decoded_instruction->regn       = 0;
   decoded_instruction->regd       = 0;
   decoded_instruction->operand2   = 0;
-  return decoded_instruction;
 }

@@ -13,23 +13,22 @@ instruction_t branch_encode(decoded_instruction_t *decoded) {
       ((decoded->offset & ((1 << 24) - 1)) << OFFSET_OFFSET);
 }
 
-decoded_instruction_t* branch_decode(instruction_t *instruction) {
-  decoded_instruction_t *decoded_instruction =
-    calloc(sizeof(decoded_instruction_t), 1);
-  decoded_instruction->kind = BRANCH;
-  decoded_instruction->cond = (*instruction & 0xf0000000) >> 28;
-  decoded_instruction->offset = (*instruction & 0x00ffffff) << 2;
-  if ((decoded_instruction->offset & 0x02000000) != 0) {
-    decoded_instruction->offset |= 0xfc000000;
+void branch_decode(pipeline_t *pipeline) {
+  pipeline->decoded->kind = BRANCH;
+  pipeline->decoded->cond = (*pipeline->fetched & 0xf0000000) >> 28;
+  pipeline->decoded->offset = (*pipeline->fetched & 0x00ffffff) << 2;
+  if ((pipeline->decoded->offset & 0x02000000) != 0) {
+    pipeline->decoded->offset |= 0xfc000000;
   }
-  return decoded_instruction;
 }
 
-int branch_execute(decoded_instruction_t* decoded, machine_t* machine) {
-  if (condition_met(decoded, machine) != 0) {
+int branch_execute(machine_t* machine) {
+  if (condition_met(machine->pipeline->decoded, machine) != 0) {
+    *(machine->pc) += machine->pipeline->decoded->offset;
+    if (machine->pipeline->decoded != NULL) free(machine->pipeline->decoded);
     machine->pipeline->decoded = NULL;
+    if (machine->pipeline->fetched != NULL) free(machine->pipeline->fetched);
     machine->pipeline->fetched = NULL;
-    *(machine->pc) += decoded->offset;
   }
   return 1;
 }

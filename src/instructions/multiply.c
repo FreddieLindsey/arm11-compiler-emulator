@@ -20,29 +20,31 @@ instruction_t multiply_encode(decoded_instruction_t *decoded) {
       (decoded->regm << OFFSET_RM);
 }
 
-decoded_instruction_t* multiply_decode(instruction_t *instruction) {
-  decoded_instruction_t *decoded_instruction =
-    calloc(sizeof(decoded_instruction_t), 1);
-  decoded_instruction->kind       = MULTIPLY;
-  decoded_instruction->cond       = (*instruction & 0xf0000000) >> 28;
-  decoded_instruction->accumulate = (*instruction & 0x00200000) != 0;
-  decoded_instruction->set        = (*instruction & 0x00100000) != 0;
-  decoded_instruction->regd       = (*instruction & 0x000f0000) >> 16;
-  decoded_instruction->regn       = (*instruction & 0x0000f000) >> 12;
-  decoded_instruction->regs       = (*instruction & 0x00000f00) >> 8;
-  decoded_instruction->regm       = (*instruction & 0x0000000f);
-  return decoded_instruction;
+void multiply_decode(pipeline_t *pipeline) {
+  pipeline->decoded->kind       = MULTIPLY;
+  pipeline->decoded->cond       = (*pipeline->fetched & 0xf0000000) >> 28;
+  pipeline->decoded->accumulate = (*pipeline->fetched & 0x00200000) != 0;
+  pipeline->decoded->set        = (*pipeline->fetched & 0x00100000) != 0;
+  pipeline->decoded->regd       = (*pipeline->fetched & 0x000f0000) >> 16;
+  pipeline->decoded->regn       = (*pipeline->fetched & 0x0000f000) >> 12;
+  pipeline->decoded->regs       = (*pipeline->fetched & 0x00000f00) >> 8;
+  pipeline->decoded->regm       = (*pipeline->fetched & 0x0000000f);
 }
 
-int multiply_execute(decoded_instruction_t* decoded, machine_t* machine) {
-  if (condition_met(decoded, machine) != 0) {
-    machine->registers[decoded->regd] = machine->registers[decoded->regm]
-                                        * machine->registers[decoded->regs];
-    if (decoded->accumulate != 0) {
-      machine->registers[decoded->regd] += machine->registers[decoded->regn];
+int multiply_execute(machine_t* machine) {
+  if (condition_met(machine->pipeline->decoded, machine) != 0) {
+    machine->registers[machine->pipeline->decoded->regd] =
+    machine->registers[machine->pipeline->decoded->regm]
+    * machine->registers[machine->pipeline->decoded->regs];
+    if (machine->pipeline->decoded->accumulate != 0) {
+      machine->registers[machine->pipeline->decoded->regd] +=
+      machine->registers[machine->pipeline->decoded->regn];
     }
-    set_bit(Z, machine, machine->registers[decoded->regd] == 0);
-    set_bit(N, machine, (machine->registers[decoded->regd] & 0x80000000) != 0);
+    set_bit(Z, machine,
+              machine->registers[machine->pipeline->decoded->regd] == 0);
+    set_bit(N, machine,
+              (machine->registers[machine->pipeline->decoded->regd]
+              & 0x80000000) != 0);
   }
   return 0;
 }

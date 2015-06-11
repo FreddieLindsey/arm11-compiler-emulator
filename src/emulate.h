@@ -18,7 +18,7 @@ void usage(void);
 void loadfile(FILE *file, machine_t *machine);
 
 /*  PIPELINE */
-void init_pipeline(pipeline_t *pipeline, machine_t *machine);
+void init_pipeline(pipeline_t *pipeline);
 void close_pipeline(pipeline_t *pipeline);
 void run_pipeline(machine_t *machine);
 

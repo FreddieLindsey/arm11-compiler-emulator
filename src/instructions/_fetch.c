@@ -5,8 +5,10 @@
 #include "../emulate.h"
 #include "../instructions.h"
 
-instruction_t fetch_instruction(machine_t *machine) {
-  return fetch_instruction_pos_format(machine, (*(machine->pc) / sizeof(instruction_t)));
+void fetch_instruction(machine_t *machine) {
+  *(machine->pipeline->fetched) =
+    fetch_instruction_pos_format(machine,
+                                (*(machine->pc) / sizeof(instruction_t)));
 }
 
 /*

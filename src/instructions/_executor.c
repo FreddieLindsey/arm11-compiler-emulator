@@ -15,23 +15,18 @@ static void arithmetic_right(instruction_t* operand, machine_t *machine, int set
  *  Returns -1 iff the instruction is halt.
  *  Returns  0 otherwise.
  */
-int instruction_execute(decoded_instruction_t* decoded, machine_t* machine) {
-  if (decoded->kind != HALT) {
-    switch(decoded->kind) {
+int instruction_execute(machine_t* machine) {
+  if (machine->pipeline->decoded->kind != HALT) {
+    switch(machine->pipeline->decoded->kind) {
       case BRANCH:
-        return branch_execute(decoded, machine);
-        break;
+        return branch_execute(machine);
       case SINGLE_DATA_TRANSFER:
-        return singledatatransfer_execute(decoded, machine);
-        break;
+        return singledatatransfer_execute(machine);
       case MULTIPLY:
-        return multiply_execute(decoded, machine);
-        break;
+        return multiply_execute(machine);
       case DATA_PROCESS:
-        return dataprocess_execute(decoded, machine);
-        break;
+        return dataprocess_execute(machine);
       default: /* Inform of unsupported instruction */
-        printf("Incorrect instruction received.\n");
         return 0;
     }
   }

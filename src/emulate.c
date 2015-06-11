@@ -38,10 +38,9 @@ int main(int argc, char** argv) {
 
   /*  Create and initialise a machine and a pipeline */
   machine_t machine;
-  pipeline_t pipeline;
   init_machine(&machine);
   if (verbose) printf("Machine initialised.\n");
-  init_pipeline(&pipeline, &machine);
+  init_pipeline(machine.pipeline);
   if (verbose) printf("Pipeline initialised.\n");
 
   /*  Load a file into machine memory, then close it */
@@ -54,6 +53,7 @@ int main(int argc, char** argv) {
 
   /*  Execute the pipeline model of the ARM architecture */
   run_pipeline(&machine);
+  close_pipeline(machine.pipeline);
 
   /*  Print the final state of the machine */
   print_machine(&machine);
