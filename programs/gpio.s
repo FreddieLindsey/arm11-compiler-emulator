@@ -6,24 +6,25 @@ str r2,[r0]          ; sets up pin 16 as an output
 mov r1,#1
 lsl r1,#16           ; mask for pin 16
 
-ldr r4, =0x0FFFFFFF  ; store a very big number
-
 reset:
-  mov r5,#0          ; store counter
-  str r1,[r0,#40]    ; clear pin 16
 
-  loopBody:
-    add r5, r5, #1   ; increment counter by 1
-    cmp r4, r5       ; compare big number and counter
-    blt loopBody     ; if counter is not equal to big number, loop again
+  mov r5,#0          ; store counter
+  str r1,[r0,#36]    ; clear pin 16
+
+  ldr r3, =0xFFFFFF
+
+  waitOn:            ; loop for about 1 second
+    sub r3,r3,#1
+    cmp r3,#1
+  bne waitOn
 
   mov r5,#0          ; resets counter
-  str r1,[r0,#28]    ; set pin 16
+  str r1,[r0,#24]    ; set pin 16
+  ldr r4, =0xFFFFFF
 
-  loopBody2:
-    add r5, r5, #1   ; increments counter by 1
-    cmp r4, r5       ; compares big number and counter
-    blt loopBody2    ; if counter is not equal to big number, loop again
+  waitOff:           ; loop for another second
+    sub r4,r4,#1
+    cmp r4,#1
+  bne waitOff
 
-;  b reset            ; jump to reset
-andeq r0, r0, r0     ; halt
+b reset            ; jump to reset
