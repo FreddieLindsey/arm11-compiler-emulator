@@ -61,14 +61,14 @@ int main(int argc, char **argv) {
     char *label = getlabel(line);
     if(label != NULL) {
       // add this label to symbol table
-      currentSymbol->name = strdup(label);
+      currentSymbol->name = strduplicate(label);
       currentSymbol->address = i; 
       currentSymbol->next = malloc(sizeof(symbol));
       memset(currentSymbol->next, 0, sizeof(symbol));
       currentSymbol = currentSymbol->next;
     } else {
       // copy line and add it to filecontents
-      char *linedup = strdup(line);
+      char *linedup = strduplicate(line);
       filecontents[i] = linedup;
       i++;
     }
