@@ -77,6 +77,31 @@ void store_instruction_mem(machine_t *machine, instruction_t *instruction,
   }
 }
 
+static int gpio_check(decoded_instruction_t* decoded,
+                      machine_t* machine, addressable_t mempos) {
+  switch(mempos) {
+      case 0x20200000:
+        printf("One GPIO pin from 0 to 9 has been accessed\n");
+        machine->registers[decoded->regd] = mempos;
+        return 2;
+      case 0x20200004:
+        printf("One GPIO pin from 10 to 19 has been accessed\n");
+        machine->registers[decoded->regd] = mempos;
+        return 2;
+      case 0x20200008:
+        printf("One GPIO pin from 20 to 29 has been accessed\n");
+        machine->registers[decoded->regd] = mempos;
+        return 2;
+      case 0x2020001c:
+        printf("PIN ON\n");
+        return 2;
+      case 0x20200028:
+        printf("PIN OFF\n");
+        return 2;
+  }
+  return 0;
+}
+
 int offsetregister(decoded_instruction_t* decoded, machine_t* machine,
                     instruction_t offsetval, int neg) {
   addressable_t temp = machine->registers[decoded->regn];
@@ -85,20 +110,8 @@ int offsetregister(decoded_instruction_t* decoded, machine_t* machine,
     return -1;
   }
   temp += neg != 0 ? - offsetval : offsetval;
-  switch(temp) {
-      case 0x20200000:
-        printf("One GPIO pin from 0 to 9 has been accessed\n");
-        machine->registers[decoded->regd] = temp;
-        return 2;
-      case 0x20200004:
-        printf("One GPIO pin from 10 to 19 has been accessed\n");
-        machine->registers[decoded->regd] = temp;
-        return 2;
-      case 0x20200008:
-        printf("One GPIO pin from 20 to 29 has been accessed\n");
-        machine->registers[decoded->regd] = temp;
-        return 2;
-  }
+  int gpio_check_ = gpio_check(decoded, machine, temp);
+  if (gpio_check_ != 0) return gpio_check_;
   if (temp > machine->memsize) {
     printf("Error: Out of bounds memory access at address 0x%08x\n",
             temp);
