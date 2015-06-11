@@ -42,7 +42,6 @@ int main(int argc, char **argv) {
   failif(line == NULL, ERROR_MALLOC);
 
   while(fgets(line, MAX_LINE_SIZE, file) != NULL) {
-
     // ignore empty lines 
     if(line[0] == '\n') continue;
 
