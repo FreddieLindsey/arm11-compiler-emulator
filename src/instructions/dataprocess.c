@@ -104,9 +104,10 @@ static int eor_execute(decoded_instruction_t* decoded, machine_t* machine) {
 }
 
 static int sub_execute(decoded_instruction_t* decoded, machine_t* machine) {
+  instruction_t operand = get_operand(decoded->operand2, decoded->immediate, machine, decoded->set);
   machine->registers[decoded->regd] =
     machine->registers[decoded->regn] -
-    get_operand(decoded->operand2, decoded->immediate, machine, decoded->set);
+    operand;
   return 1;
 }
 
