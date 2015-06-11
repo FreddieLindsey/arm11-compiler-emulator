@@ -1,6 +1,7 @@
 #ifndef STR_UTILS_H
 #define STR_UTILS_H 
 
+char *strduplicate(const char *str);
 int strtoi(char *str);
 char lastChar(char *str);
 void trim(char *str);

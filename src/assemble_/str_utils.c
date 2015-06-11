@@ -3,6 +3,15 @@
 #include <ctype.h>
 #include "str_utils.h"
 
+
+char *strduplicate(const char *str) {
+  int n = strlen(str) + 1;
+  char *dup = malloc(n);
+  if(dup) {
+    strcpy(dup, str);
+  }
+  return dup;
+}
 /* 
  *  Basic string to int function
  */
