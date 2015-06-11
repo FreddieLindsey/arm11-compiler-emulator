@@ -15,7 +15,7 @@
  *  brackets e.g. "[r3]"
  */
 int valueToInt(char* str) {
-  char *copy = strdup(str);
+  char *copy = strduplicate(str);
   char *copyOrig = copy;
 
   // remove starting [ and ending ]
