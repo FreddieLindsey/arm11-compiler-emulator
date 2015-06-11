@@ -102,7 +102,7 @@ uint16_t build_operand2(char *str, char *shiftstr) {
     // while value does not fit in 8 bits
     while(value > (1 << 8) - 1) {
       // rotate twice
-      int mask = 11 << 30;
+      int mask = 3 << 30;
       int excess = (value & mask) >> 30;
       value = (value << 2) | excess;
       shift++;
