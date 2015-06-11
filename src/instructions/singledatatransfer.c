@@ -88,17 +88,17 @@ int offsetregister(decoded_instruction_t* decoded, machine_t* machine,
 int singledatatransfer_execute(decoded_instruction_t* decoded,
                                 machine_t* machine) {
   if (condition_met(decoded, machine) != 0) {
-
     instruction_t offsetvalue =
       (decoded->immediate == 0) ?
       decoded->offset :
-      get_operand(decoded->offset, 0, machine);
+      get_operand(decoded->offset, 0, machine, 0);
     int neg = (decoded->up != 0) ? 0 : 1;
 
     int ok = 1;
     if (decoded->prepost != 0) ok = offsetregister(decoded, machine,
                                                     offsetvalue, neg);
     if (ok != 0) return 1;
+
     if (decoded->loadstore != 0) {
       machine->registers[decoded->regd] =
         fetch_instruction_mem(machine, machine->registers[decoded->regn]);

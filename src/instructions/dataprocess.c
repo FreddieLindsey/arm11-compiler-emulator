@@ -82,14 +82,14 @@ int dataprocess_execute(decoded_instruction_t* decoded, machine_t* machine) {
 static int and_execute(decoded_instruction_t* decoded, machine_t* machine) {
   machine->registers[decoded->regd] =
     machine->registers[decoded->regn] &
-    get_operand(decoded->operand2, decoded->immediate, machine);
+    get_operand(decoded->operand2, decoded->immediate, machine, decoded->set);
   if (decoded->set) {
     set_bit(N, machine,
         (machine->registers[decoded->regn] & 0x80000000) != 0);
     set_bit(Z, machine, machine->registers[decoded->regn] == 0);
     set_bit(C, machine,
         (machine->registers[decoded->regn] &
-        get_operand(decoded->operand2, decoded->immediate, machine)) >
+        get_operand(decoded->operand2, decoded->immediate, machine, decoded->set)) >
         0xffffffff);
 
   }
@@ -99,20 +99,20 @@ static int and_execute(decoded_instruction_t* decoded, machine_t* machine) {
 static int eor_execute(decoded_instruction_t* decoded, machine_t* machine) {
   machine->registers[decoded->regd] =
     machine->registers[decoded->regn] ^
-    get_operand(decoded->operand2, decoded->immediate, machine);
+    get_operand(decoded->operand2, decoded->immediate, machine, decoded->set);
   return 1;
 }
 
 static int sub_execute(decoded_instruction_t* decoded, machine_t* machine) {
   machine->registers[decoded->regd] =
     machine->registers[decoded->regn] -
-    get_operand(decoded->operand2, decoded->immediate, machine);
+    get_operand(decoded->operand2, decoded->immediate, machine, decoded->set);
   return 1;
 }
 
 static int rsb_execute(decoded_instruction_t* decoded, machine_t* machine) {
   machine->registers[decoded->regd] =
-  get_operand(decoded->operand2, decoded->immediate, machine) -
+  get_operand(decoded->operand2, decoded->immediate, machine, decoded->set) -
     machine->registers[decoded->regn];
   return 1;
 }
@@ -120,13 +120,13 @@ static int rsb_execute(decoded_instruction_t* decoded, machine_t* machine) {
 static int add_execute(decoded_instruction_t* decoded, machine_t* machine) {
   machine->registers[decoded->regd] =
     machine->registers[decoded->regn] +
-    get_operand(decoded->operand2, decoded->immediate, machine);
+    get_operand(decoded->operand2, decoded->immediate, machine, decoded->set);
   if (decoded->set) {
     set_bit(N, machine, (machine->registers[decoded->regd] & 0x80000000) != 0);
     set_bit(Z, machine, machine->registers[decoded->regd] != 0);
     set_bit(C, machine,
       (machine->registers[decoded->regn] +
-      get_operand(decoded->operand2, decoded->immediate, machine))
+      get_operand(decoded->operand2, decoded->immediate, machine, decoded->set))
       > 0xffffffff);
   }
   return 1;
@@ -135,7 +135,7 @@ static int add_execute(decoded_instruction_t* decoded, machine_t* machine) {
 static int tst_execute(decoded_instruction_t* decoded, machine_t* machine) {
   instruction_t test =
     machine->registers[decoded->regn] &
-    get_operand(decoded->operand2, decoded->immediate, machine);
+    get_operand(decoded->operand2, decoded->immediate, machine, decoded->set);
   if (decoded->set) {
     if (test == 0) set_bit(Z, machine, 1);
   }
@@ -145,7 +145,7 @@ static int tst_execute(decoded_instruction_t* decoded, machine_t* machine) {
 static int teq_execute(decoded_instruction_t* decoded, machine_t* machine) {
   instruction_t test =
     machine->registers[decoded->regn] ^
-    get_operand(decoded->operand2, decoded->immediate, machine);
+    get_operand(decoded->operand2, decoded->immediate, machine, decoded->set);
   if (test == 0) set_bit(Z, machine, 1);
   return 1;
 }
@@ -153,12 +153,12 @@ static int teq_execute(decoded_instruction_t* decoded, machine_t* machine) {
 static int cmp_execute(decoded_instruction_t* decoded, machine_t* machine) {
   instruction_t test =
     machine->registers[decoded->regn] -
-    get_operand(decoded->operand2, decoded->immediate, machine);
+    get_operand(decoded->operand2, decoded->immediate, machine, decoded->set);
   if (decoded->set) {
     set_bit(N, machine, (test & 0x80000000) != 0);
     set_bit(Z, machine, test == 0);
     set_bit(C, machine,
-      get_operand(decoded->operand2, decoded->immediate, machine) <=
+      get_operand(decoded->operand2, decoded->immediate, machine, decoded->set) <=
       machine->registers[decoded->regn]);
   }
   return 1;
@@ -167,12 +167,12 @@ static int cmp_execute(decoded_instruction_t* decoded, machine_t* machine) {
 static int orr_execute(decoded_instruction_t* decoded, machine_t* machine) {
   machine->registers[decoded->regd] =
     machine->registers[decoded->regn] |
-    get_operand(decoded->operand2, decoded->immediate, machine);
+    get_operand(decoded->operand2, decoded->immediate, machine, decoded->set);
   return 1;
 }
 
 static int mov_execute(decoded_instruction_t* decoded, machine_t* machine) {
   machine->registers[decoded->regd] =
-    get_operand(decoded->operand2, decoded->immediate, machine);
+    get_operand(decoded->operand2, decoded->immediate, machine, decoded->set);
   return 1;
 }
