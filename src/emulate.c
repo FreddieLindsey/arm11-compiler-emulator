@@ -60,6 +60,7 @@ int main(int argc, char** argv) {
 
   /*  Frees the machine by closing it */
   close_machine(&machine);
+  free(filename);
   if (verbose) printf("Machine closed, memory freed\n");
 
   return EXIT_SUCCESS;
