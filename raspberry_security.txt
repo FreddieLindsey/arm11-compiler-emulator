@@ -1,2 +1,3 @@
-USER: helloworld
+HOST: helloworld
+USER: pi
 PASS: thisislife
