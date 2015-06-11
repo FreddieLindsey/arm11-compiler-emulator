@@ -5,11 +5,11 @@
 #include "../emulate.h"
 #include "../instructions.h"
 
-static void shift(shift_t shift_, instruction_t* operand);
-static void rotate_right(instruction_t* operand);
-static void logical_right(instruction_t* operand);
-static void logical_left(instruction_t* operand);
-static void arithmetic_right(instruction_t* operand);
+static void shift(shift_t shift_, instruction_t* operand, machine_t *machine, int set);
+static void rotate_right(instruction_t* operand, machine_t *machine, int set);
+static void logical_right(instruction_t* operand, machine_t *machine, int set);
+static void logical_left(instruction_t* operand, machine_t *machine, int set);
+static void arithmetic_right(instruction_t* operand, machine_t *machine, int set);
 
 /*
  *  Returns -1 iff the instruction is halt.
@@ -118,25 +118,25 @@ int get_bit(cpsr_bit_t bit, machine_t* machine) {
 
 instruction_t get_operand(instruction_t operand,
                           uint8_t immediate,
-                          machine_t* machine) {
+                          machine_t* machine, int set) {
   instruction_t operand_o = 0;
   if (immediate != 0) {
     operand_o = (operand & 0x000000ff);
     uint8_t rotate_ = (operand & 0x00000f00) >> 8;
     while (rotate_ > 0) {
-      shift(ror, &operand_o);
-      shift(ror, &operand_o);
+      shift(ror, &operand_o, machine, set);
+      shift(ror, &operand_o, machine, set);
       --rotate_;
     }
   } else {
     if ((operand & 0x00000010) != 0) {
       uint8_t rotate_ =
         machine->registers[(operand & 0x00000f00) >> 7] &
-        0x0000000f;
+        0x000000ff;
       shift_t shift_ = (operand & 0x00000060) >> 5;
       operand_o = machine->registers[(operand & 0x0000000f)];
       while (rotate_ > 0) {
-        shift(shift_, &operand_o);
+        shift(shift_, &operand_o, machine, set);
         --rotate_;
       }
     } else {
@@ -144,7 +144,7 @@ instruction_t get_operand(instruction_t operand,
       shift_t shift_ = (operand & 0x00000060) >> 5;
       operand_o = machine->registers[(operand & 0x0000000f)];
       while (rotate_ > 0) {
-        shift(shift_, &operand_o);
+        shift(shift_, &operand_o, machine, set);
         --rotate_;
       }
     }
@@ -152,39 +152,44 @@ instruction_t get_operand(instruction_t operand,
   return operand_o;
 }
 
-static void shift(shift_t shift_, instruction_t* operand) {
+static void shift(shift_t shift_, instruction_t* operand,
+                  machine_t *machine, int set) {
   switch(shift_) {
     case lsl:
-      logical_left(operand);
+      logical_left(operand, machine, set);
       break;
     case lsr:
-      logical_right(operand);
+      logical_right(operand, machine, set);
       break;
     case asr:
-      arithmetic_right(operand);
+      arithmetic_right(operand, machine, set);
       break;
     case ror:
-      rotate_right(operand);
+      rotate_right(operand, machine, set);
       break;
     default:
       printf("Unsupported shift type\n");
   }
 }
 
-static void rotate_right(instruction_t* operand) {
+static void rotate_right(instruction_t* operand, machine_t *machine, int set) {
   instruction_t rotation = (*operand & 0x00000001) << 31;
   *operand = (*operand >> 1) | rotation;
 }
 
-static void logical_right(instruction_t* operand) {
+static void logical_right(instruction_t* operand, machine_t *machine, int set) {
+  if (set != 0) set_bit(C, machine, (*operand & 0x00000001) != 0);
   *operand = *operand >> 1;
 }
 
-static void logical_left(instruction_t* operand) {
+static void logical_left(instruction_t* operand, machine_t *machine, int set) {
+  if (set != 0) set_bit(C, machine, (*operand & 0x80000000) != 0);
   *operand = *operand << 1;
 }
 
-static void arithmetic_right(instruction_t* operand) {
-  /* TODO Implement for different bit sizes */
-  *operand = *operand >> 1;
+static void arithmetic_right(instruction_t* operand,
+                             machine_t *machine, int set) {
+  if (set != 0) set_bit(C, machine, (*operand & 0x00000001) != 0);
+  instruction_t rotation = *operand | 0x7fffffff;
+  *operand = (*operand >> 1) & rotation;
 }

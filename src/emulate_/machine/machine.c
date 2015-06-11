@@ -6,7 +6,7 @@
 #include "../../instructions.h"
 
 static const uint32_t machine_memory_size = 65536;
-static const uint32_t machine_register_count = 16;
+static const uint32_t machine_register_count = 17;
 
 void init_machine(machine_t *machine) {
   machine->memory = calloc(machine_memory_size, sizeof(memchunk_t));
@@ -29,7 +29,7 @@ void print_machine(machine_t *machine) {
   printf("Registers:\n");
   int loop_read = (machine_register_count < 12) ? machine_register_count : 12;
   for (int i = 0; i <= loop_read; ++i) {
-    printf("$%-3i: %10d (0x%08x)\n", i, machine->registers[i], 
+    printf("$%-3i: %10d (0x%08x)\n", i, machine->registers[i],
         machine->registers[i]);
   }
 

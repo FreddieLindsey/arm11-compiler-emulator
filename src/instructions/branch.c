@@ -19,6 +19,9 @@ decoded_instruction_t* branch_decode(instruction_t *instruction) {
   decoded_instruction->kind = BRANCH;
   decoded_instruction->cond = (*instruction & 0xf0000000) >> 28;
   decoded_instruction->offset = (*instruction & 0x00ffffff) << 2;
+  if ((decoded_instruction->offset & 0x02000000) != 0) {
+    decoded_instruction->offset |= 0xfc000000;
+  }
   return decoded_instruction;
 }
 
@@ -26,7 +29,7 @@ int branch_execute(decoded_instruction_t* decoded, machine_t* machine) {
   if (condition_met(decoded, machine) != 0) {
     machine->pipeline->decoded = NULL;
     machine->pipeline->fetched = NULL;
-    machine->pc += decoded->offset;
+    *(machine->pc) = ((int32_t) *(machine->pc)) + decoded->offset;
   }
-  return 0;
+  return 1;
 }
