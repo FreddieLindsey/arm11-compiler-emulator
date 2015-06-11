@@ -55,6 +55,15 @@ instruction_t fetch_instruction_mem(machine_t *machine, addressable_t mempos) {
 
 void store_instruction_mem(machine_t *machine, instruction_t *instruction,
                             addressable_t mempos) {
+  /* Checks GPIO access for RPi */
+  switch(mempos) {
+    case 0x20200000:
+      printf("One GPIO pin from 0 to 9 has been accessed\n"); break;
+    case 0x20200004:
+      printf("One GPIO pin from 10 to 19 has been accessed\n"); break;
+    case 0x20200008:
+      printf("One GPIO pin from 20 to 29 has been accessed\n"); break;
+  }
   /* Initialise the instruction to 0, get the memory pointer */
   memchunk_t *memposptr =
     &machine->memory[mempos];
@@ -64,7 +73,7 @@ void store_instruction_mem(machine_t *machine, instruction_t *instruction,
   for (j = 0; j < sizeof(instruction_t); ++j) {
     *(memposptr + j) =
       (*instruction >> j * CHAR_BIT)
-      & 0x000000ff;
+      & 0xff;
   }
 }
 
@@ -76,6 +85,20 @@ int offsetregister(decoded_instruction_t* decoded, machine_t* machine,
     return -1;
   }
   temp += neg != 0 ? - offsetval : offsetval;
+  switch(temp) {
+      case 0x20200000:
+        printf("One GPIO pin from 0 to 9 has been accessed\n");
+        machine->registers[decoded->regd] = temp;
+        return 2;
+      case 0x20200004:
+        printf("One GPIO pin from 10 to 19 has been accessed\n");
+        machine->registers[decoded->regd] = temp;
+        return 2;
+      case 0x20200008:
+        printf("One GPIO pin from 20 to 29 has been accessed\n");
+        machine->registers[decoded->regd] = temp;
+        return 2;
+  }
   if (temp > machine->memsize) {
     printf("Error: Out of bounds memory access at address 0x%08x\n",
             temp);
@@ -94,10 +117,13 @@ int singledatatransfer_execute(decoded_instruction_t* decoded,
       get_operand(decoded->offset, 0, machine, 0);
     int neg = (decoded->up != 0) ? 0 : 1;
 
-    int ok = 1;
-    if (decoded->prepost != 0) ok = offsetregister(decoded, machine,
+    int code = 1;
+    if (decoded->prepost != 0) code = offsetregister(decoded, machine,
                                                     offsetvalue, neg);
-    if (ok != 0) return 1;
+    switch(code) {
+      case -1: return 1;
+      case  2: return 0;
+    }
 
     if (decoded->loadstore != 0) {
       machine->registers[decoded->regd] =
@@ -108,6 +134,7 @@ int singledatatransfer_execute(decoded_instruction_t* decoded,
     }
     offsetregister(decoded, machine, offsetvalue,
       ((decoded->prepost != 0) ? neg == 0 : neg));
+
   }
   return 1;
 }
