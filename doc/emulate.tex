@@ -1,8 +1,20 @@
 The first part of the project regarded the emulate binary. It's purpose is to emulate an ARM11 execution of ARM11 assembled code from a binary file.
 
-Firstly, we found it important to check to see that the required program arguments were given. Therefore, in our emulate.c we implemented the following for error checking:
+Firstly, we found it important to check to see that the required program arguments were given and valid. Therefore, in our emulate.c we implemented the following for error checking:
 
 \begin{verbatim}
+  // USAGE REPORTING
+  
+  void usage(void) {
+    printf( "Program takes 1 compulsory argument and 1 optional one:"
+            "\n\nExample:\n"
+            "./emulate binary_arm_file\n"
+            "OR\n"
+            "./emulate binary_arm_file v\t\t[For verbose output]\n");
+  }
+  
+  // FILE VALIDATION
+  
   /*  Check a given filename exists, and return if not */
   FILE *file;
   if ((file = fopen(argv[1], "r")) == NULL) {
@@ -36,3 +48,27 @@ Thirdly, we need to actually run the pipeline. So therefore we ran the below cod
   close_machine(&machine);
 \end{verbatim}
 
+The machine and pipeline implementation were parts of the emulation that we had to be most careful with. Errors or bad implementation here could have cost us vastly more time in a successful implementation of the rest of the project.
+
+We chose to use structs for our pipeline and machine models, the machine being responsible for the pipeline it is using as below:
+
+\begin{verbatim}
+  /*  PIPELINE */
+  typedef struct pipeline {
+    decoded_instruction_t* decoded;
+    instruction_t* fetched;
+  } pipeline_t;
+
+  /*  MACHINE */
+  typedef struct machine {
+    memchunk_t *memory;
+    addressable_t memsize;
+    instruction_t *registers;
+    addressable_t regcount;
+    instruction_t *pc;
+    instruction_t *cpsr;
+    pipeline_t * pipeline;
+  } machine_t;
+\end{verbatim}
+
+We used `typedef` to allow us to use the variable types shown above. This also meant that if we needed to change the variable types throughout the project and in the future, this could be achieved very easily without having to rewrite any code. 
