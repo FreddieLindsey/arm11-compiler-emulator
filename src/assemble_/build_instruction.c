@@ -14,7 +14,7 @@
  *  Also works with immediate numbers such as "#2" and values with square 
  *  brackets e.g. "[r3]"
  */
-int valueToInt(char* str) {
+int value_to_int(char* str) {
   char *copy = strduplicate(str);
   char *copyOrig = copy;
 
@@ -48,7 +48,7 @@ uint16_t build_shift(char *shiftstr) {
   trim(shiftamount);
 
   // work out shift amount based on either direct value or register
-  int shiftamountvalue = valueToInt(shiftamount);
+  int shiftamountvalue = value_to_int(shiftamount);
   int amount;
   int isregistershift;
   if(shiftamount[0] == '#') {
@@ -91,7 +91,7 @@ uint16_t build_shift(char *shiftstr) {
  */
 uint16_t build_operand2(char *str, char *shiftstr) {
 
-  instruction_t value = valueToInt(str);
+  instruction_t value = value_to_int(str);
   
   // if value is an immediate value
   if(str[0] == '#' || str[0] == '=') {
@@ -136,8 +136,8 @@ decoded_instruction_t *computable(char **args, int opcode) {
   ins->opcode = opcode;
   ins->immediate = args[2][0] == '#' ? 1 : 0;
   ins->set = 0;
-  ins->regn = valueToInt(args[1]);
-  ins->regd = valueToInt(args[0]);
+  ins->regn = value_to_int(args[1]);
+  ins->regd = value_to_int(args[0]);
   ins->operand2 = build_operand2(args[2], args[3]); 
 
   return ins;
@@ -152,7 +152,7 @@ decoded_instruction_t *flagsetter(char **args, int opcode) {
   ins->opcode = opcode;
   ins->immediate = args[1][0] == '#' ? 1 : 0;
   ins->set = 1;
-  ins->regn = valueToInt(args[0]);
+  ins->regn = value_to_int(args[0]);
   ins->regd = 0;
   ins->operand2 = build_operand2(args[1], args[2]);
   return ins;
@@ -175,7 +175,7 @@ decoded_instruction_t *build_mov(char **args) {
   ins->immediate = args[1][0] == '#' || args[1][0] == '=' ? 1 : 0;
   ins->set = 0;
   ins->regn = 0;
-  ins->regd = valueToInt(args[0]);
+  ins->regd = value_to_int(args[0]);
   ins->operand2 = build_operand2(args[1], args[2]);
   return ins;
 }
@@ -186,9 +186,9 @@ decoded_instruction_t *build_mul(char **args) {
   decoded_instruction_t *ins = malloc(sizeof(decoded_instruction_t));
   ins->kind = MULTIPLY;
   ins->accumulate = 0;
-  ins->regd = valueToInt(args[0]);
-  ins->regs = valueToInt(args[2]);
-  ins->regm = valueToInt(args[1]);
+  ins->regd = value_to_int(args[0]);
+  ins->regs = value_to_int(args[2]);
+  ins->regm = value_to_int(args[1]);
   ins->regn = 0;
   return ins;
 }
@@ -197,10 +197,10 @@ decoded_instruction_t *build_mla(char **args) {
   decoded_instruction_t *ins = malloc(sizeof(decoded_instruction_t));
   ins->kind = MULTIPLY;
   ins->accumulate = 1;
-  ins->regd = valueToInt(args[0]);
-  ins->regn = valueToInt(args[3]);
-  ins->regs = valueToInt(args[2]);
-  ins->regm = valueToInt(args[1]);
+  ins->regd = value_to_int(args[0]);
+  ins->regn = value_to_int(args[3]);
+  ins->regs = value_to_int(args[2]);
+  ins->regm = value_to_int(args[1]);
   return ins;
 }
 
@@ -221,7 +221,7 @@ decoded_instruction_t *build_sdt(char **args, int loadstore) {
     ins->prepost = last_char(args[1]) == ']' ? 0 : 1;
 
     if(args[3] == NULL) {
-      int offset = valueToInt(args[2]); 
+      int offset = value_to_int(args[2]); 
 
       // if offset is a register
       if(args[2][0] == 'r') {
@@ -249,8 +249,8 @@ decoded_instruction_t *build_sdt(char **args, int loadstore) {
   }
 
   ins->loadstore = loadstore;
-  ins->regn = valueToInt(args[1]);
-  ins->regd = valueToInt(args[0]);
+  ins->regn = value_to_int(args[1]);
+  ins->regd = value_to_int(args[0]);
 
   return ins;
 }
@@ -261,21 +261,21 @@ decoded_instruction_t *build_ldr(char **args, output_data_t *out, int pos) {
   
   // constant values
   if(args[1][0] == '=') {
-    int value = valueToInt(args[1]);
+    int value = value_to_int(args[1]);
     
     // if value fits in mov instruction
     if(value <= 0xFF) {
       return build_mov(args);
     } else {
       // load extra data into the end of the binary file
-      out->data[(out->numInstructions + out->numExtra) * 4] = value;
-      out->data[(out->numInstructions + out->numExtra) * 4 + 1] = value >> 8;
-      out->data[(out->numInstructions + out->numExtra) * 4 + 2] = value >> 16;
-      out->data[(out->numInstructions + out->numExtra) * 4 + 3] = value >> 24;
+      out->data[(out->num_instructions + out->num_extra) * 4] = value;
+      out->data[(out->num_instructions + out->num_extra) * 4 + 1] = value >> 8;
+      out->data[(out->num_instructions + out->num_extra) * 4 + 2] = value >> 16;
+      out->data[(out->num_instructions + out->num_extra) * 4 + 3] = value >> 24;
 
       // calculate offset 
-      int offset = (out->numInstructions - pos + out->numExtra) * 4 - 8;
-      out->numExtra++;
+      int offset = (out->num_instructions - pos + out->num_extra) * 4 - 8;
+      out->num_extra++;
 
       // build new arguments + recurse
       char *newarg1 = malloc(MAX_ARG_SIZE * sizeof(char));

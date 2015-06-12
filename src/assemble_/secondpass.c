@@ -18,7 +18,7 @@ void secondpass(symbol_t *table, char **filecontents, output_data_t *out) {
   instruction_str_t *instructions = 
       calloc(NUM_INSTRUCTIONS, sizeof(instruction_str_t));
   failif(instructions == NULL, ERROR_CALLOC);
-  initInstructions(instructions);
+  init_instructions(instructions);
 
   // for each instruction
   for(int i = 0; filecontents[i] != 0; i++) {
@@ -38,10 +38,10 @@ void secondpass(symbol_t *table, char **filecontents, output_data_t *out) {
     char *argstr = firstspace + 1;
     trim(argstr);
 
-    instruction_str_t *ins = getInstruction(instructions, mnemonic);
+    instruction_str_t *ins = get_instruction(instructions, mnemonic);
     
     // if command doesnt have any args throw an error
-    if(ins == NULL || ins->buildInstruction == NULL) {
+    if(ins == NULL || ins->build_instruction == NULL) {
       printf("Error: instruction \"%s %s\" invalid or not implemented\n", 
           mnemonic, argstr);
       exit(EXIT_FAILURE);
@@ -49,8 +49,8 @@ void secondpass(symbol_t *table, char **filecontents, output_data_t *out) {
  
     decoded_instruction_t *decoded;
     if(ins->type == BRANCH) {
-      decoded = ins->buildInstruction(
-          getSymbolAddressByName(table, argstr) - i - 2);
+      decoded = ins->build_instruction(
+          get_address_by_symbol(table, argstr) - i - 2);
     } else {
 
       int numargs;
@@ -78,9 +78,9 @@ void secondpass(symbol_t *table, char **filecontents, output_data_t *out) {
       
       // create binary and free arguments
       if(ins->type == SINGLE_DATA_TRANSFER) {
-        decoded = ins->buildInstruction(args, out, i);   
+        decoded = ins->build_instruction(args, out, i);   
       } else {
-        decoded = ins->buildInstruction(args);
+        decoded = ins->build_instruction(args);
       }
 
       free(args);
@@ -100,7 +100,7 @@ void secondpass(symbol_t *table, char **filecontents, output_data_t *out) {
   free(instructions);
 }
 
-instruction_str_t *getInstruction(instruction_str_t *instructions, 
+instruction_str_t *get_instruction(instruction_str_t *instructions, 
     char *mnemonic) {
   for(int i = 0; i < NUM_INSTRUCTIONS; i++) {
     if(strcmp(mnemonic, instructions[i].mnemonic) == 0) {
@@ -110,85 +110,85 @@ instruction_str_t *getInstruction(instruction_str_t *instructions,
   return NULL;
 }
 
-void initInstructions(instruction_str_t *instructions) {
+void init_instructions(instruction_str_t *instructions) {
   
   // DATA PROCESS
   for(int i = 0; i <= 9; i++) instructions[i].type = DATA_PROCESS;
   instructions[0].mnemonic = "add";
-  instructions[0].buildInstruction = &build_add;
+  instructions[0].build_instruction = &build_add;
 
   instructions[1].mnemonic = "sub";
-  instructions[1].buildInstruction = &build_sub;
+  instructions[1].build_instruction = &build_sub;
   
   instructions[2].mnemonic = "rsb";
-  instructions[2].buildInstruction = &build_rsb;
+  instructions[2].build_instruction = &build_rsb;
   
   instructions[3].mnemonic = "and";
-  instructions[3].buildInstruction = &build_and;
+  instructions[3].build_instruction = &build_and;
   
   instructions[4].mnemonic = "eor";
-  instructions[4].buildInstruction = &build_eor;
+  instructions[4].build_instruction = &build_eor;
   
   instructions[5].mnemonic = "orr";
-  instructions[5].buildInstruction = &build_orr;
+  instructions[5].build_instruction = &build_orr;
   
   instructions[6].mnemonic = "mov";
-  instructions[6].buildInstruction = &build_mov;
+  instructions[6].build_instruction = &build_mov;
 
   instructions[7].mnemonic = "tst";
-  instructions[7].buildInstruction = &build_tst;
+  instructions[7].build_instruction = &build_tst;
   
   instructions[8].mnemonic = "teq";
-  instructions[8].buildInstruction = &build_teq;
+  instructions[8].build_instruction = &build_teq;
   
   instructions[9].mnemonic = "cmp";
-  instructions[9].buildInstruction = &build_cmp;
+  instructions[9].build_instruction = &build_cmp;
 
   // MULTIPLICATION
   for(int i = 10; i <= 11; i++) instructions[i].type = MULTIPLY; 
   instructions[10].mnemonic = "mul";
-  instructions[10].buildInstruction = &build_mul;
+  instructions[10].build_instruction = &build_mul;
 
   instructions[11].mnemonic = "mla";
-  instructions[11].buildInstruction = &build_mla;
+  instructions[11].build_instruction = &build_mla;
 
   // SINGLE DATA TRANSFER
   for(int i = 12; i <= 13; i++) instructions[i].type = SINGLE_DATA_TRANSFER;
   instructions[12].mnemonic = "ldr";
-  instructions[12].buildInstruction = &build_ldr;
+  instructions[12].build_instruction = &build_ldr;
   
   instructions[13].mnemonic = "str";
-  instructions[13].buildInstruction = &build_str;
+  instructions[13].build_instruction = &build_str;
   
   // BRANCH
   for(int i = 14; i <= 20; i++) instructions[i].type = BRANCH;
   instructions[14].mnemonic = "beq";
-  instructions[14].buildInstruction = &build_beq;
+  instructions[14].build_instruction = &build_beq;
   
   instructions[15].mnemonic = "bne";
-  instructions[15].buildInstruction = &build_bne;
+  instructions[15].build_instruction = &build_bne;
   
   instructions[16].mnemonic = "bge";
-  instructions[16].buildInstruction = &build_bge;
+  instructions[16].build_instruction = &build_bge;
   
   instructions[17].mnemonic = "blt";
-  instructions[17].buildInstruction = &build_blt;
+  instructions[17].build_instruction = &build_blt;
   
   instructions[18].mnemonic = "bgt";
-  instructions[18].buildInstruction = &build_bgt;
+  instructions[18].build_instruction = &build_bgt;
   
   instructions[19].mnemonic = "ble";
-  instructions[19].buildInstruction = &build_ble;
+  instructions[19].build_instruction = &build_ble;
   
   instructions[20].mnemonic = "b";
-  instructions[20].buildInstruction = &build_b;
+  instructions[20].build_instruction = &build_b;
  
   // SPECIAL
   instructions[21].mnemonic = "lsl";
   instructions[21].type = LSL;
-  instructions[21].buildInstruction = &build_lsl;
+  instructions[21].build_instruction = &build_lsl;
   
   instructions[22].mnemonic = "andeq";
   instructions[22].type = ANDEQ;
-  instructions[22].buildInstruction = &build_andeq;
+  instructions[22].build_instruction = &build_andeq;
 }

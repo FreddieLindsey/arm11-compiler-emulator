@@ -36,7 +36,11 @@ assemble
 
 #ignore .dSYM directories
 *.dSYM
-doc/.texpadtmp/Checkpoint.synctex.gz
 
 #ignore img files
 *.img
+
+#ignore tex files
+*.aux
+*.synctex.gz
+*.texpadtmp

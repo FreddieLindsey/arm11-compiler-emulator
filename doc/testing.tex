@@ -1,9 +1,10 @@
--valgrind
+To test our programs that we have written, we mainly used valgrind, specifically it's memory checking tool.
 
--gdb ??
+\begin{verbatim}
+  valgrind --tool=memcheck ./emulate <ARM11 BINARY>
+\end{verbatim}
 
--our own emulator
+When we had finished our project implementation, we ran this tool on our binaries (we ran it throughout but most of the memory leaks were fixed at the end). The assemble binary proved to be the most well implemented resulting in very few memory leaks. The emulate binary had a lot of leaks and they rose significantly with program complexity. For every iteration of the pipeline's three stages, the memory usage increased linearly and without being reachable or recoverable.
+~\\
 
--test suite
-
--i cant do latex formatting 
+We spent many hours over the last few days of the project optimising our code and reducing memory leaks and succeeded in reducing these to an absolute minimum.
