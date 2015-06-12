@@ -1,25 +1,25 @@
 We decided to follow the two-pass assembly method described in the specification. First the ARM assembly file is read in to memory line-by-line. Each line has comments and white-space stripped from it, and if the line is recognised as a label, it is added to the symbol table and ignored. The symbol table is stored using a linked list of symbol structs with methods written to search, add and free an element from this list:
 
 \begin{verbatim}
-typedef struct symbol_table_entry {
-  char *name;
-  int address;
-  struct symbol_table_entry *next;
-} symbol_t;
+  typedef struct symbol_table_entry {
+    char *name;
+    int address;
+    struct symbol_table_entry *next;
+  } symbol_t;
 \end{verbatim}
 
 
 The second pass then takes each instruction again, and tokenises its arguments. It looks up the first argument (the instruction mnemonic) in a Map-like data structure, which returns a pointer to a function that can deal with that instruction:
 
 \begin{verbatim}
-typedef struct instruction_str {
-  char *mnemonic;
-  decoded_instruction_t *(*build_instruction)();
-  instruction_kt type;
-} instruction_str_t;
+  typedef struct instruction_str {
+    char *mnemonic;
+    decoded_instruction_t *(*build_instruction)();
+    instruction_kt type;
+  } instruction_str_t;
 \end{verbatim}
 
-The tokenised arguments, as well as other relevant data are passed to this function, which returns a struct holding each part of the instruction as binary. An example for the "mov" instruction is seen below. It takes an array of strings as arguments, and builds a "decoded_instruction_t" structure for this instruction. 
+The tokenised arguments, as well as other relevant data are passed to this function, which returns a struct holding each part of the instruction as binary. An example for the mov instruction is seen below. It takes an array of strings as arguments, and builds a decoded instruction structure for this instruction. 
 
 \begin{verbatim}
 decoded_instruction_t *build_mov(char **args) {
@@ -35,43 +35,43 @@ decoded_instruction_t *build_mov(char **args) {
 }
 \end{verbatim}
 
-The value_to_int function is a utility function that takes a string such as "#14" or "r2" and returns the integer associated with that string, i.e. 14 and 2 respectively. It also deals with square brackets that could be included in that string. 
+The value to int function is a utility function that takes a string such as 14 or r2 and returns the integer associated with that string, i.e. 14 and 2 respectively. It also deals with square brackets that could be included in that string. 
 
 ~\\
 
-When translating from ARM assembly strings to binary, we were required to implement many different functions to work on strings. We decided to group all of these functions together into a "str_utils" library, containing these functions:
+When translating from ARM assembly strings to binary, we were required to implement many different functions to work on strings. We decided to group all of these functions together into a str utils library, containing these functions:
 
 \begin{verbatim}
-int is_empty(const char *str);
-char *strduplicate(const char *str);
-int strtoi(char *str);
-char last_char(char *str);
-void trim(char *str);
-void trim_before(char *str);
-void trim_after(char *str);
+  int is_empty(const char *str);
+  char *strduplicate(const char *str);
+  int strtoi(char *str);
+  char last_char(char *str);
+  void trim(char *str);
+  void trim_before(char *str);
+  void trim_after(char *str);
 \end{verbatim} 
 
-The is_empty function determines weather a string contains only white-space, strduplicate is a custom implementation of the "strdup" function, as there were compatibility issues with the built-in version and the trim functions remove trailing/leading white-space from a string
+The is empty function determines weather a string contains only white-space, strduplicate is a custom implementation of the strdup function, as there were compatibility issues with the built-in version and the trim functions remove trailing/leading white-space from a string
 
 ~\\
 
-After the instruction is converted to a decoded instruction structure, it is passed to the encoder, which converts it to the 32-bit binary instruction, there is one function for each type of instruction, shown below is the data_transfer function.
+After the instruction is converted to a decoded instruction structure, it is passed to the encoder, which converts it to the 32-bit binary instruction, there is one function for each type of instruction, shown below is the data transfer function.
 
 \begin{verbatim}
-instruction_t dataprocess_encode(decoded_instruction_t *decoded) {
-  const int OFFSET_COND = 0x1C;
-  const int OFFSET_I = 0x19;
-  const int OFFSET_OPCODE = 0x15;
-  const int OFFSET_S = 0x14;
-  const int OFFSET_RN = 0x10;
-  const int OFFSET_RD = 0xC;
-  const int OFFSET_OPERAND2 = 0x0;
-  const int COND = 14;
-  return (COND << OFFSET_COND) | (decoded->immediate << OFFSET_I) |
+  instruction_t dataprocess_encode(decoded_instruction_t *decoded) {
+    const int OFFSET_COND = 0x1C;
+    const int OFFSET_I = 0x19;
+    const int OFFSET_OPCODE = 0x15;
+    const int OFFSET_S = 0x14;
+    const int OFFSET_RN = 0x10;
+    const int OFFSET_RD = 0xC;
+    const int OFFSET_OPERAND2 = 0x0;
+    const int COND = 14;
+    return (COND << OFFSET_COND) | (decoded->immediate << OFFSET_I) |
       (decoded->opcode << OFFSET_OPCODE) | (decoded->set << OFFSET_S) |
       (decoded->regn << OFFSET_RN) | (decoded->regd << OFFSET_RD) |
       (decoded->operand2 << OFFSET_OPERAND2);
-}
+  }
 \end{verbatim}
 
 Finally, the binary from this function is written to the output file and is ready for running.
