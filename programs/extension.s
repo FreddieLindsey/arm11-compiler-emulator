@@ -1,23 +1,32 @@
 ; r3 register will set length of countdown
 ; r5 register will set the blink mode
 
+mov r3, #0             
+mov r5, #0            
+
 userinputsetter:
 
-  mov r3, #0            ; FOR TESTING ONLY DO NOT LEAVE IN
-  cmp r3, #0            ; if user has defined length of countdown....
-  bne initialization    ; use that number
-  ldr r3, =0xFFFFFF     ; else use default length of countdown
+  setcountdownlength:
 
-  mov r5, #0            ; FOR TESTING ONLY DO NOT LEAVE IN
-  cmp r5, #3            
-  bge defaultblink      ; if user entered invalid blink mode (>2) set a default
-  cmp r5, #0
-  ble defaultblink      ; if user entered invalid blink mode (<0) set a default
-  b userinputset        ; jumps if valid blink mode selected (0, 1 or 2)
+    cmp r3, #0            ; if user has defined length of countdown....
+    ble defaultcountdown  ; invalid or unset length uses a default
+    bne setblinkmode      ; use that number
+    
+      defaultcountdown:
 
-  defaultblink:
+        ldr r3, =0xFFFFFF      ; else use default length of countdown
+
+  setblinkmode:
+
+    cmp r5, #3            
+    bge defaultblink      ; if user enters invalid blink mode (>2) set a default
+    cmp r5, #0
+    blt defaultblink      ; if user enters invalid blink mode (<0) set a default
+    b userinputset        ; jumps if valid blink mode selected (0, 1 or 2)
+
+    defaultblink:
   
-    mov r5, #0            ; sets a default blink mode of 0
+      mov r5, #0            ; sets a default blink mode of 0
 
 userinputset:
 
@@ -53,10 +62,13 @@ pinsetup:
 count:
 
   mov r4,  r3
+
   On:                   ; loop for about 1 second
-  sub r4,r4,#1
-  cmp r4,#1
-  bne On                 
+
+    sub r4,r4,#1
+    cmp r4,#1
+    bne On 
+                
   str r6,  [r0,#28]     ; after a delay displays the current pin 
 
   iteration1:           ; iterates the loop once for each of the four pins -
@@ -87,43 +99,76 @@ count:
     mov r6, r11
     b count 
 
-countdownend:         ; after first four pins displayed.... 
+countdownend:         ; after five pins displayed.... 
+
+chooseblinkmode:
+
+  cmp r5, #0            
+  beq flash             ; if blink mode is 0 flashing start
+  cmp r5, #1           
+  beq stayon            ; if blink mode is 1 constant pin displayed start
+  cmp r5, #2           
+  beq ripple            ; if blink mode is 2 ripple start
+
+stayon:
+
+  mov r6,  #60          ; sets the length of times to display pins
+
+  keepdisplayed:
+
+    ldr r4,  =0x7FFFF     ; establishes counter for display delay
+  
+    displayon:               ; loop for another second
+
+      sub r4,r4,#1
+      cmp r4,#1
+      bne displayon            ; proceeds when counter decremented to zero
+
+    cmp r6, #0            
+    sub r6, r6, #1        ; decreases the remaining number of blinks
+    bne keepdisplayed     ; reiterates blink if required otherwise resets pins
+
+  b closeprogram        ; ends the program
+
+ripple:
 
 flash:                ; blink all five pins at a rapid pace
 
   mov r6, #30           ; sets the number of times to blink pins
+
   reset:
-  str r7,  [r0,#40]     ; clears pin 7
-  str r8,  [r0,#40]     ; clears pin 8
-  str r9,  [r0,#40]     ; clears pin 9
-  str r10, [r0,#40]     ; clears pin 10
-  str r11, [r0,#40]     ; clears pin 11
-  ldr r4,  =0x7FFFF     ; establishes counter for blink delay
 
-  waitOff:              ; loop for about 1 second
+    str r7,  [r0,#40]     ; clears pin 7
+    str r8,  [r0,#40]     ; clears pin 8
+    str r9,  [r0,#40]     ; clears pin 9
+    str r10, [r0,#40]     ; clears pin 10
+    str r11, [r0,#40]     ; clears pin 11
+    ldr r4,  =0x7FFFF     ; establishes counter for blink delay
 
-    sub r4,r4,#1
-    cmp r4,#1
-    bne waitOff           ; proceeds when counter decremented to zero
+    waitoff:              ; loop for about 1 second
 
-  str r7,  [r0,#28]     ; displays pin 7
-  str r8,  [r0,#28]     ; displays pin 8
-  str r9,  [r0,#28]     ; displays pin 9
-  str r10, [r0,#28]     ; displays pin 10
-  str r11, [r0,#28]     ; displays pin 11
-  ldr r4,  =0x7FFFF
+      sub r4,r4,#1
+      cmp r4,#1
+      bne waitoff           ; proceeds when counter decremented to zero
 
-  waitOn:               ; loop for another second
+    str r7,  [r0,#28]     ; displays pin 7
+    str r8,  [r0,#28]     ; displays pin 8
+    str r9,  [r0,#28]     ; displays pin 9
+    str r10, [r0,#28]     ; displays pin 10
+    str r11, [r0,#28]     ; displays pin 11
+    ldr r4,  =0x7FFFF     ; resets the counter
 
-    sub r4,r4,#1
-    cmp r4,#1
-    bne waitOn            ; proceeds when counter decremented to zero
+    waiton:               ; loop for another second
 
-  cmp r6, #0            
-  sub r6, r6, #1        ; decreases the remaining number of blinks
-  bne reset             ; reiterates blink if required otherwise resets pins
+      sub r4,r4,#1
+      cmp r4,#1
+      bne waiton            ; proceeds when counter decremented to zero
 
-closesprogram:
+    cmp r6, #0            
+    sub r6, r6, #1        ; decreases the remaining number of blinks
+    bne reset             ; reiterates blink if required otherwise resets pins
+
+closeprogram:
 
   str r7,  [r0,#40]     ; clears pin 7 
   str r8,  [r0,#40]     ; clears pin 8
