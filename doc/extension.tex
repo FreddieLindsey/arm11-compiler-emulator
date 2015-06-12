@@ -1,21 +1,16 @@
 For the extension we decided to create a simple motor-sport style starting light program. We connected the raspberry pi up to 5 LEDs to simulate the 5 stages of lighting that a real starting light would show. 
-
 ~\\
 
 The raspberry pi was set up by connecting the GPIO pins 7, 8, 9, 10 and 11 to individual LEDs on the breadboard, so that they could be controlled by the ARM program. We chose to use these pins as they are the only 5 consecutive pin numbers on this version of the pi. This allowed LEDs to be controlled in turn by simply shifting the register holding the mask by 1 bit left. 
-
 ~\\
 
 The assembly program was written to control the LEDs in 3 different ways. Each of the 3 procedures start the same, by powering the LEDs one by one until all 5 are lit. The value stored in register r5 controls what happens after this count-up has finished. In the case it is "0", all 5 of the LEDs will flash at the same time. When it's "1", the LEDs will stay lit until the pi is powered off. And when it's "2" or higher, the LEDs will perform a ripple effect, each LED will switch on in turn, switching off when the next one turns on. The effect of the LED can currently only be chosen by setting a register value in the ARM assembly file. 
-
 ~\\
 
 The pi could easily be connected to more powerful LED clusters, such as the ones used in professional race scenarios, creating an effective starting light system. As these kinds of lights are usually very large, there would be no problems fitting the raspberry pi into the lights housing. If the system was to be used in a smaller setting, for example a toy race track, there may be issues with the raspberry pi being too large.
-
 ~\\
 
 The main programming problem was ......
-
 ~\\
 
 In the future it could be possible to attach two switches to act as a selection for the lighting procedure, and possibly another switch to control when to start the count-up. Real starting lights also incorporate a random element into the timings, which we didn't have the time to implement in our program.

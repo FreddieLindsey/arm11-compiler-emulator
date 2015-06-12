@@ -5,10 +5,11 @@ all: Report.pdf Checkpoint.pdf
 
 .phony: all clean
 
-%.pdf: %.tex $(EXTRA_SRC)
-	while( $(TEX) $< ; grep -q "Rerun to get cross" $(<:.tex=.log)) ; \
-	  do true ; \
-	 done
+Report.pdf: Report.tex
+	pandoc -o $@ $^
+
+Checkpoint.pdf: Checkpoint.tex
+	pandoc -o $@ $^
 
 clean:
 	rm -f *.aux
