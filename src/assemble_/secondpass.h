@@ -9,15 +9,15 @@ typedef struct instruction_str {
   char *mnemonic;
 
   // function to create binary
-  decoded_instruction_t *(*buildInstruction)(); 
+  decoded_instruction_t *(*build_instruction)(); 
 
   // type of instruction (see enum above);
   instruction_kt type;
 } instruction_str_t;
 
 void secondpass(symbol_t *table, char **filecontents, output_data_t *out);
-void initInstructions(instruction_str_t* instructions);
-instruction_str_t *getInstruction(instruction_str_t* instructions,
+void init_instructions(instruction_str_t* instructions);
+instruction_str_t *get_instruction(instruction_str_t* instructions,
     char *mnemonic);
 
 #endif

@@ -268,14 +268,14 @@ decoded_instruction_t *build_ldr(char **args, output_data_t *out, int pos) {
       return build_mov(args);
     } else {
       // load extra data into the end of the binary file
-      out->data[(out->numInstructions + out->numExtra) * 4] = value;
-      out->data[(out->numInstructions + out->numExtra) * 4 + 1] = value >> 8;
-      out->data[(out->numInstructions + out->numExtra) * 4 + 2] = value >> 16;
-      out->data[(out->numInstructions + out->numExtra) * 4 + 3] = value >> 24;
+      out->data[(out->num_instructions + out->num_extra) * 4] = value;
+      out->data[(out->num_instructions + out->num_extra) * 4 + 1] = value >> 8;
+      out->data[(out->num_instructions + out->num_extra) * 4 + 2] = value >> 16;
+      out->data[(out->num_instructions + out->num_extra) * 4 + 3] = value >> 24;
 
       // calculate offset 
-      int offset = (out->numInstructions - pos + out->numExtra) * 4 - 8;
-      out->numExtra++;
+      int offset = (out->num_instructions - pos + out->num_extra) * 4 - 8;
+      out->num_extra++;
 
       // build new arguments + recurse
       char *newarg1 = malloc(MAX_ARG_SIZE * sizeof(char));
