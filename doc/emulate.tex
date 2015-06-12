@@ -1,4 +1,5 @@
 The first part of the project regarded the emulate binary. It's purpose is to emulate an ARM11 execution of ARM11 assembled code from a binary file.
+~\\
 
 Firstly, we found it important to check to see that the required program arguments were given and valid. Therefore, in our emulate.c we implemented the following for error checking:
 
@@ -49,6 +50,7 @@ Thirdly, we need to actually run the pipeline. So therefore we ran the below cod
 \end{verbatim}
 
 The machine and pipeline implementation were parts of the emulation that we had to be most careful with. Errors or bad implementation here could have cost us vastly more time in a successful implementation of the rest of the project.
+~\\
 
 We chose to use structs for our pipeline and machine models, the machine being responsible for the pipeline it is using as below:
 
@@ -72,6 +74,7 @@ We chose to use structs for our pipeline and machine models, the machine being r
 \end{verbatim}
 
 We used `typedef` to allow us to use the variable types shown above. This also meant that if we needed to change the variable types throughout the project and in the future, this could be achieved very easily without having to rewrite any code.
+~\\
 
 To actually emulate each instruction and the pipeline, we took to three-stage pipeline model and implemented that in a while loop: 
 
@@ -86,5 +89,6 @@ To actually emulate each instruction and the pipeline, we took to three-stage pi
 \end{verbatim}
 
 The end result is that, since we never have anything to execute at the start, we can move the execute into the condition of the while loop. As shown above, we run the while loop until the execution of an instruction returns -1 signifiying that it's a HALT.
+~\\
 
 To discuss our implementation of emulate (and to some extent assemble below), it may have improved the efficiency of the group had we sat down to discuss the implementation of the instructions first rather than diving straight into the emulation and assembly parts of the project. However, given our understanding of C at the start of the project, and the top down approach that works very well in Java, this is understandable.

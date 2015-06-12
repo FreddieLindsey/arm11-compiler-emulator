@@ -36,7 +36,6 @@ decoded_instruction_t *build_mov(char **args) {
 \end{verbatim}
 
 The value\textunderscore{}to\textunderscore{}int function is a utility function that takes a string such as 14 or r2 and returns the integer associated with that string, i.e. 14 and 2 respectively. It also deals with square brackets that could be included in that string. 
-
 ~\\
 
 When translating from ARM assembly strings to binary, we were required to implement many different functions to work on strings. We decided to group all of these functions together into a str\textunderscore{}utils library, containing these functions:
@@ -52,7 +51,6 @@ When translating from ARM assembly strings to binary, we were required to implem
 \end{verbatim} 
 
 The is empty function determines weather a string contains only white-space, strduplicate is a custom implementation of the strdup function, as there were compatibility issues with the built-in version and the trim functions remove trailing/leading white-space from a string
-
 ~\\
 
 After the instruction is converted to a decoded instruction structure, it is passed to the encoder, which converts it to the 32-bit binary instruction, there is one function for each type of instruction, shown below is the data transfer function.
