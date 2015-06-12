@@ -10,12 +10,6 @@
 #define MAX_LINE_SIZE 512 * sizeof(char)
 #define MEMORY_SIZE 65536
 
-// symbol_t tables are stored in a linked list format
-struct symbol_table_entry {
-  char *name;
-  int address;
-  struct symbol_table_entry *next;
-};
 
 int main(int argc, char **argv) {
 
@@ -58,7 +52,7 @@ int main(int argc, char **argv) {
     trim_after(line);
 
     // if line is a label, add it to the table
-    char *label = getlabel(line);
+    char *label = get_label(line);
     if(label != NULL) {
       // add this label to symbol_t table
       currentSymbol->name = strduplicate(label);
@@ -83,15 +77,15 @@ int main(int argc, char **argv) {
   // allocate space for each 4 byte binary instruction
   output_data_t *output = malloc(sizeof(output_data_t));
   output->data = calloc(numInstructions * 4 * 2, 1);
-  output->numInstructions = numInstructions;
-  output->numExtra = 0;
+  output->num_instructions = numInstructions;
+  output->num_extra = 0;
   failif(output == NULL, ERROR_MALLOC);
 
   // run secondpass
   secondpass(symbolTable, filecontents, output);
   
   // free memory
-  freeTable(symbolTable);
+  free_table(symbolTable);
   for(int i = 0; i < MEMORY_SIZE; i++) {
     free(filecontents[i]);
   }
@@ -102,7 +96,7 @@ int main(int argc, char **argv) {
   failif(out == NULL, ERROR_OUTPUT_FILE);
 
   size_t writesize = fwrite(output->data, 1, 
-     (numInstructions + output->numExtra) * 4, fopen(argv[2], "wb"));
+     (numInstructions + output->num_extra) * 4, fopen(argv[2], "wb"));
   failif(writesize == 0, ERROR_OUTPUT_FILE_WRITE);
 
   free(output->data);
@@ -114,7 +108,7 @@ int main(int argc, char **argv) {
 /*
  *  Free all memory used by a symboltable
  */
-void freeTable(symbol_t *table) {
+void free_table(symbol_t *table) {
   symbol_t *next, *current = table;
   while(current != NULL) {
     next = current->next;
@@ -127,7 +121,7 @@ void freeTable(symbol_t *table) {
 /*
  *  Gets a symbol's address given its name
  */
-int getSymbolAddressByName(symbol_t *table, char *name) {
+int get_address_by_symbol(symbol_t *table, char *name) {
   symbol_t *current = table;
   while(current->next != NULL) {
     if(strcmp(current->name, name) == 0) {
@@ -143,7 +137,7 @@ int getSymbolAddressByName(symbol_t *table, char *name) {
 /*
  *  Recursively prints a symbol_t table
  */
-void printTable(symbol_t *table) {
+void print_table(symbol_t *table) {
   symbol_t *current = table;
   while(current->next != NULL) {
     printf("\"%s\" => %03d\n", current->name, current->address);
@@ -151,7 +145,7 @@ void printTable(symbol_t *table) {
   }
 }
 
-void printFileContents(char **filecontents) {
+void print_file_contents(char **filecontents) {
   for(int i = 0; i < MEMORY_SIZE; i++) {
     if(filecontents[i] != 0) {
       printf("%03d: %s\n", i, filecontents[i]);
@@ -159,17 +153,10 @@ void printFileContents(char **filecontents) {
   }
 }
 
-void printBinary(unsigned char *binary) {
-  for(int i = 0; binary[i] != '\0'; i += 4) {
-    printf("0x%02x%02x%02x%02x\n", 
-        binary[i], binary[i+1], binary[i+2], binary[i+3]);
-  }
-}
-
 /*
  *  Checks if [str] is a label, returns the label name if true, NULL otherwise
  */
-char *getlabel(char *str) {
+char *get_label(char *str) {
 
   // check first char is alphetical
   if(!isalpha(str[0])) return NULL;
@@ -187,7 +174,6 @@ char *getlabel(char *str) {
   } else {
     return NULL;
   }
-
 }
 
 /*
