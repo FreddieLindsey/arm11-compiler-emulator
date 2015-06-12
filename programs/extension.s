@@ -1,5 +1,5 @@
-ldr r3, =0xFFFFFF           ; r3 register will set length of countdown  
-mov r5, #0           ; r5 register will set the blink mode 
+ldr r3, =0xFFFFFF       ; r3 register will set length of countdown  
+mov r5, #0              ; r5 register will set the blink mode 
 
 userinputsetter:
 
@@ -136,11 +136,11 @@ ripple:
   str r11, [r0,#40]     ; clears pin 11
   mov r3, #10
 
-singleripple:
+singleripple:           ; ripples through all five pins once
  
   mov r6,  r7
 
-  ripplepin:
+  ripplepin:            ; toggles on and off a single pin
     ldr r4, =0x7FFFF
     str r6,  [r0,#28]     ; displays the current pin 
 
@@ -183,8 +183,8 @@ singleripple:
   rippleend:
 
     cmp r3, #0            
-    sub r3, r3, #1        ; decreases the remaining number of blinks
-    bne singleripple      ; reiterates blink if required otherwise resets pins
+    sub r3, r3, #1        ; decreases the remaining number of ripples
+    bne singleripple      ; reiterates ripple if required or end program
     b closeprogram
  
 countdownend:         ; after five pins displayed.... 
