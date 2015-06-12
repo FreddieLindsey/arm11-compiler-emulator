@@ -10,11 +10,11 @@
 #define MAX_LINE_SIZE 512 * sizeof(char)
 #define MEMORY_SIZE 65536
 
-// symbol tables are stored in a linked list format
-struct symbolTableEntry {
+// symbol_t tables are stored in a linked list format
+struct symbol_table_entry {
   char *name;
   int address;
-  struct symbolTableEntry *next;
+  struct symbol_table_entry *next;
 };
 
 int main(int argc, char **argv) {
@@ -26,11 +26,11 @@ int main(int argc, char **argv) {
   FILE *file = fopen(argv[1], "r");
   failif(file == NULL, ERROR_INPUT_FILE_NOT_FOUND);
 
-  // define symbol table
-  symbol *symbolTable = malloc(sizeof(symbol));
-  memset(symbolTable, 0, sizeof(symbol));
+  // define symbol_t table
+  symbol_t *symbolTable = malloc(sizeof(symbol_t));
+  memset(symbolTable, 0, sizeof(symbol_t));
   failif(symbolTable == NULL, ERROR_MALLOC);
-  symbol *currentSymbol = symbolTable;
+  symbol_t *currentSymbol = symbolTable;
 
   // space to hold file contents
   char **filecontents = calloc(MEMORY_SIZE, sizeof(char*));
@@ -43,10 +43,10 @@ int main(int argc, char **argv) {
 
   while(fgets(line, MAX_LINE_SIZE, file) != NULL) {
     // ignore empty lines 
-    if(line[0] == '\n') continue;
+    if(is_empty(line)) continue;
 
     // remove leading whitespace
-    trimBefore(line);
+    trim_before(line);
 
     // ignore lines that are only comments
     if(line[0] == ';') continue;
@@ -55,16 +55,16 @@ int main(int argc, char **argv) {
     line = strtok(line, ";");
 
     // remove ending whitespace
-    trimAfter(line);
+    trim_after(line);
 
     // if line is a label, add it to the table
     char *label = getlabel(line);
     if(label != NULL) {
-      // add this label to symbol table
+      // add this label to symbol_t table
       currentSymbol->name = strduplicate(label);
       currentSymbol->address = i; 
-      currentSymbol->next = malloc(sizeof(symbol));
-      memset(currentSymbol->next, 0, sizeof(symbol));
+      currentSymbol->next = malloc(sizeof(symbol_t));
+      memset(currentSymbol->next, 0, sizeof(symbol_t));
       currentSymbol = currentSymbol->next;
     } else {
       // copy line and add it to filecontents
@@ -114,8 +114,8 @@ int main(int argc, char **argv) {
 /*
  *  Free all memory used by a symboltable
  */
-void freeTable(symbol *table) {
-  symbol *next, *current = table;
+void freeTable(symbol_t *table) {
+  symbol_t *next, *current = table;
   while(current != NULL) {
     next = current->next;
     free(current->name);
@@ -127,24 +127,24 @@ void freeTable(symbol *table) {
 /*
  *  Gets a symbol's address given its name
  */
-int getSymbolAddressByName(symbol *table, char *name) {
-  symbol *current = table;
+int getSymbolAddressByName(symbol_t *table, char *name) {
+  symbol_t *current = table;
   while(current->next != NULL) {
     if(strcmp(current->name, name) == 0) {
       return current->address; 
     }
     current = current->next;
   }
-  printf("Error: symbol \"%s\" not found\n", name);
+  printf("Error: symbol_t \"%s\" not found\n", name);
   fail(ERROR_NONE);
   return 0;
 }
 
 /*
- *  Recursively prints a symbol table
+ *  Recursively prints a symbol_t table
  */
-void printTable(symbol *table) {
-  symbol *current = table;
+void printTable(symbol_t *table) {
+  symbol_t *current = table;
   while(current->next != NULL) {
     printf("\"%s\" => %03d\n", current->name, current->address);
     current = current->next;

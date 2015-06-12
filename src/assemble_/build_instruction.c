@@ -20,7 +20,7 @@ int valueToInt(char* str) {
 
   // remove starting [ and ending ]
   if(copy[0] == '[') copy++;
-  if(lastChar(copy) == ']') copy[strlen(copy) - 1] = '\0'; 
+  if(last_char(copy) == ']') copy[strlen(copy) - 1] = '\0'; 
 
   // check for PC
   if(strcmp(copy, "PC") == 0) return PC_ADDRESS;
@@ -218,7 +218,7 @@ decoded_instruction_t *build_sdt(char **args, int loadstore) {
     ins->prepost = 1;
   } else {
     // prepost set if last char of 2nd arg is not a ']' 
-    ins->prepost = lastChar(args[1]) == ']' ? 0 : 1;
+    ins->prepost = last_char(args[1]) == ']' ? 0 : 1;
 
     if(args[3] == NULL) {
       int offset = valueToInt(args[2]); 

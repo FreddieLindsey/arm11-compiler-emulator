@@ -14,7 +14,7 @@
  *  and written to [out], any extra binary used by ldr instructions in stored
  *  in [extradata]
  */
-void secondpass(symbol *table, char **filecontents, output_data_t *out) {
+void secondpass(symbol_t *table, char **filecontents, output_data_t *out) {
   instruction_str_t *instructions = 
       calloc(NUM_INSTRUCTIONS, sizeof(instruction_str_t));
   failif(instructions == NULL, ERROR_CALLOC);
