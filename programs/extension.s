@@ -1,8 +1,5 @@
-; r3 register will set length of countdown
-; r5 register will set the blink mode
-
-mov r3, #0             
-mov r5, #0            
+ldr r3, =0xFFFFFF           ; r3 register will set length of countdown  
+mov r5, #0           ; r5 register will set the blink mode 
 
 userinputsetter:
 
@@ -10,21 +7,21 @@ userinputsetter:
 
     cmp r3, #0            ; if user has defined length of countdown....
     ble defaultcountdown  ; invalid or unset length uses a default
-    bne setblinkmode      ; use that number
+    bne setstartmode      ; use that number
     
       defaultcountdown:
 
         ldr r3, =0xFFFFFF      ; else use default length of countdown
 
-  setblinkmode:
+  setstartmode:
 
     cmp r5, #3            
-    bge defaultblink      ; if user enters invalid blink mode (>2) set a default
+    bge defaultstart      ; if user enters invalid blink mode (>2) set a default
     cmp r5, #0
-    blt defaultblink      ; if user enters invalid blink mode (<0) set a default
+    blt defaultstart      ; if user enters invalid blink mode (<0) set a default
     b userinputset        ; jumps if valid blink mode selected (0, 1 or 2)
 
-    defaultblink:
+    defaultstart:
   
       mov r5, #0            ; sets a default blink mode of 0
 
@@ -101,7 +98,7 @@ count:
 
 countdownend:         ; after five pins displayed.... 
 
-chooseblinkmode:
+choosestartmode:
 
   cmp r5, #0            
   beq flash             ; if blink mode is 0 flashing start
@@ -131,6 +128,67 @@ stayon:
   b closeprogram        ; ends the program
 
 ripple:
+
+  str r7,  [r0,#40]     ; clears pin 7
+  str r8,  [r0,#40]     ; clears pin 8
+  str r9,  [r0,#40]     ; clears pin 9
+  str r10, [r0,#40]     ; clears pin 10
+  str r11, [r0,#40]     ; clears pin 11
+  mov r3, #10
+
+singleripple:
+ 
+  mov r6,  r7
+
+  ripplepin:
+    ldr r4, =0x7FFFF
+    str r6,  [r0,#28]     ; displays the current pin 
+
+  rippleon:             ; loops for a short time
+
+    sub r4,r4,#1
+    cmp r4,#1
+    bne rippleon 
+                
+  str r6,  [r0,#40]     ; after a short delay clears the current pin 
+
+  ripple1:           ; iterates the loop once for each of the five pins -
+
+    cmp r6, r7            ;-s in succession
+    bne ripple2
+    mov r6, r8
+    b ripplepin
+
+  ripple2:
+
+    cmp r6, r8
+    bne ripple3
+    mov r6, r9
+    b ripplepin
+
+  ripple3:
+
+    cmp r6, r9
+    bne ripple4
+    mov r6, r10
+    b ripplepin
+
+  ripple4:
+
+    cmp r6, r10
+    bne rippleend
+    mov r6, r11
+    b ripplepin
+  
+  rippleend:
+
+    cmp r3, #0            
+    sub r3, r3, #1        ; decreases the remaining number of blinks
+    bne singleripple      ; reiterates blink if required otherwise resets pins
+    b closeprogram
+ 
+countdownend:         ; after five pins displayed.... 
+  
 
 flash:                ; blink all five pins at a rapid pace
 
