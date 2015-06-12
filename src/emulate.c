@@ -27,14 +27,13 @@ int main(int argc, char** argv) {
   }
 
   /*  Check a given filename exists, and return if not */
-  char* filename = basename(argv[1]);
   FILE *file;
   if ((file = fopen(argv[1], "r")) == NULL) {
     perror("Error opening file!");
-    printf("Does the file %s exist?\nEXITING\n", filename);
+    printf("Does the file %s exist?\nEXITING\n", argv[1]);
     exit(EXIT_FAILURE);
   }
-  if (verbose) printf("File opened successfully:\t%s\n", filename);
+  if (verbose) printf("File opened successfully:\t%s\n", argv[1]);
 
   /*  Create and initialise a machine and a pipeline */
   machine_t machine;
@@ -44,9 +43,9 @@ int main(int argc, char** argv) {
   if (verbose) printf("Pipeline initialised.\n");
 
   /*  Load a file into machine memory, then close it */
-  if (verbose) printf("Loading file\t\t\t%s\n", filename);
+  if (verbose) printf("Loading file\t\t\t%s\n", argv[1]);
   loadfile(file, &machine);
-  if (verbose) printf("Loaded file\t\t\t%s\n", filename);
+  if (verbose) printf("Loaded file\t\t\t%s\n", argv[1]);
 
   /*  Print the state of the machine prior to any execution */
   if (verbose) print_machine(&machine);
@@ -60,7 +59,6 @@ int main(int argc, char** argv) {
 
   /*  Frees the machine by closing it */
   close_machine(&machine);
-  free(filename);
   if (verbose) printf("Machine closed, memory freed\n");
 
   return EXIT_SUCCESS;
