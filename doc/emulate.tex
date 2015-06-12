@@ -1,4 +1,38 @@
-TODO
-
 The first part of the project regarded the emulate binary. It's purpose is to emulate an ARM11 execution of ARM11 assembled code from a binary file.
+
+Firstly, we found it important to check to see that the required program arguments were given. Therefore, in our emulate.c we implemented the following for error checking:
+
+\begin{verbatim}
+  /*  Check a given filename exists, and return if not */
+  FILE *file;
+  if ((file = fopen(argv[1], "r")) == NULL) {
+    perror("Error opening file!");
+    printf("Does the file %s exist?\nEXITING\n", argv[1]);
+    exit(EXIT_FAILURE);
+  }
+\end{verbatim}
+
+Secondly, once a file had been successfully found and opened, we initialised a new machine and the pipeline within that machine before loading the file we'd just opened into the machine memory.
+
+\begin{verbatim}
+  /*  Create and initialise a machine and a pipeline */
+  machine_t machine;
+  init_machine(&machine);
+  init_pipeline(machine.pipeline);
+  loadfile(file, &machine);
+\end{verbatim}
+
+Thirdly, we need to actually run the pipeline. So therefore we ran the below code (implementation to follow) before closing the pipeline, printing the machine, and finally closing the machine.
+
+\begin{verbatim}
+  /*  Execute the pipeline model of the ARM architecture */
+  run_pipeline(&machine);
+  close_pipeline(machine.pipeline);
+
+  /*  Print the final state of the machine */
+  print_machine(&machine);
+
+  /*  Frees the machine by closing it */
+  close_machine(&machine);
+\end{verbatim}
 
