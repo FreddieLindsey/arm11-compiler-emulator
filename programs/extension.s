@@ -58,7 +58,6 @@ countdownend:         ; after first four pins displayed....
 flash:                ; blink all five pins at a rapid pace
 mov r6, #30           ; sets the number of times to blink pins
 reset:
-mov r5,   #0          ; register to compare with counter
 str r7,  [r0,#40]     ; clears pin 7
 str r8,  [r0,#40]     ; clears pin 8
 str r9,  [r0,#40]     ; clears pin 9
