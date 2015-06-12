@@ -19,7 +19,7 @@ The second pass then takes each instruction again, and tokenises its arguments. 
   } instruction_str_t;
 \end{verbatim}
 
-The tokenised arguments, as well as other relevant data are passed to this function, which returns a struct holding each part of the instruction as binary. An example for the mov instruction is seen below. It takes an array of strings as arguments, and builds a decoded instruction structure for this instruction. 
+The tokenised arguments, as well as other relevant data are passed to this function, which returns a struct holding each part of the instruction as binary. An example for the mov instruction is seen below. It takes an array of strings as arguments, and builds a decoded\textunderscore{}instruction\textunderscore{}structure for this instruction. 
 
 \begin{verbatim}
 decoded_instruction_t *build_mov(char **args) {
@@ -35,11 +35,11 @@ decoded_instruction_t *build_mov(char **args) {
 }
 \end{verbatim}
 
-The value to int function is a utility function that takes a string such as 14 or r2 and returns the integer associated with that string, i.e. 14 and 2 respectively. It also deals with square brackets that could be included in that string. 
+The value\textunderscore{}to\textunderscore{}int function is a utility function that takes a string such as 14 or r2 and returns the integer associated with that string, i.e. 14 and 2 respectively. It also deals with square brackets that could be included in that string. 
 
 ~\\
 
-When translating from ARM assembly strings to binary, we were required to implement many different functions to work on strings. We decided to group all of these functions together into a str utils library, containing these functions:
+When translating from ARM assembly strings to binary, we were required to implement many different functions to work on strings. We decided to group all of these functions together into a str\textunderscore{}utils library, containing these functions:
 
 \begin{verbatim}
   int is_empty(const char *str);
