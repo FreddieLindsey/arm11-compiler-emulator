@@ -1,5 +1,5 @@
 ldr r3, =0xFFFFFF       ; r3 register will set length of countdown  
-mov r5, #0              ; r5 register will set the blink mode 
+mov r5, #2              ; r5 register will set the blink mode 
 
 userinputsetter:
 
